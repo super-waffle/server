@@ -16,7 +16,7 @@ public class UserServiceImpl implements UserService{
     private UserRepository userRepository;
 
     @Override
-    public User getUserByUserSeq(Long userSeq) {
+    public User getUserByUserSeq(Integer userSeq) {
         return userRepository.findUserByUserSeq(userSeq).orElse(new User());
     }
 }

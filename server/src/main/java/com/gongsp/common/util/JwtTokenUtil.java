@@ -44,7 +44,7 @@ public class JwtTokenUtil {
                 .build();
     }
 
-    public static String getToken(Long userSeq) {
+    public static String getToken(Integer userSeq) {
         Date expires = JwtTokenUtil.getTokenExpiration(expirationTime);
         return JWT.create()
                 .withSubject(userSeq.toString())
@@ -54,7 +54,7 @@ public class JwtTokenUtil {
                 .sign(Algorithm.HMAC512(secretKey.getBytes()));
     }
 
-    public static String getToken(Instant expires, Long userSeq) {
+    public static String getToken(Instant expires, Integer userSeq) {
         return JWT.create()
                 .withSubject(userSeq.toString())
                 .withExpiresAt(Date.from(expires))

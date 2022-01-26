@@ -7,6 +7,5 @@ import com.gongsp.db.entity.User;
 public interface AccountService {
     User createUser(AccountSignupPostReq signupInfo);
     User getUserByUserEmail(String userEmail);
-    boolean getUserByUserNickname(AccountCheckNicknamePostReq nicknameInfo);
-
+    Boolean existsByUserNickname(AccountCheckNicknamePostReq nicknameInfo);
 }
