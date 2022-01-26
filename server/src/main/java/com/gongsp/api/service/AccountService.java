@@ -1,10 +1,12 @@
 package com.gongsp.api.service;
 
-import com.gongsp.api.request.account.AccountRegisterPostReq;
+import com.gongsp.api.request.account.AccountCheckNicknamePostReq;
+import com.gongsp.api.request.account.AccountSignupPostReq;
 import com.gongsp.db.entity.User;
 
 public interface AccountService {
-    public void createUser(AccountRegisterPostReq accountRegisterPostReq) throws Exception;
-    public User getUserByUserEmail(String userEmail);
+    User createUser(AccountSignupPostReq signupInfo);
+    User getUserByUserEmail(String userEmail);
+    boolean getUserByUserNickname(AccountCheckNicknamePostReq nicknameInfo);
 
 }

@@ -1,25 +1,32 @@
 package com.gongsp.db.entity;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name="tb_user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer userSeq;
-    private Integer levelSeq;
-    private Integer levelImgSeq;
-    private boolean isAdmin;
+    private Long userSeq;
+    private Integer levelSeq=1;
+    private Integer levelImgSeq=1;
+    private Boolean isAdmin=false;
     private String userEmail;
     private String userNickname;
-    private String userPassword;
     private String userProfileMsg;
     private String userImg;
-    private int userTimeTotal;
-    private int userTimeGoal;
-    private int userWarning;
+    private Integer userTimeTotal;
+    private Integer userTimeGoal;
+    private Integer userWarning=0;
+
+    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String userPassword;
 }

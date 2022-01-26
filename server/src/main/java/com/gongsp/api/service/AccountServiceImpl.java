@@ -1,32 +1,37 @@
 package com.gongsp.api.service;
 
-import com.gongsp.api.request.account.AccountRegisterPostReq;
+import com.gongsp.api.request.account.AccountCheckNicknamePostReq;
+import com.gongsp.api.request.account.AccountSignupPostReq;
 import com.gongsp.db.entity.User;
 import com.gongsp.db.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Service
-public class AccountServiceImpl implements AccountService{
+@Service("accountService")
+@RequiredArgsConstructor
+public class AccountServiceImpl implements AccountService {
 
     @Autowired
     private UserRepository userRepository;
 
     @Override
-    public void createUser(AccountRegisterPostReq accountRegisterPostReq) throws Exception {
+    public User createUser(AccountSignupPostReq signupInfo) {
         User user = new User();
-        user.setUserEmail(accountRegisterPostReq.getUserEmail());
-        user.setUserNickname(accountRegisterPostReq.getUserNickname());
-        user.setUserPassword(accountRegisterPostReq.getUserPassword());
-        user.setUserPassword(accountRegisterPostReq.getUserPassword());
-        user.setLevelSeq(1);
-        user.setLevelImgSeq(1);
+        user.setUserEmail(signupInfo.getEmail());
+        user.setUserNickname(signupInfo.getNickname());
+        user.setUserPassword(signupInfo.getPassword());
         userRepository.save(user);
-        return;
+        return userRepository.findUserByUserEmail(signupInfo.getEmail()).get();
     }
 
     @Override
     public User getUserByUserEmail(String userEmail) {
-        return userRepository.findByUserEmail(userEmail).orElse(null);
+        return userRepository.findUserByUserEmail(userEmail).orElse(null);
+    }
+
+    @Override
+    public boolean getUserByUserNickname(AccountCheckNicknamePostReq nicknameInfo) {
+        return userRepository.findUserByUserNickname(nicknameInfo.getNickname()).isPresent();
     }
 }
