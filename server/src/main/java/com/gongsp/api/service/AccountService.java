@@ -5,8 +5,8 @@ import com.gongsp.api.request.account.AccountSignupPostReq;
 import com.gongsp.db.entity.User;
 
 public interface AccountService {
-    User createUser(AccountSignupPostReq signupInfo);
-    User getUserByUserEmail(String userEmail);
-    Boolean existsByUserNickname(AccountCheckNicknamePostReq nicknameInfo);
-    Boolean updateTempPassword(String userEmail, String tempPassword);
+    public User createUser(AccountSignupPostReq signupInfo);
+    public User getUserByUserEmail(String userEmail);
+    public Boolean existsByUserNickname(AccountCheckNicknamePostReq nicknameInfo);
+    public Boolean updateTempPassword(String userEmail, String uuid, String tempPassword);
 }

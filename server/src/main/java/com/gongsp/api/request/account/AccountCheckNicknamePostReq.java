@@ -6,5 +6,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AccountCheckNicknamePostReq {
-    String nickname;
+    private String nickname;
 }

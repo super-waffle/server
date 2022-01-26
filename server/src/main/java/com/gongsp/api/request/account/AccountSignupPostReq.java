@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @Generated
 public class AccountSignupPostReq {
-    String email;
-    String nickname;
-    String password;
+    private String email;
+    private String nickname;
+    private String password;
 }
