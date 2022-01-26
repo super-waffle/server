@@ -1,11 +1,13 @@
 package com.gongsp.api.response.account;
 
 import com.gongsp.common.model.response.BaseResponseBody;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class AccountLoginPostRes extends BaseResponseBody {
-    private String accessToken;
+    String accessToken;
 
     public static AccountLoginPostRes of(Integer statusCode, String message, String accessToken) {
         AccountLoginPostRes res = new AccountLoginPostRes();

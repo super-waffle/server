@@ -1,11 +1,17 @@
 package com.gongsp.db.entity;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 
 @Entity
-@Data
+@Getter
+@Setter
+@DynamicInsert
 @Table(name="tb_user")
 public class User {
     @Id
@@ -13,13 +19,16 @@ public class User {
     private Integer userSeq;
     private Integer levelSeq;
     private Integer levelImgSeq;
-    private boolean isAdmin;
+    private Boolean isAdmin;
     private String userEmail;
     private String userNickname;
-    private String userPassword;
     private String userProfileMsg;
     private String userImg;
-    private int userTimeTotal;
-    private int userTimeGoal;
-    private int userWarning;
+    private Integer userTimeTotal;
+    private Integer userTimeGoal;
+    private Integer userWarning;
+
+    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String userPassword;
 }

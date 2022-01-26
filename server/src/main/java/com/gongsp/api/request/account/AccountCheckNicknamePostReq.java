@@ -5,7 +5,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class AccountLoginPostReq {
-    String email;
-    String password;
+public class AccountCheckNicknamePostReq {
+    String nickname;
 }
