@@ -4,7 +4,7 @@ plugins {
     id 'java'
 }
 
-group = 'com.gongsp'
+group = 'com.example.jpa'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
@@ -24,18 +24,20 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'mysql:mysql-connector-java'
-    annotationProcessor 'org.projectlombok:lombok'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-
-    //jwt
+    // https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt
+    //implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security
+    //implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '2.5.5'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
     implementation("com.auth0:java-jwt:3.10.3")
-
     implementation("com.google.guava:guava:29.0-jre")
     annotationProcessor("com.google.guava:guava:29.0-jre")
     testImplementation("com.jayway.jsonpath:json-path:2.4.0")
+
 }
 
 tasks.named('test') {
