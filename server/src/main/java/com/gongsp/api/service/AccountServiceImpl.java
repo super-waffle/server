@@ -34,4 +34,12 @@ public class AccountServiceImpl implements AccountService {
     public Boolean existsByUserNickname(AccountCheckNicknamePostReq nicknameInfo) {
         return accountRepository.existsByUserNickname(nicknameInfo.getNickname());
     }
+
+    @Override
+    public Boolean updateTempPassword(String userEmail, String tempPassword) {
+        User user = accountRepository.findUserByUserEmail(userEmail).orElse(null);
+        user.setUserPassword(tempPassword);
+        accountRepository.save(user);
+        return null;
+    }
 }

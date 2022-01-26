@@ -8,4 +8,5 @@ public interface AccountService {
     User createUser(AccountSignupPostReq signupInfo);
     User getUserByUserEmail(String userEmail);
     Boolean existsByUserNickname(AccountCheckNicknamePostReq nicknameInfo);
+    Boolean updateTempPassword(String userEmail, String tempPassword);
 }
