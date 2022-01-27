@@ -13,7 +13,7 @@ import java.util.List;
  * 현재 액세스 토큰으로 부터 인증된 유저의 부가 상세정보(활성화 여부, 만료, 롤 등) 정의.
  */
 public class GongUserDetails implements UserDetails {
-    @Autowired
+
     User user;
     boolean accountNonExpired;
     boolean accountNonLocked;
@@ -45,7 +45,6 @@ public class GongUserDetails implements UserDetails {
     @Override
     public String getUsername() {
         return this.user.getUserNickname();
-        //스켈레톤 플젝에선 getUserId
     }
 
     @Override
@@ -67,4 +66,6 @@ public class GongUserDetails implements UserDetails {
     public boolean isEnabled() {
         return this.enabled;
     }
+
+    public int getUserSeq() { return this.user.getUserSeq(); }
 }

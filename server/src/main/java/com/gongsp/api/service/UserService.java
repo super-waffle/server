@@ -2,6 +2,9 @@ package com.gongsp.api.service;
 
 import com.gongsp.db.entity.User;
 
+import java.util.Optional;
+
 public interface UserService {
-    User getUserByUserSeq(Integer userSeq);
+    Optional<User> getUserByUserSeq(Integer userSeq);
+    Boolean isUserExists(Integer userSeq);
 }
