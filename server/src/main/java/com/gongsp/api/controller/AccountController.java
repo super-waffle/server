@@ -61,7 +61,7 @@ public class AccountController {
     public ResponseEntity<? extends BaseResponseBody> checkNickname(@RequestBody AccountCheckNicknamePostReq nicknameInfo) {
         // DB에 체크
         if (accountService.existsByUserNickname(nicknameInfo)) {
-            return ResponseEntity.status(409).body(BaseResponseBody.of(409, "Nickname Occupied"));
+            return ResponseEntity.status(200).body(BaseResponseBody.of(409, "Nickname Occupied"));
         }
         return ResponseEntity.status(200).body(BaseResponseBody.of(200, "Nickname Available"));
     }
