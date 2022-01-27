@@ -49,6 +49,12 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
+    public void deleteAuthEmail(String email) {
+        AuthEmail authEmail = getByAuthEmail(email);
+        authRepository.delete(authEmail);
+    }
+
+    @Override
     public Boolean existsByUserEmail(String userEmail) {
         return emailRepository.existsByUserEmail(userEmail);
     }
@@ -60,4 +66,6 @@ public class EmailServiceImpl implements EmailService {
         String mailContent = String.format("<div>발급된 인증코드는 <b>%s</b> 입니다.</div> <div>위 인증코드를 회원가입 인증코드 입력창에 정확하게 입력해주세요.</div>", authCode);
         return mailUtil.sendEmail(userEmail, mailTitle, mailContent);
     }
+
+
 }

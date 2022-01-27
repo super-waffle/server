@@ -5,6 +5,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class EmailAuthPostReq {
+public class EmailVerifyEmailPostReq {
     String email;
 }
