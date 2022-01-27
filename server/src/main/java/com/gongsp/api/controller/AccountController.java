@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/accounts")
@@ -33,7 +32,11 @@ public class AccountController {
     @PostMapping()
     public ResponseEntity<? extends BaseResponseBody> signup(@RequestBody AccountSignupPostReq signupInfo) {
         signupInfo.setPassword(passwordEncoder.encode(signupInfo.getPassword()));
-        accountService.createUser(signupInfo);
+        User user = accountService.createUser(signupInfo);
+        // 사용자 생성 여부 확인
+        if (user == null) {
+            return ResponseEntity.status(404).body(BaseResponseBody.of(404, "Signup Failed"));
+        }
         return ResponseEntity.status(200).body(BaseResponseBody.of(200, "Signup Successful"));
     }
 
@@ -60,7 +63,7 @@ public class AccountController {
     @PostMapping("/nickname")
     public ResponseEntity<? extends BaseResponseBody> checkNickname(@RequestBody AccountCheckNicknamePostReq nicknameInfo) {
         // DB에 체크
-        if (accountService.existsByUserNickname(nicknameInfo)) {
+        if (accountService.existsByUserNickname(nicknameInfo.getNickname())) {
             return ResponseEntity.status(409).body(BaseResponseBody.of(409, "Nickname Occupied"));
         }
         return ResponseEntity.status(200).body(BaseResponseBody.of(200, "Nickname Available"));
@@ -77,11 +80,13 @@ public class AccountController {
         }
         // 있는 경우
         // 임시 비밀번호 생성
-        String uuid = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 10);
-        String tempPassword = passwordEncoder.encode(uuid);
-        // 임시 비밀번호 갱신 및 이메일 전송
-        Boolean emailSent = accountService.updateTempPassword(emailInfo.getEmail(), uuid, tempPassword);
-        if (emailSent) {
+        String tempPassword = accountService.createTempPassword();
+        // 임시 비밀번호 갱신
+        String encodedTempPassword = passwordEncoder.encode(tempPassword);
+        Boolean updatePassword = accountService.updateTempPassword(emailInfo.getEmail(), encodedTempPassword);
+        // 이메일 전송
+        Boolean emailSent = accountService.sendPasswordEmail(emailInfo.getEmail(), tempPassword);
+        if (updatePassword && emailSent) {
             // 이메일 성공적 전송
             return ResponseEntity.status(200).body(BaseResponseBody.of(200, "Successfully sent email."));
         }
