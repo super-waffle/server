@@ -25,8 +25,8 @@ public class EmailController {
         if (emailService.existsByUserEmail(emailInfo.getEmail())) {
             return ResponseEntity.status(409).body(BaseResponseBody.of(409, "Email Unavailable"));
         }
-        // 인증코드 생성
-        String authCode = emailService.createAuthCode();
+        // 인증코드 생성/변경 및 저장
+        String authCode = emailService.createAuthCode(emailInfo.getEmail());
         // 이메일 전송
         Boolean emailSent = emailService.sendAuthEmail(emailInfo.getEmail(), authCode);
         if (emailSent) {

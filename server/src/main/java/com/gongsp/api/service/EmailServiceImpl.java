@@ -2,6 +2,8 @@ package com.gongsp.api.service;
 
 import com.gongsp.common.util.UuidUtil;
 import com.gongsp.common.util.MailUtil;
+import com.gongsp.db.entity.AuthEmail;
+import com.gongsp.db.repository.AuthRepository;
 import com.gongsp.db.repository.EmailRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,9 @@ public class EmailServiceImpl implements EmailService {
     private EmailRepository emailRepository;
 
     @Autowired
+    private AuthRepository authRepository;
+
+    @Autowired
     private MailUtil mailUtil;
 
     @Autowired
@@ -20,8 +25,27 @@ public class EmailServiceImpl implements EmailService {
     
     // 인증코드 발급
     @Override
-    public String createAuthCode() {
-        return uuidUtil.createRandomUUID();
+    public String createAuthCode(String email) {
+        String authCode = uuidUtil.createRandomUUID();
+        AuthEmail existingAuthEmail = getByAuthEmail(email);
+        // 인증코드 비교를 위해 저장
+        // 기존 발급된 인증코드 있는 경우
+        if (existingAuthEmail != null) {
+            existingAuthEmail.setAuthCode(authCode);
+            authRepository.save(existingAuthEmail);
+        } else {
+            // 인증코드 새로 발급
+            AuthEmail authEmail = new AuthEmail();
+            authEmail.setAuthEmail(email);
+            authEmail.setAuthCode(authCode);
+            authRepository.save(authEmail);
+        }
+        return authCode;
+    }
+
+    @Override
+    public AuthEmail getByAuthEmail(String email) {
+       return authRepository.findByAuthEmail(email).orElse(null);
     }
 
     @Override
