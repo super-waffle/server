@@ -1,6 +1,5 @@
 package com.gongsp.db.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,7 +27,6 @@ public class User {
     private Integer userTimeGoal;
     private Integer userWarning;
 
-    @JsonIgnore
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String userPassword;
 }

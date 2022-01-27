@@ -1,7 +1,10 @@
 package com.gongsp.api.controller;
 
+import com.gongsp.api.response.user.UserProfileGetRes;
 import com.gongsp.api.service.UserService;
+import com.gongsp.common.auth.GongUserDetails;
 import com.gongsp.common.model.response.BaseResponseBody;
+import com.gongsp.db.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -9,13 +12,28 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    @Autowired private UserService userService;
 
+    @Autowired
+    private UserService userService;
+
+    // API U-001
     @GetMapping("")
     public ResponseEntity<? extends BaseResponseBody> getMyProfile(Authentication authentication) throws Exception {
-        return null; //ResponseEntity.status(200).body(BaseResponseBody.of(200, "회원가입 성공"));
+        // Token에 따른 사용자 인증 객체 내부의 사용자 정보를 가져온다
+        GongUserDetails userDetails = (GongUserDetails) authentication.getDetails();
+        // 사용자 정보 내부의 사용자 일련번호를 가져온다.
+        int userSeq = userDetails.getUserSeq();
+        // 사용자 일련번호를 통해 사용자의 모든 정보를 가져온다.
+        Optional<User> userInfo = userService.getUserByUserSeq(userSeq);
+
+        if (userInfo.isPresent())
+            return ResponseEntity.ok(UserProfileGetRes.of(200, "Success", userInfo.get()));
+
+        return ResponseEntity.status(404).body(UserProfileGetRes.of(404, "No User Info", null));
     }
 }
