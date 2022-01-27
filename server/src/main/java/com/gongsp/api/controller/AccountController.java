@@ -1,6 +1,7 @@
 package com.gongsp.api.controller;
 
 import com.gongsp.api.request.account.AccountCheckNicknamePostReq;
+import com.gongsp.api.request.account.AccountFindPasswordPostReq;
 import com.gongsp.api.request.account.AccountLoginPostReq;
 import com.gongsp.api.request.account.AccountSignupPostReq;
 import com.gongsp.api.response.account.AccountLoginPostRes;
@@ -16,15 +17,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/accounts")
 public class AccountController {
 
     @Autowired
-    AccountService accountService;
+    private AccountService accountService;
 
     @Autowired
-    PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
     // 회원가입
     @PostMapping()
@@ -61,5 +64,27 @@ public class AccountController {
             return ResponseEntity.status(409).body(BaseResponseBody.of(409, "Nickname Occupied"));
         }
         return ResponseEntity.status(200).body(BaseResponseBody.of(200, "Nickname Available"));
+    }
+
+    // 비밀번호 찾기
+    @PostMapping("/password")
+    public ResponseEntity<? extends BaseResponseBody> findPassword(@RequestBody AccountFindPasswordPostReq emailInfo) {
+        // DB에서 사용자 조회
+        User user = accountService.getUserByUserEmail(emailInfo.getEmail());
+        // 없는 경우
+        if (user == null) {
+            return ResponseEntity.status(403).body(BaseResponseBody.of(403, "Cannot find user with this email."));
+        }
+        // 있는 경우
+        // 임시 비밀번호 생성
+        String uuid = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 10);
+        String tempPassword = passwordEncoder.encode(uuid);
+        // 임시 비밀번호 갱신 및 이메일 전송
+        Boolean emailSent = accountService.updateTempPassword(emailInfo.getEmail(), uuid, tempPassword);
+        if (emailSent) {
+            // 이메일 성공적 전송
+            return ResponseEntity.status(200).body(BaseResponseBody.of(200, "Successfully sent email."));
+        }
+        return ResponseEntity.status(409).body(BaseResponseBody.of(409, "Failed to send email."));
     }
 }

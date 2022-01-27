@@ -36,6 +36,10 @@ dependencies {
     implementation("com.google.guava:guava:29.0-jre")
     annotationProcessor("com.google.guava:guava:29.0-jre")
     testImplementation("com.jayway.jsonpath:json-path:2.4.0")
+
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mail
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '2.2.6.RELEASE'
+
 }
 
 tasks.named('test') {
