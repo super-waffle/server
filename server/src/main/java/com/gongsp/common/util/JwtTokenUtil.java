@@ -123,10 +123,4 @@ public class JwtTokenUtil {
             throw ex;
         }
     }
-
-    // userSeq 추출
-    public Integer getUserSeqFromAuth(Authentication authentication) {
-        return Integer.parseInt((String)authentication.getPrincipal());
-    }
-
 }

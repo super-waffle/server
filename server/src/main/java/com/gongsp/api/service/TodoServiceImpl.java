@@ -1,6 +1,7 @@
 package com.gongsp.api.service;
 
 import com.gongsp.api.request.todo.TodoCreatePostReq;
+import com.gongsp.api.request.todo.TodoUpdatePatchReq;
 import com.gongsp.common.util.JwtTokenUtil;
 import com.gongsp.db.entity.Todo;
 import com.gongsp.db.repository.TodoRepository;
@@ -25,7 +26,7 @@ public class TodoServiceImpl implements TodoService{
     public Boolean createTodo(Authentication authentication, TodoCreatePostReq todoInfo) {
         try {
             Todo todo = new Todo();
-            todo.setUserSeq(jwtTokenUtil.getUserSeqFromAuth(authentication));
+            todo.setUserSeq(Integer.parseInt((String) authentication.getPrincipal()));
             todo.setTodoDate(todoInfo.getDate());
             todo.setTodoContent(todoInfo.getContent());
             todoRepository.save(todo);
@@ -37,18 +38,33 @@ public class TodoServiceImpl implements TodoService{
 
     @Override
     public List<Todo> getTodoList(Authentication authentication, LocalDate date) {
-        List<Todo> todoList = todoRepository.getTodosByUserSeqAndTodoDate(jwtTokenUtil.getUserSeqFromAuth(authentication), date);
+        List<Todo> todoList = todoRepository.getTodosByUserSeqAndTodoDate(Integer.parseInt((String) authentication.getPrincipal()), date);
         return todoList;
     }
 
     @Override
     public Boolean deleteTodo(Authentication authentication, Integer todoSeq) {
         Todo todo = todoRepository.getTodoByTodoSeq(todoSeq);
-        if (todo == null) {
+        if (todo == null || authentication == null) {
             return false;
         }
-        if (authentication.getPrincipal().equals(todo.getUserSeq().toString())) {
+        if (todo.getUserSeq().toString().equals(authentication.getPrincipal())) {
             todoRepository.delete(todo);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public Boolean updateTodo(Authentication authentication, Integer todoSeq, TodoUpdatePatchReq updateInfo) {
+        Todo todo = todoRepository.getTodoByTodoSeq(todoSeq);
+        if (todo == null || authentication == null) {
+            return false;
+        }
+        if (todo.getUserSeq().toString().equals(authentication.getPrincipal())) {
+            todo.setTodoContent(updateInfo.getContent());
+            todo.setTodoCompleted(updateInfo.getCompleted());
+            todoRepository.save(todo);
             return true;
         }
         return false;

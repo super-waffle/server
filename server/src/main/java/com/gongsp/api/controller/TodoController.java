@@ -1,6 +1,7 @@
 package com.gongsp.api.controller;
 
 import com.gongsp.api.request.todo.TodoCreatePostReq;
+import com.gongsp.api.request.todo.TodoUpdatePatchReq;
 import com.gongsp.api.response.todo.TodoListGetRes;
 import com.gongsp.api.service.TodoService;
 import com.gongsp.common.model.response.BaseResponseBody;
@@ -35,12 +36,22 @@ public class TodoController {
         return ResponseEntity.ok(BaseResponseBody.of(400, "Failed to create Todo"));
     }
 
+    // 투두 항목 수정 및 완료버튼 토글
+    @PatchMapping("/{todoSeq}")
+    public ResponseEntity<? extends BaseResponseBody> updateTodo(Authentication authentication, @PathVariable String todoSeq, @RequestBody TodoUpdatePatchReq updateInfo) {
+        Boolean updated = todoService.updateTodo(authentication, Integer.parseInt(todoSeq), updateInfo);
+        if (updated) {
+            return ResponseEntity.ok(BaseResponseBody.of(201, "Todo Updated"));
+        }
+        return ResponseEntity.ok(BaseResponseBody.of(409, "Failed to update Todo"));
+    }
+
     // 투두 항목 삭제
     @DeleteMapping("/{todoSeq}")
     public ResponseEntity<? extends BaseResponseBody> deleteTodo(Authentication authentication, @PathVariable String todoSeq) {
         Boolean deleted = todoService.deleteTodo(authentication, Integer.parseInt(todoSeq));
         if (deleted) {
-            return ResponseEntity.ok(BaseResponseBody.of(204, "No Content"));
+            return ResponseEntity.ok(BaseResponseBody.of(204, "Todo Deleted"));
         }
         return ResponseEntity.ok(BaseResponseBody.of(409, "Failed to delete Todo"));
     }
