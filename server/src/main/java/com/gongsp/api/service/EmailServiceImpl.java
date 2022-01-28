@@ -8,6 +8,8 @@ import com.gongsp.db.repository.EmailRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service("emailService")
 public class EmailServiceImpl implements EmailService {
 
@@ -32,6 +34,7 @@ public class EmailServiceImpl implements EmailService {
         // 기존 발급된 인증코드 있는 경우
         if (existingAuthEmail != null) {
             existingAuthEmail.setAuthCode(authCode);
+            existingAuthEmail.setAuthDate(LocalDateTime.now());
             authRepository.save(existingAuthEmail);
         } else {
             // 인증코드 새로 발급

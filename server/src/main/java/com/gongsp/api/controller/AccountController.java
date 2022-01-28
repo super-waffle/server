@@ -35,9 +35,9 @@ public class AccountController {
         User user = accountService.createUser(signupInfo);
         // 사용자 생성 여부 확인
         if (user == null) {
-            return ResponseEntity.status(404).body(BaseResponseBody.of(404, "Signup Failed"));
+            return ResponseEntity.ok(BaseResponseBody.of(404, "Signup Failed"));
         }
-        return ResponseEntity.status(200).body(BaseResponseBody.of(200, "Signup Successful"));
+        return ResponseEntity.ok(BaseResponseBody.of(200, "Signup Successful"));
     }
 
     // 로그인
@@ -49,14 +49,14 @@ public class AccountController {
         User user = accountService.getUserByUserEmail(userEmail);
         // 존재하지 않는 사용자
         if (user == null) {
-            return ResponseEntity.status(404).body(AccountLoginPostRes.of(404, "User Not Found", null));
+            return ResponseEntity.ok(AccountLoginPostRes.of(404, "User Not Found", null));
         }
         // 존재하는 사용자
         if (passwordEncoder.matches(userPassword, user.getUserPassword())) {
             // 로그인 성공
             return ResponseEntity.ok(AccountLoginPostRes.of(200, "Login Successful", JwtTokenUtil.getToken(user.getUserSeq())));
         }
-        return ResponseEntity.status(401).body(AccountLoginPostRes.of(401, "Login Failed", null));
+        return ResponseEntity.ok(AccountLoginPostRes.of(401, "Login Failed", null));
     }
 
     // 닉네임 중복검사
@@ -64,9 +64,9 @@ public class AccountController {
     public ResponseEntity<? extends BaseResponseBody> checkNickname(@RequestBody AccountCheckNicknamePostReq nicknameInfo) {
         // DB에 체크
         if (accountService.existsByUserNickname(nicknameInfo.getNickname())) {
-            return ResponseEntity.status(409).body(BaseResponseBody.of(409, "Nickname Occupied"));
+            return ResponseEntity.ok(BaseResponseBody.of(409, "Nickname Occupied"));
         }
-        return ResponseEntity.status(200).body(BaseResponseBody.of(200, "Nickname Available"));
+        return ResponseEntity.ok(BaseResponseBody.of(200, "Nickname Available"));
     }
 
     // 비밀번호 찾기
@@ -76,7 +76,7 @@ public class AccountController {
         User user = accountService.getUserByUserEmail(emailInfo.getEmail());
         // 없는 경우
         if (user == null) {
-            return ResponseEntity.status(403).body(BaseResponseBody.of(403, "Cannot find user with this email."));
+            return ResponseEntity.ok(BaseResponseBody.of(403, "Cannot find user with this email."));
         }
         // 있는 경우
         // 임시 비밀번호 생성
@@ -88,8 +88,8 @@ public class AccountController {
         Boolean emailSent = accountService.sendPasswordEmail(emailInfo.getEmail(), tempPassword);
         if (updatePassword && emailSent) {
             // 이메일 성공적 전송
-            return ResponseEntity.status(200).body(BaseResponseBody.of(200, "Successfully sent email."));
+            return ResponseEntity.ok(BaseResponseBody.of(200, "Successfully sent email."));
         }
-        return ResponseEntity.status(409).body(BaseResponseBody.of(409, "Failed to send email."));
+        return ResponseEntity.ok(BaseResponseBody.of(409, "Failed to send email."));
     }
 }
