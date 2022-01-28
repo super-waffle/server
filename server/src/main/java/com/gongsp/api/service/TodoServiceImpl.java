@@ -41,5 +41,18 @@ public class TodoServiceImpl implements TodoService{
         return todoList;
     }
 
+    @Override
+    public Boolean deleteTodo(Authentication authentication, Integer todoSeq) {
+        Todo todo = todoRepository.getTodoByTodoSeq(todoSeq);
+        if (todo == null) {
+            return false;
+        }
+        if (authentication.getPrincipal().equals(todo.getUserSeq().toString())) {
+            todoRepository.delete(todo);
+            return true;
+        }
+        return false;
+    }
+
 
 }

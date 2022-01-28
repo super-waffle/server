@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface TodoRepository extends JpaRepository<Todo, Integer> {
     List<Todo> getTodosByUserSeqAndTodoDate(Integer userSeq, LocalDate date);
+    Todo getTodoByTodoSeq(Integer todoSeq);
 }

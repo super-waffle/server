@@ -35,7 +35,17 @@ public class TodoController {
         return ResponseEntity.ok(BaseResponseBody.of(400, "Failed to create Todo"));
     }
 
-    // 투두리스트 조회
+    // 투두 항목 삭제
+    @DeleteMapping("/{todoSeq}")
+    public ResponseEntity<? extends BaseResponseBody> deleteTodo(Authentication authentication, @PathVariable String todoSeq) {
+        Boolean deleted = todoService.deleteTodo(authentication, Integer.parseInt(todoSeq));
+        if (deleted) {
+            return ResponseEntity.ok(BaseResponseBody.of(204, "No Content"));
+        }
+        return ResponseEntity.ok(BaseResponseBody.of(409, "Failed to delete Todo"));
+    }
+
+   // 투두리스트 조회
     @GetMapping()
     public ResponseEntity<TodoListGetRes> todoList(Authentication authentication, @RequestParam String date) {
         List<Todo> todoList = todoService.getTodoList(authentication, LocalDate.parse(date, DateTimeFormatter.ISO_DATE));
