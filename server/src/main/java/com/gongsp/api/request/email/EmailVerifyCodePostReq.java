@@ -6,6 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class EmailVerifyCodePostReq {
-    String email;
-    String authCode;
+    private String email;
+    private String authCode;
 }

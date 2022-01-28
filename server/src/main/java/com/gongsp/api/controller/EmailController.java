@@ -24,7 +24,7 @@ public class EmailController {
     public ResponseEntity<? extends BaseResponseBody> verifyEmail(@RequestBody EmailVerifyEmailPostReq emailInfo) {
         // 기존 사용자 여부
         if (emailService.existsByUserEmail(emailInfo.getEmail())) {
-            return ResponseEntity.status(409).body(BaseResponseBody.of(409, "Email Unavailable"));
+            return ResponseEntity.ok(BaseResponseBody.of(409, "Email Unavailable"));
         }
         // 인증코드 생성/변경 및 저장
         String authCode = emailService.createAuthCode(emailInfo.getEmail());
@@ -32,9 +32,9 @@ public class EmailController {
         Boolean emailSent = emailService.sendAuthEmail(emailInfo.getEmail(), authCode);
         if (emailSent) {
             // 이메일 성공적 전송
-            return ResponseEntity.status(200).body(BaseResponseBody.of(200, "Sent verification email"));
+            return ResponseEntity.ok(BaseResponseBody.of(200, "Sent verification email"));
         }
-        return ResponseEntity.status(409).body(BaseResponseBody.of(409, "Failed to send email"));
+        return ResponseEntity.ok(BaseResponseBody.of(409, "Failed to send email"));
     }
 
     // 이메일 인증코드 검증
@@ -44,8 +44,8 @@ public class EmailController {
         if (emailService.getByAuthEmail(codeInfo.getEmail()).getAuthCode().equals(codeInfo.getAuthCode())) {
             // 저장한 인증코드 삭제
             emailService.deleteAuthEmail(codeInfo.getEmail());
-            return ResponseEntity.status(200).body(BaseResponseBody.of(200, "Email Verified"));
+            return ResponseEntity.ok(BaseResponseBody.of(200, "Email Verified"));
         }
-        return ResponseEntity.status(409).body(BaseResponseBody.of(409, "Wrong Authcode"));
+        return ResponseEntity.ok(BaseResponseBody.of(409, "Wrong Authcode"));
     }
 }
