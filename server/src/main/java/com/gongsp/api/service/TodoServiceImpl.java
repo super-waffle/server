@@ -2,7 +2,6 @@ package com.gongsp.api.service;
 
 import com.gongsp.api.request.todo.TodoCreatePostReq;
 import com.gongsp.api.request.todo.TodoUpdatePatchReq;
-import com.gongsp.common.util.JwtTokenUtil;
 import com.gongsp.db.entity.Todo;
 import com.gongsp.db.repository.TodoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +17,6 @@ public class TodoServiceImpl implements TodoService{
 
     @Autowired
     private TodoRepository todoRepository;
-
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
 
     @Override
     public Boolean createTodo(Authentication authentication, TodoCreatePostReq todoInfo) {
