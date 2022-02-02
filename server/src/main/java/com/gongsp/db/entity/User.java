@@ -16,8 +16,14 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer userSeq;
-    private Integer levelSeq;
-    private Integer levelImgSeq;
+
+    @OneToOne
+    @JoinColumn (name = "level_seq")
+    private Level userLevel;
+
+    @OneToOne
+    @JoinColumn (name = "level_img_seq")
+    private Level userImageLevel;
     private Boolean isAdmin;
     private String userEmail;
     private String userNickname;
