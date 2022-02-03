@@ -25,7 +25,11 @@ public class TodoController {
     // 투두 항목 추가
     @PostMapping()
     public ResponseEntity<? extends BaseResponseBody> createTodo(Authentication authentication, @RequestBody TodoCreatePostReq todoInfo) {
-        if (todoService.createTodo(authentication, todoInfo)) {
+        if (authentication == null) {
+            return ResponseEntity.ok(BaseResponseBody.of(403, "Access Denied"));
+        }
+
+        if (todoService.createTodo(Integer.parseInt((String) authentication.getPrincipal()), todoInfo)) {
             return ResponseEntity.ok(BaseResponseBody.of(201, "Todo Created"));
         }
         return ResponseEntity.ok(BaseResponseBody.of(400, "Failed to create Todo"));
@@ -33,8 +37,12 @@ public class TodoController {
 
     // 투두 항목 수정 및 완료버튼 토글
     @PatchMapping("/{todoSeq}")
-    public ResponseEntity<? extends BaseResponseBody> updateTodo(Authentication authentication, @PathVariable String todoSeq, @RequestBody TodoUpdatePatchReq updateInfo) {
-        Boolean updated = todoService.updateTodo(authentication, Integer.parseInt(todoSeq), updateInfo);
+    public ResponseEntity<? extends BaseResponseBody> updateTodo(Authentication authentication, @PathVariable Integer todoSeq, @RequestBody TodoUpdatePatchReq updateInfo) {
+        if (authentication == null) {
+            return ResponseEntity.ok(BaseResponseBody.of(403, "Access Denied"));
+        }
+        Boolean updated = todoService.updateTodo(Integer.parseInt((String) authentication.getPrincipal()), todoSeq, updateInfo);
+
         if (updated) {
             return ResponseEntity.ok(BaseResponseBody.of(201, "Todo Updated"));
         }
@@ -43,8 +51,12 @@ public class TodoController {
 
     // 투두 항목 삭제
     @DeleteMapping("/{todoSeq}")
-    public ResponseEntity<? extends BaseResponseBody> deleteTodo(Authentication authentication, @PathVariable String todoSeq) {
-        Boolean deleted = todoService.deleteTodo(authentication, Integer.parseInt(todoSeq));
+    public ResponseEntity<? extends BaseResponseBody> deleteTodo(Authentication authentication, @PathVariable Integer todoSeq) {
+        if (authentication == null) {
+            return ResponseEntity.ok(BaseResponseBody.of(403, "Access Denied"));
+        }
+        Boolean deleted = todoService.deleteTodo(Integer.parseInt((String) authentication.getPrincipal()), todoSeq);
+
         if (deleted) {
             return ResponseEntity.ok(BaseResponseBody.of(204, "Todo Deleted"));
         }
@@ -54,7 +66,7 @@ public class TodoController {
    // 투두리스트 조회
     @GetMapping()
     public ResponseEntity<TodoListGetRes> todoList(Authentication authentication, @RequestParam LocalDate date) {
-        List<Todo> todoList = todoService.getTodoList(authentication, date);
+        List<Todo> todoList = todoService.getTodoList(Integer.parseInt((String) authentication.getPrincipal()), date);
         if (todoList.isEmpty()) {
             return ResponseEntity.ok(TodoListGetRes.of(204, "No Content", null));
         }
