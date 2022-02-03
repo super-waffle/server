@@ -5,7 +5,6 @@ import com.gongsp.api.request.todo.TodoUpdatePatchReq;
 import com.gongsp.db.entity.Todo;
 import com.gongsp.db.repository.TodoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -19,10 +18,10 @@ public class TodoServiceImpl implements TodoService{
     private TodoRepository todoRepository;
 
     @Override
-    public Boolean createTodo(Authentication authentication, TodoCreatePostReq todoInfo) {
+    public Boolean createTodo(Integer userSeq, TodoCreatePostReq todoInfo) {
         try {
             Todo todo = new Todo();
-            todo.setUserSeq(Integer.parseInt((String) authentication.getPrincipal()));
+            todo.setUserSeq(userSeq);
             todo.setTodoDate(todoInfo.getDate());
             todo.setTodoContent(todoInfo.getContent());
             todoRepository.save(todo);
@@ -33,18 +32,18 @@ public class TodoServiceImpl implements TodoService{
     }
 
     @Override
-    public List<Todo> getTodoList(Authentication authentication, LocalDate date) {
-        List<Todo> todoList = todoRepository.getTodosByUserSeqAndTodoDate(Integer.parseInt((String) authentication.getPrincipal()), date);
+    public List<Todo> getTodoList(Integer userSeq, LocalDate date) {
+        List<Todo> todoList = todoRepository.getTodosByUserSeqAndTodoDate(userSeq, date);
         return todoList;
     }
 
     @Override
-    public Boolean deleteTodo(Authentication authentication, Integer todoSeq) {
+    public Boolean deleteTodo(Integer userSeq, Integer todoSeq) {
         Todo todo = todoRepository.getTodoByTodoSeq(todoSeq);
-        if (todo == null || authentication == null) {
+        if (todo == null) {
             return false;
         }
-        if (todo.getUserSeq().toString().equals(authentication.getPrincipal())) {
+        if (todo.getUserSeq().equals(userSeq)) {
             todoRepository.delete(todo);
             return true;
         }
@@ -52,12 +51,12 @@ public class TodoServiceImpl implements TodoService{
     }
 
     @Override
-    public Boolean updateTodo(Authentication authentication, Integer todoSeq, TodoUpdatePatchReq updateInfo) {
+    public Boolean updateTodo(Integer userSeq, Integer todoSeq, TodoUpdatePatchReq updateInfo) {
         Todo todo = todoRepository.getTodoByTodoSeq(todoSeq);
-        if (todo == null || authentication == null) {
+        if (todo == null) {
             return false;
         }
-        if (todo.getUserSeq().toString().equals(authentication.getPrincipal())) {
+        if (todo.getUserSeq().equals(userSeq)) {
             todo.setTodoContent(updateInfo.getContent());
             todo.setTodoCompleted(updateInfo.getCompleted());
             todoRepository.save(todo);
