@@ -109,7 +109,7 @@ public class MeetingController {
 
         //당일 최초로 공부를 시작한 사용자
         if(!logTimeService.existsLog(userSeq, LocalDate.now())) {
-            System.out.println("공부기록삽입");
+//            System.out.println("공부기록삽입");
             logTimeService.createLogTime(userSeq);
         }
 
@@ -132,7 +132,7 @@ public class MeetingController {
 
 //        System.out.println(logTimeRepository.findLogTimeByLogSeq(2));
 
-        System.out.println("Removing user | {sessionName, userSeq}=" + "{" + meetingSeq + "," + userSeq + "}");
+//        System.out.println("Removing user | {sessionName, userSeq}=" + "{" + meetingSeq + "," + userSeq + "}");
 
         String sessionName = meetingSeq.toString();
         String token = meetingExitDeleteReq.getSessionToken();

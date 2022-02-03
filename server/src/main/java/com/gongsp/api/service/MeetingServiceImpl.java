@@ -26,17 +26,17 @@ public class MeetingServiceImpl implements MeetingService {
 
     @Override
     public String getToken(OpenVidu openVidu, Integer userSeq, Meeting meeting) {
-        System.out.println("Getting a token from OpenVidu Server | {Meetingroom name}=" + meeting.getMeetingTitle());
+//        System.out.println("Getting a token from OpenVidu Server | {Meetingroom name}=" + meeting.getMeetingTitle());
 
         // sessionName = meetingSeq
         String sessionName = meeting.getMeetingSeq().toString();
         // 근데 아예 Subscriber로 설정하면 화면송출이 안되는듯?? 일단 예제따라서
-        System.out.println(userSeq + " " + meeting.getHostSeq() + userSeq.equals(meeting.getHostSeq()));
+//        System.out.println(userSeq + " " + meeting.getHostSeq() + userSeq.equals(meeting.getHostSeq()));
 
         OpenViduRole role = OpenViduRole.PUBLISHER;
 
 //        OpenViduRole role = userSeq.equals(meeting.getHostSeq()) ? OpenViduRole.PUBLISHER : OpenViduRole.SUBSCRIBER;
-        System.out.println("역할:" + role);
+//        System.out.println("역할:" + role);
         String serverData = "{\"serverData\": \"" + userSeq + "\"}";
 
         // Build connectionProperties object with the serverData and the role
@@ -44,7 +44,7 @@ public class MeetingServiceImpl implements MeetingService {
 
         if (this.mapSessions.get(sessionName) != null) {
             // Session already exists
-            System.out.println("Existing session " + sessionName);
+//            System.out.println("Existing session " + sessionName);
             try {
                 // Generate a new Connection with the recently created connectionProperties
                 String token = this.mapSessions.get(sessionName).createConnection(connectionProperties).getToken();
@@ -100,9 +100,9 @@ public class MeetingServiceImpl implements MeetingService {
         Optional<Meeting> opMeeting = getMeeting(meetingSeq);
         if (!opMeeting.isPresent()) return;
         Meeting meeting = opMeeting.get();
-        System.out.println("현재인원 : " + meeting.getMeetingHeadcount());
+//        System.out.println("현재인원 : " + meeting.getMeetingHeadcount());
         meeting.setMeetingHeadcount(meeting.getMeetingHeadcount() + flag);
-        System.out.println("현재인원 : " + meeting.getMeetingHeadcount());
+//        System.out.println("현재인원 : " + meeting.getMeetingHeadcount());
         meetingRepository.save(meeting);
     }
 
