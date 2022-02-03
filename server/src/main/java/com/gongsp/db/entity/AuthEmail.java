@@ -6,7 +6,6 @@ import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 import java.sql.Date;
-import java.time.DateTimeException;
 import java.time.LocalDateTime;
 
 @Entity
