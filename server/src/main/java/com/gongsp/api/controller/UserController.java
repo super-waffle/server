@@ -1,5 +1,6 @@
 package com.gongsp.api.controller;
 
+import com.gongsp.api.request.user.UserTimeGoalPatchReq;
 import com.gongsp.api.response.user.OtherUserProfileGetRes;
 import com.gongsp.api.response.user.UserProfileGetRes;
 import com.gongsp.api.service.UserService;
@@ -10,10 +11,7 @@ import com.gongsp.db.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -49,5 +47,21 @@ public class UserController {
             return ResponseEntity.ok(OtherUserProfileGetRes.of(200, "Success", userInfo.get()));
 
         return ResponseEntity.ok(OtherUserProfileGetRes.of(404, "No User Profile Info", null));
+    }
+
+    // API U-003
+    // API U-004
+
+    // API U-005
+    @PatchMapping("/goal")
+    public ResponseEntity<BaseResponseBody> updateUserTimeGoal(Authentication authentication, @RequestBody UserTimeGoalPatchReq timeGoal) {
+        // Token에 따른 사용자 인증 객체 내부의 사용자 정보를 가져온다
+        GongUserDetails userDetails = (GongUserDetails) authentication.getDetails();
+        // 사용자 정보 내부의 사용자 일련번호를 가져온다.
+        int userSeq = userDetails.getUserSeq();
+
+        if (userService.updateUserTimeGoal(userSeq, timeGoal.getTimeGoal()))
+            return ResponseEntity.ok(BaseResponseBody.of(200,"Success"));
+        return ResponseEntity.ok(BaseResponseBody.of(404, "No Such User"));
     }
 }

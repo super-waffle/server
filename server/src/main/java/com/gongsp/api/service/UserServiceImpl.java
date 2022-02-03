@@ -33,4 +33,16 @@ public class UserServiceImpl implements UserService{
     public Optional<OtherUserProfile> getOtherProfile(Integer userSeq) {
         return otherProfileRepository.selectOne(userSeq);
     }
+
+    @Override
+    public boolean updateUserTimeGoal(int userSeq, int timeGoal) {
+        Optional<User> userInfo = userRepository.findUserByUserSeq(userSeq);
+        if (userInfo.isPresent()) {
+            User user = userInfo.get();
+            user.setUserTimeGoal(timeGoal);
+            userRepository.save(user);
+            return true;
+        }
+        return false;
+    }
 }
