@@ -19,6 +19,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * 요청 헤더에 jwt 토큰이 있는 경우, 토큰 검증 및 인증 처리 로직 정의.
@@ -70,10 +71,10 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
             // If so, then grab user details and create spring auth token using username, pass, authorities/roles
             if (userSeq != null) {
                 // jwt 토큰에 포함된 계정 정보(userId) 통해 실제 디비에 해당 정보의 계정이 있는지 조회.
-                User user = userService.getUserByUserSeq(Integer.parseInt(userSeq));
-                if (user != null) {
+                Optional<User> user = userService.getUserByUserSeq(Integer.parseInt(userSeq));
+                if (user.isPresent()) {
                     // 식별된 정상 유저인 경우, 요청 context 내에서 참조 가능한 인증 정보(jwtAuthentication) 생성.
-                    GongUserDetails userDetails = new GongUserDetails(user);
+                    GongUserDetails userDetails = new GongUserDetails(user.get());
                     UsernamePasswordAuthenticationToken jwtAuthentication = new UsernamePasswordAuthenticationToken(userSeq,
                             null, userDetails.getAuthorities());
                     jwtAuthentication.setDetails(userDetails);
