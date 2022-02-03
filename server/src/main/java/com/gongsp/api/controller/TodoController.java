@@ -37,7 +37,6 @@ public class TodoController {
 
     // 투두 항목 수정 및 완료버튼 토글
     @PatchMapping("/{todoSeq}")
-
     public ResponseEntity<? extends BaseResponseBody> updateTodo(Authentication authentication, @PathVariable Integer todoSeq, @RequestBody TodoUpdatePatchReq updateInfo) {
         if (authentication == null) {
             return ResponseEntity.ok(BaseResponseBody.of(403, "Access Denied"));
@@ -67,7 +66,7 @@ public class TodoController {
    // 투두리스트 조회
     @GetMapping()
     public ResponseEntity<TodoListGetRes> todoList(Authentication authentication, @RequestParam LocalDate date) {
-        List<Todo> todoList = todoService.getTodoList(Integer.parseInt((String) authentication.getPrincipal()), date);git 
+        List<Todo> todoList = todoService.getTodoList(Integer.parseInt((String) authentication.getPrincipal()), date);
         if (todoList.isEmpty()) {
             return ResponseEntity.ok(TodoListGetRes.of(204, "No Content", null));
         }
