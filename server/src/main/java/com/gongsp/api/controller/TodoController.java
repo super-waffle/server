@@ -5,7 +5,6 @@ import com.gongsp.api.request.todo.TodoUpdatePatchReq;
 import com.gongsp.api.response.todo.TodoListGetRes;
 import com.gongsp.api.service.TodoService;
 import com.gongsp.common.model.response.BaseResponseBody;
-import com.gongsp.common.util.JwtTokenUtil;
 import com.gongsp.db.entity.Todo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +12,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 
@@ -22,10 +20,7 @@ import java.util.List;
 public class TodoController {
 
     @Autowired
-    TodoService todoService;
-
-    @Autowired
-    JwtTokenUtil jwtTokenUtil;
+    private TodoService todoService;
 
     // 투두 항목 추가
     @PostMapping()
@@ -58,8 +53,8 @@ public class TodoController {
 
    // 투두리스트 조회
     @GetMapping()
-    public ResponseEntity<TodoListGetRes> todoList(Authentication authentication, @RequestParam String date) {
-        List<Todo> todoList = todoService.getTodoList(authentication, LocalDate.parse(date, DateTimeFormatter.ISO_DATE));
+    public ResponseEntity<TodoListGetRes> todoList(Authentication authentication, @RequestParam LocalDate date) {
+        List<Todo> todoList = todoService.getTodoList(authentication, date);
         if (todoList.isEmpty()) {
             return ResponseEntity.ok(TodoListGetRes.of(204, "No Content", null));
         }

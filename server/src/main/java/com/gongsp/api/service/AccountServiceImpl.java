@@ -1,6 +1,5 @@
 package com.gongsp.api.service;
 
-import com.gongsp.api.request.account.AccountCheckNicknamePostReq;
 import com.gongsp.api.request.account.AccountSignupPostReq;
 import com.gongsp.common.util.UuidUtil;
 import com.gongsp.common.util.MailUtil;
