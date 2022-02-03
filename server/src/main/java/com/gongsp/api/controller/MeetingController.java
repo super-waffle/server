@@ -128,7 +128,7 @@ public class MeetingController {
 
         Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
 
-        System.out.println(meetingExitDeleteReq.toString());
+//        System.out.println(meetingExitDeleteReq.toString());
 
 //        System.out.println(logTimeRepository.findLogTimeByLogSeq(2));
 
