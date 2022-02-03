@@ -1,9 +1,6 @@
 package com.gongsp.api.service;
 
 import com.gongsp.db.entity.Meeting;
-import com.gongsp.db.entity.MeetingOnair;
-import com.gongsp.db.entity.MeetingOnairId;
-import com.gongsp.db.repository.MeetingOnairRepository;
 import com.gongsp.db.repository.MeetingRepository;
 import io.openvidu.java.client.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +16,6 @@ public class MeetingServiceImpl implements MeetingService {
     @Autowired
     private MeetingRepository meetingRepository;
 
-    @Autowired
-    private MeetingOnairRepository meetingOnairRepository;
 
     // Collection to pair session names and OpenVidu Session objects
     // ConcurrentHashMap : Multi-Thread 환경에서 사용할 수 있도록 나온 클래스
@@ -100,8 +95,7 @@ public class MeetingServiceImpl implements MeetingService {
     @Override
     public void updateMeeting(Integer meetingSeq, int flag) {
         Optional<Meeting> opMeeting = getMeeting(meetingSeq);
-        if (!opMeeting.isPresent())
-            return;
+        if (!opMeeting.isPresent()) return;
         Meeting meeting = opMeeting.get();
         System.out.println("현재인원 : " + meeting.getMeetingHeadcount());
         meeting.setMeetingHeadcount(meeting.getMeetingHeadcount() + flag);
@@ -131,30 +125,5 @@ public class MeetingServiceImpl implements MeetingService {
             System.out.println("Problems in the app server: the SESSION does not exist");
             return "Error";
         }
-    }
-
-    @Override
-    public void deleteOnair(Integer userSeq, Integer meetingSeq) {
-        meetingOnairRepository.deleteById(new MeetingOnairId(userSeq, meetingSeq));
-    }
-
-    @Override
-    public MeetingOnair createOnair(Integer userSeq, Integer meetingSeq, Boolean isHost) {
-        MeetingOnair meetingOnair = new MeetingOnair();
-        meetingOnair.setMeetingOnairId(new MeetingOnairId(userSeq, meetingSeq));
-        meetingOnair.setIsHost(isHost);
-        return meetingOnairRepository.save(meetingOnair);
-    }
-
-    @Override
-    public MeetingOnair createOnair(Integer userSeq, Integer meetingSeq) {
-        MeetingOnair meetingOnair = new MeetingOnair();
-        meetingOnair.setMeetingOnairId(new MeetingOnairId(userSeq, meetingSeq));
-        return meetingOnairRepository.save(meetingOnair);
-    }
-
-    @Override
-    public boolean existsOnair(Integer userSeq, Integer meetingSeq) {
-        return meetingOnairRepository.existsMeetingOnairByMeetingOnairId(new MeetingOnairId(userSeq, meetingSeq));
     }
 }

@@ -16,5 +16,6 @@ import javax.persistence.Table;
 public class MeetingOnair {
     @EmbeddedId
     private MeetingOnairId meetingOnairId;
-    private Boolean isHost;
+    // 0 : false, 1 : true
+    private Short isHost;
 }

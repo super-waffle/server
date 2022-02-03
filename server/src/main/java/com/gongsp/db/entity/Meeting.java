@@ -24,8 +24,9 @@ public class Meeting {
     private Integer meetingHeadcount;
     private String meetingUrl;
     // 0 : X, 1: 얼굴, 2: 손, 3: 노캠
-    private Integer meetingCamType;
+    private Short meetingCamType;
     // 0 : X, 1: 음소거, 2: 소음
-    private Integer meetingMicType;
-    private Boolean isMeetingOnair;
+    private Short meetingMicType;
+    // 0 : false, 1 : true
+    private Short isMeetingOnair;
 }

@@ -4,6 +4,7 @@ import com.gongsp.db.entity.Meeting;
 import com.gongsp.db.entity.MeetingOnair;
 import io.openvidu.java.client.OpenVidu;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 public interface MeetingService {
@@ -14,8 +15,5 @@ public interface MeetingService {
 
     Optional<Meeting> getMeeting(Integer meetingSeq);
     void updateMeeting(Integer meetingSeq, int flag);
-    void deleteOnair(Integer userSeq, Integer meetingSeq);
-    MeetingOnair createOnair(Integer userSeq, Integer meetingSeq, Boolean isHost);
-    MeetingOnair createOnair(Integer userSeq, Integer meetingSeq);
-    boolean existsOnair(Integer userSeq, Integer meetingSeq);
+
 }
