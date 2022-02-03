@@ -1,6 +1,5 @@
 package com.gongsp.db.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,8 +16,14 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer userSeq;
-    private Integer levelSeq;
-    private Integer levelImgSeq;
+
+    @OneToOne
+    @JoinColumn (name = "level_seq")
+    private Level userLevel;
+
+    @OneToOne
+    @JoinColumn (name = "level_img_seq")
+    private Level userImageLevel;
     private Boolean isAdmin;
     private String userEmail;
     private String userNickname;
@@ -28,7 +33,6 @@ public class User {
     private Integer userTimeGoal;
     private Integer userWarning;
 
-    @JsonIgnore
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String userPassword;
 }
