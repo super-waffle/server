@@ -24,4 +24,18 @@ public class NoticeServiceImpl implements NoticeService{
         List<Notice> noticeList = noticePage.getContent();
         return noticeList;
     }
+
+    @Override
+    public Boolean toggleNotice(Integer userSeq, Integer noticeSeq) {
+        Notice notice = noticeRepository.findByNoticeSeq(noticeSeq).orElse(null);
+        if (notice == null) {
+            return false;
+        }
+        if (notice.getUserSeq().equals(userSeq)) {
+            notice.setIsChecked(!notice.getIsChecked());
+            noticeRepository.save(notice);
+            return true;
+        }
+        return false;
+    }
 }

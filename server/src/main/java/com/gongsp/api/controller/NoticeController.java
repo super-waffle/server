@@ -2,14 +2,12 @@ package com.gongsp.api.controller;
 
 import com.gongsp.api.response.notice.NoticeListGetRes;
 import com.gongsp.api.service.NoticeService;
+import com.gongsp.common.model.response.BaseResponseBody;
 import com.gongsp.db.entity.Notice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,14 +18,27 @@ public class NoticeController {
     @Autowired
     NoticeService noticeService;
 
+    // 알림 목록 조회
     @GetMapping()
     public ResponseEntity<NoticeListGetRes> getNotice(Authentication authentication, @RequestParam("page") Integer page, @RequestParam("size") Integer size) {
-        // notice 테이블에 userSeq로 접근을 해서 모든 데이터를 다 가져오기
         List<Notice> noticeList = noticeService.findByUserSeq(Integer.parseInt((String) authentication.getPrincipal()), page-1, size);
 
         if (noticeList.isEmpty()) {
             return ResponseEntity.ok(NoticeListGetRes.of(204, "No Content", null));
         }
         return ResponseEntity.ok(NoticeListGetRes.of(200, "Success", noticeList));
+    }
+
+    // 알림 완료 토글
+    @PostMapping("/{noticeSeq}")
+    public ResponseEntity<? extends BaseResponseBody> toggleNotice(Authentication authentication, @PathVariable Integer noticeSeq) {
+        if (authentication == null) {
+            return ResponseEntity.ok(BaseResponseBody.of(403, "Access Denied"));
+        }
+        Boolean toggled = noticeService.toggleNotice(Integer.parseInt((String) authentication.getPrincipal()), noticeSeq);
+        if (toggled) {
+            return ResponseEntity.ok(BaseResponseBody.of(200, "Notice Toggled"));
+        }
+        return ResponseEntity.ok(BaseResponseBody.of(409, "Failed to toggle notice"));
     }
 }
