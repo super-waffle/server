@@ -25,6 +25,9 @@ public class TodoController {
     // 투두 항목 추가
     @PostMapping()
     public ResponseEntity<? extends BaseResponseBody> createTodo(Authentication authentication, @RequestBody TodoCreatePostReq todoInfo) {
+        if (authentication == null) {
+            return ResponseEntity.ok(BaseResponseBody.of(403, "Access Denied"));
+        }
         if (todoService.createTodo(Integer.parseInt((String) authentication.getPrincipal()), todoInfo)) {
             return ResponseEntity.ok(BaseResponseBody.of(201, "Todo Created"));
         }
@@ -34,6 +37,9 @@ public class TodoController {
     // 투두 항목 수정 및 완료버튼 토글
     @PatchMapping("/{todoSeq}")
     public ResponseEntity<? extends BaseResponseBody> updateTodo(Authentication authentication, @PathVariable String todoSeq, @RequestBody TodoUpdatePatchReq updateInfo) {
+        if (authentication == null) {
+            return ResponseEntity.ok(BaseResponseBody.of(403, "Access Denied"));
+        }
         Boolean updated = todoService.updateTodo(Integer.parseInt((String) authentication.getPrincipal()), Integer.parseInt(todoSeq), updateInfo);
         if (updated) {
             return ResponseEntity.ok(BaseResponseBody.of(201, "Todo Updated"));
@@ -44,6 +50,9 @@ public class TodoController {
     // 투두 항목 삭제
     @DeleteMapping("/{todoSeq}")
     public ResponseEntity<? extends BaseResponseBody> deleteTodo(Authentication authentication, @PathVariable String todoSeq) {
+        if (authentication == null) {
+            return ResponseEntity.ok(BaseResponseBody.of(403, "Access Denied"));
+        }
         Boolean deleted = todoService.deleteTodo(Integer.parseInt((String) authentication.getPrincipal()), Integer.parseInt(todoSeq));
         if (deleted) {
             return ResponseEntity.ok(BaseResponseBody.of(204, "Todo Deleted"));
