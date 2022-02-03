@@ -37,9 +37,10 @@ public class UserController {
         if (userInfo.isPresent())
             return ResponseEntity.ok(UserProfileGetRes.of(200, "Success", userInfo.get()));
 
-        return ResponseEntity.status(404).body(UserProfileGetRes.of(404, "No User Info", null));
+        return ResponseEntity.ok(UserProfileGetRes.of(404, "No User Info", null));
     }
 
+    // API U-002
     @GetMapping("/{userSeq}")
     public ResponseEntity<? extends BaseResponseBody> getOtherProfile(Authentication authentication, @PathVariable(value = "userSeq") int userSeq) {
         Optional<OtherUserProfile> userInfo = userService.getOtherProfile(userSeq);
@@ -47,6 +48,6 @@ public class UserController {
         if (userInfo.isPresent())
             return ResponseEntity.ok(OtherUserProfileGetRes.of(200, "Success", userInfo.get()));
 
-        return ResponseEntity.status(404).body(OtherUserProfileGetRes.of(404, "No User Info", null));
+        return ResponseEntity.ok(OtherUserProfileGetRes.of(404, "No User Profile Info", null));
     }
 }
