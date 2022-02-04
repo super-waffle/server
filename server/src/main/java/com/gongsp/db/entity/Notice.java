@@ -5,7 +5,7 @@ import lombok.Setter;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -17,7 +17,7 @@ public class Notice {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer noticeSeq;
     private Integer userSeq;
-    private Date noticeDate;
+    private LocalDate noticeDate;
     private String noticeContent;
     private Boolean isChecked;
 }
