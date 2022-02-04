@@ -18,4 +18,15 @@ public class DiaryServiceImpl implements DiaryService{
         Diary diary = diaryRepository.getDiaryByUserSeqAndDiaryDate(userSeq, date).orElse(null);
         return diary;
     }
+
+    @Override
+    public Boolean deleteDiary(Integer userSeq, Integer diarySeq) {
+        Diary diary = diaryRepository.getDiaryByDiarySeq(diarySeq).orElse(null);
+        if (diary == null || !userSeq.equals(diary.getUserSeq())) {
+            // 해당 하루기록 존재하지 않거나, 사용자의 하루기록이 아닌 경우(권한 없음)
+            return false;
+        }
+        diaryRepository.delete(diary);
+        return true;
+    }
 }

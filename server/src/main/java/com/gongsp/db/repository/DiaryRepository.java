@@ -8,4 +8,5 @@ import java.util.Optional;
 
 public interface DiaryRepository extends JpaRepository<Diary, Integer> {
     Optional<Diary> getDiaryByUserSeqAndDiaryDate(Integer userSeq, LocalDate date);
+    Optional<Diary> getDiaryByDiarySeq(Integer diarySeq);
 }
