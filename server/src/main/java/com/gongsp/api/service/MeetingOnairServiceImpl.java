@@ -21,10 +21,7 @@ public class MeetingOnairServiceImpl implements MeetingOnairService{
     public MeetingOnair createOnair(Integer userSeq, Integer meetingSeq, Boolean isHost) {
         MeetingOnair meetingOnair = new MeetingOnair();
         meetingOnair.setMeetingOnairId(new MeetingOnairId(userSeq, meetingSeq));
-        if(isHost)
-            meetingOnair.setIsHost((short)1);
-        else
-            meetingOnair.setIsHost((short)0);
+        meetingOnair.setIsHost(isHost);
         return meetingOnairRepository.save(meetingOnair);
     }
 

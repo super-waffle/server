@@ -100,6 +100,8 @@ public class MeetingServiceImpl implements MeetingService {
         Optional<Meeting> opMeeting = getMeeting(meetingSeq);
         if (!opMeeting.isPresent()) return;
         Meeting meeting = opMeeting.get();
+        if(meeting.getMeetingHeadcount() == 0)
+            meeting.setIsMeetingOnair(true);
 //        System.out.println("현재인원 : " + meeting.getMeetingHeadcount());
         meeting.setMeetingHeadcount(meeting.getMeetingHeadcount() + flag);
 //        System.out.println("현재인원 : " + meeting.getMeetingHeadcount());

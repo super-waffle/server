@@ -27,6 +27,5 @@ public class Meeting {
     private Short meetingCamType;
     // 0 : X, 1: 음소거, 2: 소음
     private Short meetingMicType;
-    // 0 : false, 1 : true
-    private Short isMeetingOnair;
+    private Boolean isMeetingOnair;
 }
