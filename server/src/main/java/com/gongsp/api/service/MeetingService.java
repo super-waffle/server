@@ -11,7 +11,7 @@ public interface MeetingService {
     //미팅룸 입실(session 연결)
     String getToken(OpenVidu openVidu, Integer userSeq, Meeting meeting);
     //미팅룸 퇴실(session 연결종료)
-    String removeUser(String sessionName, String token);
+    String removeUser(String sessionName, String token, Integer meetingSeq);
 
     Optional<Meeting> getMeeting(Integer meetingSeq);
     void updateMeeting(Integer meetingSeq, int flag);

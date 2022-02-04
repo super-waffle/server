@@ -5,6 +5,7 @@ import com.gongsp.api.response.meeting.MeetingEnterPostRes;
 import com.gongsp.api.service.LogTimeService;
 import com.gongsp.api.service.MeetingOnairService;
 import com.gongsp.api.service.MeetingService;
+import com.gongsp.api.service.UserService;
 import com.gongsp.common.auth.GongUserDetails;
 import com.gongsp.common.model.response.BaseResponseBody;
 import com.gongsp.db.entity.Meeting;
@@ -42,12 +43,12 @@ public class MeetingController {
 
     @Autowired
     MeetingService meetingService;
-
     @Autowired
     MeetingOnairService meetingOnairService;
-
     @Autowired
     LogTimeService logTimeService;
+    @Autowired
+    UserService userService;
 
     public MeetingController(@Value("${openvidu.secret}") String secret, @Value("${openvidu.url}") String openviduUrl) {
         this.SECRET = secret;
@@ -138,7 +139,7 @@ public class MeetingController {
         String token = meetingExitDeleteReq.getSessionToken();
 
         // session, connection 해제
-        String result = meetingService.removeUser(sessionName, token);
+        String result = meetingService.removeUser(sessionName, token, meetingSeq);
         if("Error".equals(result))
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(BaseResponseBody.of(409, "Fail : Remove user"));
 
@@ -150,6 +151,7 @@ public class MeetingController {
 
         // 시간 넘어온거 누적
         logTimeService.updateMeetingLogTime(userSeq, meetingExitDeleteReq.getLogMeeting(), meetingExitDeleteReq.getLogStartTime());
+        userService.updateUserLogTime(userSeq, meetingExitDeleteReq.getLogMeeting());
 
         return ResponseEntity.ok(BaseResponseBody.of(200, "Success : Remove user"));
     }

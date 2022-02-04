@@ -1,7 +1,9 @@
 package com.gongsp.api.service;
 
 import com.gongsp.db.entity.Meeting;
+import com.gongsp.db.entity.User;
 import com.gongsp.db.repository.MeetingRepository;
+import com.gongsp.db.repository.UserRepository;
 import io.openvidu.java.client.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +17,6 @@ public class MeetingServiceImpl implements MeetingService {
 
     @Autowired
     private MeetingRepository meetingRepository;
-
 
     // Collection to pair session names and OpenVidu Session objects
     // ConcurrentHashMap : Multi-Thread 환경에서 사용할 수 있도록 나온 클래스
@@ -109,7 +110,7 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
-    public String removeUser(String sessionName, String token) {
+    public String removeUser(String sessionName, String token, Integer meetingSeq) {
         // If the session exists
         if (this.mapSessions.get(sessionName) != null && this.mapSessionNamesTokens.get(sessionName) != null) {
             // If the token exists
@@ -118,6 +119,12 @@ public class MeetingServiceImpl implements MeetingService {
                 if (this.mapSessionNamesTokens.get(sessionName).isEmpty()) {
                     // Last user left: session must be removed
                     this.mapSessions.remove(sessionName);
+                    Optional<Meeting> opMeeting = getMeeting(meetingSeq);
+                    if (opMeeting.isPresent()){
+                        Meeting meeting = opMeeting.get();
+                        meeting.setMeetingHeadcount(0);
+                        meeting.setIsMeetingOnair(false);
+                    }
                 }
                 return "OK";
             } else {

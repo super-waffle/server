@@ -9,4 +9,5 @@ public interface UserService {
     Optional<User> getUserByUserSeq(Integer userSeq);
     Boolean isUserExists(Integer userSeq);
     Optional<OtherUserProfile> getOtherProfile(Integer userSeq);
+    void updateUserLogTime(Integer userSeq, Integer logTime);
 }
