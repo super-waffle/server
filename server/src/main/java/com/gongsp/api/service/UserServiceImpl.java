@@ -22,7 +22,7 @@ public class UserServiceImpl implements UserService{
 
     // Study Related Repositories
     @Autowired
-    private UserStudyRepository studyRepository;
+    private StudyRepository studyRepository;
     @Autowired
     private StudyMemberRepository studyMemberRepository;
     @Autowired
@@ -57,22 +57,22 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public Optional<List<StudyRes>> getUserIncludedStudies(int userSeq) {
-        Optional<UserStudy[]> myStudy = studyRepository.selectAllStudies(userSeq);
+        Optional<Study[]> myStudy = studyRepository.selectAllStudies(userSeq);
 
         if (!myStudy.isPresent())
             return Optional.empty();
 
         List<StudyRes> results = new ArrayList<>();
 
-        UserStudy[] studies = myStudy.get();
+        Study[] studies = myStudy.get();
 
-        for (UserStudy userStudy : studies) {
-            Optional<StudyMember[]> members = studyMemberRepository.selectAllStudyMemebers(userStudy.getStudySeq());
+        for (Study study : studies) {
+            Optional<StudyMember[]> members = studyMemberRepository.selectAllStudyMemebers(study.getStudySeq());
             if (members.isPresent()) {
-                StudyRes temp = new StudyRes(userStudy, members.get());
+                StudyRes temp = new StudyRes(study, members.get());
                 results.add(temp);
             } else {
-                StudyRes temp = new StudyRes(userStudy);
+                StudyRes temp = new StudyRes(study);
                 results.add(temp);
             }
         }
@@ -87,8 +87,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public Optional<StudyRes> getUserIncludedDetailStudyInfo(int studySeq, int userSeq) {
-        Optional<UserStudy> study = studyRepository.selectMyStudyDetailInfo(studySeq, userSeq);
+    public Optional<StudyRes> getUserIncludedDetailStudyInfo(int studySeq) {
+        Optional<Study> study = studyRepository.selectStudyDetailInfo(studySeq);
 
         if (!study.isPresent())
             return Optional.empty();

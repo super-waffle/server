@@ -13,5 +13,5 @@ public interface UserService {
     Optional<OtherUserProfile> getOtherProfile(Integer userSeq);
     boolean updateUserTimeGoal(int userSeq, int timeGoal);
     Optional<List<StudyRes>> getUserIncludedStudies(int userSeq);
-    Optional<StudyRes> getUserIncludedDetailStudyInfo(int studySeq, int userSeq);
+    Optional<StudyRes> getUserIncludedDetailStudyInfo(int studySeq);
 }

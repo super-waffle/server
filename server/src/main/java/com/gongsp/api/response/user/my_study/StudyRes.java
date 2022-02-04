@@ -1,6 +1,6 @@
 package com.gongsp.api.response.user.my_study;
 
-import com.gongsp.db.entity.UserStudy;
+import com.gongsp.db.entity.Study;
 import com.gongsp.db.entity.StudyDay;
 import com.gongsp.db.entity.StudyMember;
 import lombok.Getter;
@@ -13,7 +13,6 @@ import java.time.LocalDate;
 public class StudyRes {
 
     private Integer studySeq;
-    private Integer ejectCount;
     private String hostName;
     private String categoryName;
     private String title;
@@ -31,48 +30,46 @@ public class StudyRes {
     private StudyMember[] memberList;
     private StudyDay[] days;
 
-    public StudyRes(UserStudy userStudy, StudyMember[] members) {
-        this.studySeq = userStudy.getStudySeq();
-        this.ejectCount = userStudy.getEjectCount();
-        this.categoryName = userStudy.getCategoryName();
-        this.title = userStudy.getTitle();
-        this.shortDescription = userStudy.getShortDescription();
-        this.description = userStudy.getDescription();
-        this.capacity = userStudy.getCapacity();
-        this.url = userStudy.getUrl();
-        this.lateTime = userStudy.getLateTime();
-        this.startDate = userStudy.getStartDate();
-        this.endDate = userStudy.getEndDate();
-        this.recruitStartDate = userStudy.getRecruitStartDate();
-        this.recruitEndDate = userStudy.getRecruitEndDate();
-        this.isRecruiting = userStudy.getIsRecruiting();
-        this.isOnAir = userStudy.getIsOnAir();
+    public StudyRes(Study study, StudyMember[] members) {
+        this.studySeq = study.getStudySeq();
+        this.categoryName = study.getCategoryName();
+        this.title = study.getTitle();
+        this.shortDescription = study.getShortDescription();
+        this.description = study.getDescription();
+        this.capacity = study.getCapacity();
+        this.url = study.getUrl();
+        this.lateTime = study.getLateTime();
+        this.startDate = study.getStartDate();
+        this.endDate = study.getEndDate();
+        this.recruitStartDate = study.getRecruitStartDate();
+        this.recruitEndDate = study.getRecruitEndDate();
+        this.isRecruiting = study.getIsRecruiting();
+        this.isOnAir = study.getIsOnAir();
         this.memberList = members;
-        this.hostName = userStudy.getHostSeq() + "";
+        this.hostName = study.getHostSeq() + "";
         for (StudyMember member : members)
-            if (member.getUserSeq().equals(userStudy.getHostSeq())) {
+            if (member.getUserSeq().equals(study.getHostSeq())) {
                 this.hostName = member.getUserNickname();
                 break;
             }
     }
 
-    public StudyRes(UserStudy userStudy) {
-        this.studySeq = userStudy.getStudySeq();
-        this.hostName = userStudy.getHostSeq() + "";
-        this.ejectCount = userStudy.getEjectCount();
-        this.categoryName = userStudy.getCategoryName();
-        this.title = userStudy.getTitle();
-        this.shortDescription = userStudy.getShortDescription();
-        this.description = userStudy.getDescription();
-        this.capacity = userStudy.getCapacity();
-        this.url = userStudy.getUrl();
-        this.lateTime = userStudy.getLateTime();
-        this.startDate = userStudy.getStartDate();
-        this.endDate = userStudy.getEndDate();
-        this.recruitStartDate = userStudy.getRecruitStartDate();
-        this.recruitEndDate = userStudy.getRecruitEndDate();
-        this.isRecruiting = userStudy.getIsRecruiting();
-        this.isOnAir = userStudy.getIsOnAir();
+    public StudyRes(Study study) {
+        this.studySeq = study.getStudySeq();
+        this.hostName = study.getHostSeq() + "";
+        this.categoryName = study.getCategoryName();
+        this.title = study.getTitle();
+        this.shortDescription = study.getShortDescription();
+        this.description = study.getDescription();
+        this.capacity = study.getCapacity();
+        this.url = study.getUrl();
+        this.lateTime = study.getLateTime();
+        this.startDate = study.getStartDate();
+        this.endDate = study.getEndDate();
+        this.recruitStartDate = study.getRecruitStartDate();
+        this.recruitEndDate = study.getRecruitEndDate();
+        this.isRecruiting = study.getIsRecruiting();
+        this.isOnAir = study.getIsOnAir();
         this.memberList = null;
     }
 

@@ -86,13 +86,8 @@ public class UserController {
 
     // API U-007
     @GetMapping("/studies/{studySeq}")
-    public ResponseEntity<? extends BaseResponseBody> getDetailStudyInfo(Authentication authentication, @PathVariable(value = "studySeq") int studySeq) {
-        // Token에 따른 사용자 인증 객체 내부의 사용자 정보를 가져온다
-        GongUserDetails userDetails = (GongUserDetails) authentication.getDetails();
-        // 사용자 정보 내부의 사용자 일련번호를 가져온다.
-        int userSeq = userDetails.getUserSeq();
-
-        Optional<StudyRes> studyInfo = userService.getUserIncludedDetailStudyInfo(studySeq, userSeq);
+    public ResponseEntity<? extends BaseResponseBody> getDetailStudyInfo(@PathVariable(value = "studySeq") int studySeq) {
+        Optional<StudyRes> studyInfo = userService.getUserIncludedDetailStudyInfo(studySeq);
 
         if (studyInfo.isPresent())
             return ResponseEntity.ok(StudyDetailInfoGetRes.of(200, "Success", studyInfo.get()));

@@ -12,15 +12,11 @@ import java.time.LocalDate;
 @Getter
 @ToString
 @Table(name = "tb_study")
-public class UserStudy {
+public class Study {
 
     @Id
     private Integer studySeq;
-
     private Integer hostSeq;
-
-    @Column(name = "member_eject_count")
-    private Integer ejectCount;
 
     @Column(name = "category_name")
     private String categoryName;

@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface StudyMemberRepository extends JpaRepository<StudyMember, Integer> {
-    @Query(value = "select u.user_seq, u.user_nickname\n" +
+    @Query(value = "select *\n" +
             "from tb_user u left outer join tb_member_study sm\n" +
             "using (user_seq)\n" +
             "where study_seq = :seq",
