@@ -33,6 +33,9 @@ public class DiaryServiceImpl implements DiaryService{
             return false;
         }
         diaryRepository.delete(diary);
+        // 기존 이미지 삭제
+        String originalDiaryImg = diary.getDiaryImg();
+        storageService.delete(originalDiaryImg);
         return true;
     }
 
