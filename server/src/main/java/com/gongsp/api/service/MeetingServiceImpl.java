@@ -2,19 +2,17 @@ package com.gongsp.api.service;
 
 import com.gongsp.api.request.meeting.MeetingCreatePostReq;
 import com.gongsp.api.request.meeting.MeetingParameter;
+import com.gongsp.api.response.meeting.MeetingDetailGetRes;
 import com.gongsp.api.response.meeting.MeetingRes;
 import com.gongsp.db.entity.Category;
 import com.gongsp.db.entity.Meeting;
+import com.gongsp.db.entity.MeetingDetail;
+import com.gongsp.db.repository.MeetingDetailRepository;
 import com.gongsp.db.repository.MeetingRepository;
 import io.openvidu.java.client.*;
-import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.awt.print.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +24,8 @@ public class MeetingServiceImpl implements MeetingService {
 
     @Autowired
     private MeetingRepository meetingRepository;
+    @Autowired
+    private MeetingDetailRepository meetingDetailRepository;
 
     // Collection to pair session names and OpenVidu Session objects
     // ConcurrentHashMap : Multi-Thread 환경에서 사용할 수 있도록 나온 클래스
@@ -110,8 +110,7 @@ public class MeetingServiceImpl implements MeetingService {
         Optional<Meeting> opMeeting = getMeeting(meetingSeq);
         if (!opMeeting.isPresent()) return;
         Meeting meeting = opMeeting.get();
-        if (meeting.getMeetingHeadcount() == 0)
-            meeting.setIsMeetingOnair(true);
+        if (meeting.getMeetingHeadcount() == 0) meeting.setIsMeetingOnair(true);
 //        System.out.println("현재인원 : " + meeting.getMeetingHeadcount());
         meeting.setMeetingHeadcount(meeting.getMeetingHeadcount() + flag);
 //        System.out.println("현재인원 : " + meeting.getMeetingHeadcount());
@@ -119,7 +118,7 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
-    public List<MeetingRes> getMeetingList(MeetingParameter meetingParameter) {
+    public List<MeetingRes> getMeetingList(MeetingParameter meetingParameter, Integer userSeq) {
         List<Meeting> meetingList = new ArrayList<>();
         List<MeetingRes> meetingResList = new ArrayList<>();
 
@@ -134,27 +133,27 @@ public class MeetingServiceImpl implements MeetingService {
             //검색어 없음 = 전체목록
             if (meetingParameter.getKey() == null || meetingParameter.getKey().equals("")) {
 //                System.out.println("카테고리X 검색어X");
-                meetingList = meetingRepository.searchAll(start, 10);
+                meetingList = meetingRepository.searchAll(start, 10, userSeq);
             } else {
                 //검색어 있음 - 필터링(글제목, 글내용)
 //                Optional<List<Meeting>> optionalMeetings = meetingRepository.findByMeetingTitleContainingOrMeetingDescContaining(meetingParameter.getKey(), meetingParameter.getKey(), pageRequest);
 //                if (optionalMeetings.isPresent())
 //                    meetingList = optionalMeetings.get();
 //                System.out.println("카테고리X 검색어O");
-                meetingList = meetingRepository.searchByKey(meetingParameter.getKey(), start, 10);
+                meetingList = meetingRepository.searchByKey(meetingParameter.getKey(), start, 10, userSeq);
             }
         } else {    //카테고리 선택한경우
             //검색어 없음 = 선택한 카테고리 모두
             if (meetingParameter.getKey() == null || meetingParameter.getKey().equals("")) {
 //                System.out.println("카테고리O 검색어X");
-                meetingList = meetingRepository.searchByCategorySeq(meetingParameter.getType(), start, 10);
+                meetingList = meetingRepository.searchByCategorySeq(meetingParameter.getType(), start, 10, userSeq);
             } else {
                 //검색어 있음 - 필터링(글제목, 글내용)
 //                Optional<List<Meeting>> optionalMeetings = meetingRepository.findByMeetingTitleContainingOrMeetingDescContaining(meetingParameter.getKey(), meetingParameter.getKey(), pageRequest);
 //                if (optionalMeetings.isPresent())
 //                    meetingList = optionalMeetings.get();
 //                System.out.println("카테고리O 검색어O");
-                meetingList = meetingRepository.searchByKeyAndCategory(meetingParameter.getKey(), meetingParameter.getType(), start, 10);
+                meetingList = meetingRepository.searchByKeyAndCategory(meetingParameter.getKey(), meetingParameter.getType(), start, 10, userSeq);
             }
         }
 
@@ -172,7 +171,7 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
-    public void createMeeting(MeetingCreatePostReq meetingCreatePostReq, Integer userSeq, String uuidFilename) {
+    public Meeting createMeeting(MeetingCreatePostReq meetingCreatePostReq, Integer userSeq, String uuidFilename) {
         Meeting meeting = new Meeting();
         meeting.setHostSeq(userSeq);
         meeting.setCategory(new Category(meetingCreatePostReq.getCategorySeq()));
@@ -182,7 +181,54 @@ public class MeetingServiceImpl implements MeetingService {
         meeting.setMeetingCamType(meetingCreatePostReq.getMeetingCamType());
         meeting.setMeetingMicType(meetingCreatePostReq.getMeetingMicType());
         meeting.setMeetingImg(uuidFilename);
-        meetingRepository.save(meeting);
+        return meetingRepository.save(meeting);
+    }
+
+    @Override
+    public MeetingDetailGetRes getMeetingDetail(Integer meetingSeq) {
+        MeetingDetailGetRes meetingDetailGetRes = new MeetingDetailGetRes();
+        Optional<MeetingDetail> opMeetingDetail = meetingDetailRepository.findMeetingByMeetingSeq(meetingSeq);
+        if (!opMeetingDetail.isPresent())
+            return null;
+        MeetingDetail meetingDetail = opMeetingDetail.get();
+        meetingDetailGetRes.setMeetingSeq(meetingSeq);
+        meetingDetailGetRes.setHostName(meetingDetail.getUser().getUserNickname());
+        meetingDetailGetRes.setCategoryName(meetingDetail.getCategory().getCategoryName());
+        meetingDetailGetRes.setMeetingTitle(meetingDetail.getMeetingTitle());
+        meetingDetailGetRes.setMeetingDesc(meetingDetail.getMeetingDesc());
+        meetingDetailGetRes.setMeetingImg(meetingDetail.getMeetingImg());
+        meetingDetailGetRes.setMeetingHeadcount(meetingDetail.getMeetingHeadcount());
+        meetingDetailGetRes.setMeetingUrl(meetingDetail.getMeetingUrl());
+        String type = "";
+        switch(meetingDetail.getMeetingCamType()){
+            case 1:
+                type = "얼굴";
+                break;
+            case 2:
+                type = "손";
+                break;
+            case 3:
+                type = "노캠";
+                break;
+        }
+        meetingDetailGetRes.setMeetingCamType(type);
+        type = "";
+        switch(meetingDetail.getMeetingMicType()){
+            case 1:
+                type = "음소거";
+                break;
+            case 2:
+                type = "소음";
+                break;
+        }
+        meetingDetailGetRes.setMeetingMicType(type);
+        meetingDetailGetRes.setIsMeetingOnair(meetingDetail.getIsMeetingOnair());
+        return meetingDetailGetRes;
+    }
+
+    @Override
+    public boolean isUserOwnMeeting(Integer userSeq) {
+        return meetingRepository.existsMeetingByHostSeq(userSeq);
     }
 
     @Override

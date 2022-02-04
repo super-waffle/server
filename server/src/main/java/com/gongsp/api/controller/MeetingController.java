@@ -3,6 +3,7 @@ package com.gongsp.api.controller;
 import com.gongsp.api.request.meeting.MeetingCreatePostReq;
 import com.gongsp.api.request.meeting.MeetingExitDeleteReq;
 import com.gongsp.api.request.meeting.MeetingParameter;
+import com.gongsp.api.response.meeting.MeetingDetailGetRes;
 import com.gongsp.api.response.meeting.MeetingEnterPostRes;
 import com.gongsp.api.response.meeting.MeetingListGetRes;
 import com.gongsp.api.response.meeting.MeetingRes;
@@ -63,32 +64,39 @@ public class MeetingController {
 
     // 자유열람실 목록 조회
     @GetMapping
-    public ResponseEntity<? extends BaseResponseBody> getMeetingList(MeetingParameter meetingParameter) {
+    public ResponseEntity<? extends BaseResponseBody> getMeetingList(MeetingParameter meetingParameter, Authentication authentication) {
         if (meetingParameter.getPage() == null)
             return ResponseEntity.ok(MeetingListGetRes.of(409, "Fail : Get Meeting List. No page"));
         if (meetingParameter.getType() == null)
             return ResponseEntity.ok(MeetingListGetRes.of(409, "Fail : Get Meeting List. No Category type"));
-        List<MeetingRes> data = meetingService.getMeetingList(meetingParameter);
+        List<MeetingRes> data = meetingService.getMeetingList(meetingParameter, Integer.parseInt((String) authentication.getPrincipal()));
         return ResponseEntity.ok(MeetingListGetRes.of(200, "Success : Get Meeting List", meetingParameter, data.size(), data));
     }
 
     // 자유열람실 생성
     @PostMapping
     public ResponseEntity<? extends BaseResponseBody> createMeeting(@ModelAttribute MeetingCreatePostReq meetingCreatePostReq, Authentication authentication) {
-        // 이미지 처리 필요
-        meetingService.createMeeting(meetingCreatePostReq, Integer.parseInt((String) authentication.getPrincipal()), storageService.store(meetingCreatePostReq.getMeetingImg()));
+        Integer userSeq =  Integer.parseInt((String) authentication.getPrincipal());
+        if(meetingService.isUserOwnMeeting(userSeq))
+            return ResponseEntity.ok(BaseResponseBody.of(408, "Fail : User already has meeting room"));
+        if(meetingService.createMeeting(meetingCreatePostReq, userSeq, storageService.store(meetingCreatePostReq.getMeetingImg()))==null)
+            return ResponseEntity.ok(BaseResponseBody.of(409, "Fail : Create meeting room"));
         return ResponseEntity.ok(BaseResponseBody.of(200, "Success : Create meeting room"));
     }
 
     // 자유열람실 상세조회
     @GetMapping("/{meeting-seq}")
     public ResponseEntity<? extends BaseResponseBody> getMeetingDetail(@PathVariable("meeting-seq") Integer meetingSeq, Authentication authentication) {
-        return ResponseEntity.ok(BaseResponseBody.of(200, "Success : Create meeting room"));
+        MeetingDetailGetRes meetingDetailGetRes = meetingService.getMeetingDetail(meetingSeq);
+        if(meetingDetailGetRes == null)
+            return ResponseEntity.ok(BaseResponseBody.of(409, "Fail : Get meeting detail"));
+        return ResponseEntity.ok(MeetingDetailGetRes.of(200, "Success : Get meeting detail", meetingDetailGetRes));
     }
 
     // 자유열람실 강퇴
     @GetMapping("/{meeting-seq}/kick/{user-seq}")
     public ResponseEntity<? extends BaseResponseBody> kickUserFromMeeting(@PathVariable("meeting-seq") Integer meetingSeq, @PathVariable("user-seq") Integer userSeq, Authentication authentication) {
+
         return ResponseEntity.ok(BaseResponseBody.of(200, "Success : Create meeting room"));
     }
 
@@ -107,10 +115,12 @@ public class MeetingController {
         if (!opMeeting.isPresent())
             return ResponseEntity.ok(MeetingEnterPostRes.of(404, "Fail : Not valid meetingSeq"));
 
-        // 이미 방에 들어가 있는경우 입실 불가능
+        // 이미 방에 들어가 있는경우 입실 불가능 -> 이거 처리 다시해야될거같긴 한데..
         if (meetingOnairService.existsOnair(userSeq, meetingSeq)) {
             return ResponseEntity.ok(MeetingEnterPostRes.of(406, "Fail : Already exists in meeting room"));
         }
+
+        // 블랙리스트인 경우 입실 못함
 
         // 호스트 유무에 따른 정원
         Meeting meeting = opMeeting.get();
@@ -157,9 +167,7 @@ public class MeetingController {
         Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
 
 //        System.out.println(meetingExitDeleteReq.toString());
-
 //        System.out.println(logTimeRepository.findLogTimeByLogSeq(2));
-
 //        System.out.println("Removing user | {sessionName, userSeq}=" + "{" + meetingSeq + "," + userSeq + "}");
 
         String sessionName = meetingSeq.toString();
@@ -179,6 +187,8 @@ public class MeetingController {
         // 시간 넘어온거 누적
         logTimeService.updateMeetingLogTime(userSeq, meetingExitDeleteReq.getLogMeeting(), meetingExitDeleteReq.getLogStartTime());
         userService.updateUserLogTime(userSeq, meetingExitDeleteReq.getLogMeeting());
+
+        // 만석인 방에서 나갈경우 알림보내기
 
         return ResponseEntity.ok(BaseResponseBody.of(200, "Success : Remove user"));
     }
