@@ -10,7 +10,6 @@ import com.gongsp.api.service.UserService;
 import com.gongsp.common.auth.GongUserDetails;
 import com.gongsp.common.model.response.BaseResponseBody;
 import com.gongsp.db.entity.OtherUserProfile;
-import com.gongsp.db.entity.Study;
 import com.gongsp.db.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

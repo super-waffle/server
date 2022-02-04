@@ -22,7 +22,7 @@ public class UserServiceImpl implements UserService{
 
     // Study Related Repositories
     @Autowired
-    private StudyRepository studyRepository;
+    private UserStudyRepository studyRepository;
     @Autowired
     private StudyMemberRepository studyMemberRepository;
     @Autowired
@@ -57,22 +57,22 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public Optional<List<StudyRes>> getUserIncludedStudies(int userSeq) {
-        Optional<Study[]> myStudy = studyRepository.selectAllStudies(userSeq);
+        Optional<UserStudy[]> myStudy = studyRepository.selectAllStudies(userSeq);
 
         if (!myStudy.isPresent())
             return Optional.empty();
 
         List<StudyRes> results = new ArrayList<>();
 
-        Study[] studies = myStudy.get();
+        UserStudy[] studies = myStudy.get();
 
-        for (Study study : studies) {
-            Optional<StudyMember[]> members = studyMemberRepository.selectAllStudyMemebers(study.getStudySeq());
+        for (UserStudy userStudy : studies) {
+            Optional<StudyMember[]> members = studyMemberRepository.selectAllStudyMemebers(userStudy.getStudySeq());
             if (members.isPresent()) {
-                StudyRes temp = new StudyRes(study, members.get());
+                StudyRes temp = new StudyRes(userStudy, members.get());
                 results.add(temp);
             } else {
-                StudyRes temp = new StudyRes(study);
+                StudyRes temp = new StudyRes(userStudy);
                 results.add(temp);
             }
         }
@@ -88,7 +88,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public Optional<StudyRes> getUserIncludedDetailStudyInfo(int studySeq, int userSeq) {
-        Optional<Study> study = studyRepository.selectMyStudyDetailInfo(studySeq, userSeq);
+        Optional<UserStudy> study = studyRepository.selectMyStudyDetailInfo(studySeq, userSeq);
 
         if (!study.isPresent())
             return Optional.empty();

@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @Getter
 @ToString
 @Table(name = "tb_study")
-public class Study {
+public class UserStudy {
 
     @Id
     private Integer studySeq;
