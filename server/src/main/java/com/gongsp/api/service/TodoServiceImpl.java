@@ -57,9 +57,13 @@ public class TodoServiceImpl implements TodoService{
             return false;
         }
         if (todo.getUserSeq().equals(userSeq)) {
-            todo.setTodoContent(updateInfo.getContent());
-            todo.setTodoCompleted(updateInfo.getCompleted());
-            todoRepository.save(todo);
+            try {
+                todo.setTodoContent(updateInfo.getContent());
+                todo.setTodoCompleted(updateInfo.getCompleted());
+                todoRepository.save(todo);
+            } catch (Exception e) {
+                return false;
+            }
             return true;
         }
         return false;

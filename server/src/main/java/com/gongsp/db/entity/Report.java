@@ -5,19 +5,19 @@ import lombok.Setter;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Setter
 @DynamicInsert
-@Table(name="tb_notice")
-public class Notice {
+@Table(name="tb_report")
+public class Report {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer noticeSeq;
-    private Integer userSeq;
-    private LocalDate noticeDate;
-    private String noticeContent;
-    private Boolean isChecked;
+    private Integer reportSeq;
+    private Integer userSeqFrom;
+    private Integer userSeqTo;
+    private String reportContent;
+    private LocalDateTime reportDate;
 }

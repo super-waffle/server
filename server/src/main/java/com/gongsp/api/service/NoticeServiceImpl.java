@@ -38,4 +38,10 @@ public class NoticeServiceImpl implements NoticeService{
         }
         return false;
     }
+
+    @Override
+    public Integer getUnreadNotice(Integer userSeq) {
+        List<Notice> unreadNoticeList = noticeRepository.findAllByIsCheckedFalseAndUserSeq(userSeq);
+        return unreadNoticeList.size();
+    }
 }

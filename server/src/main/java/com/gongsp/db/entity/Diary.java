@@ -11,13 +11,13 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @DynamicInsert
-@Table(name="tb_notice")
-public class Notice {
+@Table(name="tb_diary")
+public class Diary {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer noticeSeq;
+    private Integer diarySeq;
     private Integer userSeq;
-    private LocalDate noticeDate;
-    private String noticeContent;
-    private Boolean isChecked;
+    private LocalDate diaryDate;
+    private String diaryContent;
+    private String diaryImg;
 }
