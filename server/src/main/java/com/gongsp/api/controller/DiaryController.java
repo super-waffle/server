@@ -1,6 +1,7 @@
 package com.gongsp.api.controller;
 
 import com.gongsp.api.request.diary.DiaryCreatePostReq;
+import com.gongsp.api.request.diary.DiaryUpdatePatchReq;
 import com.gongsp.api.response.diary.DiaryReadGetRes;
 import com.gongsp.api.service.DiaryService;
 import com.gongsp.api.service.StorageService;
@@ -77,4 +78,28 @@ public class DiaryController {
         String uuidFilename = storageService.store(file);
         return uuidFilename;
     }
+
+    // 하루기록 수정
+    @PatchMapping("/{diary_seq}")
+    public ResponseEntity<? extends BaseResponseBody> updateDiary(Authentication authentication, @PathVariable("diary_seq") Integer diarySeq, @ModelAttribute DiaryUpdatePatchReq request) {
+        if (authentication == null) {
+            return ResponseEntity.ok(BaseResponseBody.of(403, "Access Denied"));
+        }
+        // 하루기록 찾아서,
+        if (!diaryService.existsDiary(diarySeq)) {
+            return ResponseEntity.ok(BaseResponseBody.of(204, "No Diary"));
+        }
+        // 있으면 이미지 파일 저장하고
+        if (request.getImage() == null) {
+            return ResponseEntity.ok(DiaryReadGetRes.of(400, "Failed to upload image"));
+        }
+        String uuidFilename = imageUpload(request.getImage());
+
+        // 전해온 정보로 수정
+        Boolean diaryUpdated = diaryService.updateDiary(Integer.parseInt((String) authentication.getPrincipal()), diarySeq, request.getContentInfo(), uuidFilename);
+        if (!diaryUpdated) {
+            return ResponseEntity.ok(DiaryReadGetRes.of(400, "Failed to update diary"));
+        }
+        return ResponseEntity.ok(DiaryReadGetRes.of(201, "Diary Updated"));
+   }
 }

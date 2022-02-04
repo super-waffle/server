@@ -6,8 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
-public class DiaryCreatePostReq {
-    private DiaryDateInfo dateInfo;
+public class DiaryUpdatePatchReq {
     private DiaryContentInfo contentInfo;
     private MultipartFile image;
 }

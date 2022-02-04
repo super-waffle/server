@@ -5,7 +5,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class DiaryInfo {
-    private String date;
+public class DiaryContentInfo {
     private String content;
 }

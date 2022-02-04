@@ -72,7 +72,12 @@ public class StorageServiceImpl implements StorageService{
     }
 
     @Override
-    public void deleteAll() {
-        // TODO Auto-generated method stub
+    public void delete(String uuidFilename) {
+        Path root = Paths.get(uploadPath);
+        try {
+            Files.deleteIfExists(root.resolve(uuidFilename));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
