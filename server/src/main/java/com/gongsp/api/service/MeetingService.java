@@ -20,5 +20,5 @@ public interface MeetingService {
     Optional<Meeting> getMeeting(Integer meetingSeq);
     void updateMeeting(Integer meetingSeq, int flag);
     List<MeetingRes> getMeetingList(MeetingParameter meetingParameter);
-    void createMeeting(MeetingCreatePostReq meetingCreatePostReq, Integer userSeq);
+    void createMeeting(MeetingCreatePostReq meetingCreatePostReq, Integer userSeq, String uuidFileName);
 }

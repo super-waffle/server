@@ -6,10 +6,7 @@ import com.gongsp.api.request.meeting.MeetingParameter;
 import com.gongsp.api.response.meeting.MeetingEnterPostRes;
 import com.gongsp.api.response.meeting.MeetingListGetRes;
 import com.gongsp.api.response.meeting.MeetingRes;
-import com.gongsp.api.service.LogTimeService;
-import com.gongsp.api.service.MeetingOnairService;
-import com.gongsp.api.service.MeetingService;
-import com.gongsp.api.service.UserService;
+import com.gongsp.api.service.*;
 import com.gongsp.common.auth.GongUserDetails;
 import com.gongsp.common.model.response.BaseResponseBody;
 import com.gongsp.db.entity.Meeting;
@@ -47,13 +44,16 @@ public class MeetingController {
     private String SECRET;
 
     @Autowired
-    MeetingService meetingService;
+    private MeetingService meetingService;
     @Autowired
-    MeetingOnairService meetingOnairService;
+    private MeetingOnairService meetingOnairService;
     @Autowired
-    LogTimeService logTimeService;
+    private LogTimeService logTimeService;
     @Autowired
-    UserService userService;
+    private UserService userService;
+    @Autowired
+    private StorageService storageService;
+
 
     public MeetingController(@Value("${openvidu.secret}") String secret, @Value("${openvidu.url}") String openviduUrl) {
         this.SECRET = secret;
@@ -74,9 +74,9 @@ public class MeetingController {
 
     // 자유열람실 생성
     @PostMapping
-    public ResponseEntity<? extends BaseResponseBody> createMeeting(@RequestBody MeetingCreatePostReq meetingCreatePostReq, Authentication authentication) {
+    public ResponseEntity<? extends BaseResponseBody> createMeeting(@ModelAttribute MeetingCreatePostReq meetingCreatePostReq, Authentication authentication) {
         // 이미지 처리 필요
-        meetingService.createMeeting(meetingCreatePostReq, Integer.parseInt((String) authentication.getPrincipal()));
+        meetingService.createMeeting(meetingCreatePostReq, Integer.parseInt((String) authentication.getPrincipal()), storageService.store(meetingCreatePostReq.getMeetingImg()));
         return ResponseEntity.ok(BaseResponseBody.of(200, "Success : Create meeting room"));
     }
 

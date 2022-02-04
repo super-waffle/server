@@ -39,7 +39,7 @@ public class MeetingServiceImpl implements MeetingService {
 //        System.out.println("Getting a token from OpenVidu Server | {Meetingroom name}=" + meeting.getMeetingTitle());
 
         // sessionName = meetingSeq
-        String sessionName = meeting.getMeetingSeq().toString();
+        String sessionName = meeting.getMeetingUrl();
         // 근데 아예 Subscriber로 설정하면 화면송출이 안되는듯?? 일단 예제따라서
 //        System.out.println(userSeq + " " + meeting.getHostSeq() + userSeq.equals(meeting.getHostSeq()));
 
@@ -172,14 +172,7 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
-    public void createMeeting(MeetingCreatePostReq meetingCreatePostReq, Integer userSeq) {
-
-//        private Integer categorySeq;
-//        private String meetingTitle;
-//        private String meetingDesc;
-//        private MultipartFile meetingImg;
-//        private Integer meetingCamType;
-//        private Integer meetingMicType;
+    public void createMeeting(MeetingCreatePostReq meetingCreatePostReq, Integer userSeq, String uuidFilename) {
         Meeting meeting = new Meeting();
         meeting.setHostSeq(userSeq);
         meeting.setCategory(new Category(meetingCreatePostReq.getCategorySeq()));
@@ -188,7 +181,8 @@ public class MeetingServiceImpl implements MeetingService {
         meeting.setMeetingUrl(meetingCreatePostReq.getMeetingTitle() + userSeq);
         meeting.setMeetingCamType(meetingCreatePostReq.getMeetingCamType());
         meeting.setMeetingMicType(meetingCreatePostReq.getMeetingMicType());
-
+        meeting.setMeetingImg(uuidFilename);
+        meetingRepository.save(meeting);
     }
 
     @Override
