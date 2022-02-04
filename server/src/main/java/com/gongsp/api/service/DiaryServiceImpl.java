@@ -1,11 +1,13 @@
 package com.gongsp.api.service;
 
+import com.gongsp.api.request.diary.DiaryCreatePostReq;
 import com.gongsp.db.entity.Diary;
 import com.gongsp.db.repository.DiaryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Service("diaryService")
 public class DiaryServiceImpl implements DiaryService{
@@ -28,5 +30,20 @@ public class DiaryServiceImpl implements DiaryService{
         }
         diaryRepository.delete(diary);
         return true;
+    }
+
+    @Override
+    public Boolean createDiary(Integer userSeq, DiaryCreatePostReq request, String uuidFilename) {
+        try {
+            Diary diary = new Diary();
+            diary.setUserSeq(userSeq);
+            diary.setDiaryDate(LocalDate.parse(request.getDiaryInfo().getDate(), DateTimeFormatter.ISO_DATE));
+            diary.setDiaryContent(request.getDiaryInfo().getContent());
+            diary.setDiaryImg(uuidFilename);
+            diaryRepository.save(diary);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
