@@ -15,4 +15,10 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer categorySeq;
     private String categoryName;
+
+    public Category(Integer categorySeq) {
+        this.categorySeq = categorySeq;
+    }
+    public Category() {
+    }
 }

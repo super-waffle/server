@@ -1,5 +1,6 @@
 package com.gongsp.api.controller;
 
+import com.gongsp.api.request.meeting.MeetingCreatePostReq;
 import com.gongsp.api.request.meeting.MeetingExitDeleteReq;
 import com.gongsp.api.request.meeting.MeetingParameter;
 import com.gongsp.api.response.meeting.MeetingEnterPostRes;
@@ -73,7 +74,9 @@ public class MeetingController {
 
     // 자유열람실 생성
     @PostMapping
-    public ResponseEntity<? extends BaseResponseBody> createMeeting() {
+    public ResponseEntity<? extends BaseResponseBody> createMeeting(@RequestBody MeetingCreatePostReq meetingCreatePostReq, Authentication authentication) {
+        // 이미지 처리 필요
+        meetingService.createMeeting(meetingCreatePostReq, Integer.parseInt((String) authentication.getPrincipal()));
         return ResponseEntity.ok(BaseResponseBody.of(200, "Success : Create meeting room"));
     }
 

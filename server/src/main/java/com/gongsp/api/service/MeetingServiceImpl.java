@@ -1,14 +1,18 @@
 package com.gongsp.api.service;
 
+import com.gongsp.api.request.meeting.MeetingCreatePostReq;
 import com.gongsp.api.request.meeting.MeetingParameter;
 import com.gongsp.api.response.meeting.MeetingRes;
+import com.gongsp.db.entity.Category;
 import com.gongsp.db.entity.Meeting;
 import com.gongsp.db.repository.MeetingRepository;
 import io.openvidu.java.client.*;
+import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.awt.print.Pageable;
 import java.util.ArrayList;
@@ -123,33 +127,33 @@ public class MeetingServiceImpl implements MeetingService {
         //정렬기준 정해야됨
 //        Pageable pageRequest = (Pageable) PageRequest.of(start, 10, Sort.by("meeting_seq").descending());
 
-        System.out.println("페이지: " + meetingParameter.getPage() + "카테고리: " + meetingParameter.getType() + "검색어 : " + meetingParameter.getKey());
+//        System.out.println("페이지: " + meetingParameter.getPage() + "카테고리: " + meetingParameter.getType() + "검색어 : " + meetingParameter.getKey());
 
         //카테고리 선택안한경우
         if (meetingParameter.getType() == 0) {
             //검색어 없음 = 전체목록
             if (meetingParameter.getKey() == null || meetingParameter.getKey().equals("")) {
-                System.out.println("카테고리X 검색어X");
+//                System.out.println("카테고리X 검색어X");
                 meetingList = meetingRepository.searchAll(start, 10);
             } else {
                 //검색어 있음 - 필터링(글제목, 글내용)
 //                Optional<List<Meeting>> optionalMeetings = meetingRepository.findByMeetingTitleContainingOrMeetingDescContaining(meetingParameter.getKey(), meetingParameter.getKey(), pageRequest);
 //                if (optionalMeetings.isPresent())
 //                    meetingList = optionalMeetings.get();
-                System.out.println("카테고리X 검색어O");
+//                System.out.println("카테고리X 검색어O");
                 meetingList = meetingRepository.searchByKey(meetingParameter.getKey(), start, 10);
             }
         } else {    //카테고리 선택한경우
             //검색어 없음 = 선택한 카테고리 모두
             if (meetingParameter.getKey() == null || meetingParameter.getKey().equals("")) {
-                System.out.println("카테고리O 검색어X");
+//                System.out.println("카테고리O 검색어X");
                 meetingList = meetingRepository.searchByCategorySeq(meetingParameter.getType(), start, 10);
             } else {
                 //검색어 있음 - 필터링(글제목, 글내용)
 //                Optional<List<Meeting>> optionalMeetings = meetingRepository.findByMeetingTitleContainingOrMeetingDescContaining(meetingParameter.getKey(), meetingParameter.getKey(), pageRequest);
 //                if (optionalMeetings.isPresent())
 //                    meetingList = optionalMeetings.get();
-                System.out.println("카테고리O 검색어O");
+//                System.out.println("카테고리O 검색어O");
                 meetingList = meetingRepository.searchByKeyAndCategory(meetingParameter.getKey(), meetingParameter.getType(), start, 10);
             }
         }
@@ -165,6 +169,26 @@ public class MeetingServiceImpl implements MeetingService {
             meetingResList.add(meetingRes);
         }
         return meetingResList;
+    }
+
+    @Override
+    public void createMeeting(MeetingCreatePostReq meetingCreatePostReq, Integer userSeq) {
+
+//        private Integer categorySeq;
+//        private String meetingTitle;
+//        private String meetingDesc;
+//        private MultipartFile meetingImg;
+//        private Integer meetingCamType;
+//        private Integer meetingMicType;
+        Meeting meeting = new Meeting();
+        meeting.setHostSeq(userSeq);
+        meeting.setCategory(new Category(meetingCreatePostReq.getCategorySeq()));
+        meeting.setMeetingTitle(meetingCreatePostReq.getMeetingTitle());
+        meeting.setMeetingDesc(meetingCreatePostReq.getMeetingDesc());
+        meeting.setMeetingUrl(meetingCreatePostReq.getMeetingTitle() + userSeq);
+        meeting.setMeetingCamType(meetingCreatePostReq.getMeetingCamType());
+        meeting.setMeetingMicType(meetingCreatePostReq.getMeetingMicType());
+
     }
 
     @Override

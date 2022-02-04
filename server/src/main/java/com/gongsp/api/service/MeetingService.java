@@ -1,5 +1,6 @@
 package com.gongsp.api.service;
 
+import com.gongsp.api.request.meeting.MeetingCreatePostReq;
 import com.gongsp.api.request.meeting.MeetingParameter;
 import com.gongsp.api.response.meeting.MeetingRes;
 import com.gongsp.db.entity.Meeting;
@@ -19,4 +20,5 @@ public interface MeetingService {
     Optional<Meeting> getMeeting(Integer meetingSeq);
     void updateMeeting(Integer meetingSeq, int flag);
     List<MeetingRes> getMeetingList(MeetingParameter meetingParameter);
+    void createMeeting(MeetingCreatePostReq meetingCreatePostReq, Integer userSeq);
 }
