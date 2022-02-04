@@ -54,6 +54,8 @@ public class MeetingController {
     private UserService userService;
     @Autowired
     private StorageService storageService;
+    @Autowired
+    private BlacklistMeetingService blacklistMeetingService;
 
 
     public MeetingController(@Value("${openvidu.secret}") String secret, @Value("${openvidu.url}") String openviduUrl) {
@@ -116,11 +118,13 @@ public class MeetingController {
             return ResponseEntity.ok(MeetingEnterPostRes.of(404, "Fail : Not valid meetingSeq"));
 
         // 이미 방에 들어가 있는경우 입실 불가능 -> 이거 처리 다시해야될거같긴 한데..
-        if (meetingOnairService.existsOnair(userSeq, meetingSeq)) {
+        if (meetingOnairService.existsOnair(userSeq, meetingSeq))
             return ResponseEntity.ok(MeetingEnterPostRes.of(406, "Fail : Already exists in meeting room"));
-        }
 
         // 블랙리스트인 경우 입실 못함
+        // 애초에 목록에서 안보이도록 제외시키긴 했는데 혹시 url로 들어가려는 시도를 할 수 있으니?
+        if(blacklistMeetingService.isUserInBlacklist(userSeq, meetingSeq))
+            return ResponseEntity.ok(MeetingEnterPostRes.of(407, "Fail : User is in blacklist"));
 
         // 호스트 유무에 따른 정원
         Meeting meeting = opMeeting.get();
