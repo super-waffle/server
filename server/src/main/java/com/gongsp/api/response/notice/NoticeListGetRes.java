@@ -11,12 +11,14 @@ import java.util.List;
 @Setter
 public class NoticeListGetRes extends BaseResponseBody {
     private List<Notice> noticeList;
+    private Integer unreadNoticeCount;
 
-    public static com.gongsp.api.response.notice.NoticeListGetRes of(Integer statusCode, String message, List<Notice> noticeList) {
+    public static com.gongsp.api.response.notice.NoticeListGetRes of(Integer statusCode, String message, List<Notice> noticeList, Integer unreadNoticeCount) {
         com.gongsp.api.response.notice.NoticeListGetRes res = new com.gongsp.api.response.notice.NoticeListGetRes();
         res.setStatusCode(statusCode);
         res.setMessage(message);
         res.setNoticeList(noticeList);
+        res.setUnreadNoticeCount(unreadNoticeCount);
         return res;
     }
 }
