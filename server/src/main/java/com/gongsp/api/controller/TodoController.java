@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 
@@ -65,8 +66,8 @@ public class TodoController {
 
    // 투두리스트 조회
     @GetMapping()
-    public ResponseEntity<TodoListGetRes> todoList(Authentication authentication, @RequestParam LocalDate date) {
-        List<Todo> todoList = todoService.getTodoList(Integer.parseInt((String) authentication.getPrincipal()), date);
+    public ResponseEntity<TodoListGetRes> todoList(Authentication authentication, @RequestParam String date) {
+        List<Todo> todoList = todoService.getTodoList(Integer.parseInt((String) authentication.getPrincipal()), LocalDate.parse(date, DateTimeFormatter.ISO_DATE));
         if (todoList.isEmpty()) {
             return ResponseEntity.ok(TodoListGetRes.of(204, "No Content", null));
         }
