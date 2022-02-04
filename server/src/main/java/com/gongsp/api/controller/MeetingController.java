@@ -1,7 +1,10 @@
 package com.gongsp.api.controller;
 
 import com.gongsp.api.request.meeting.MeetingExitDeleteReq;
+import com.gongsp.api.request.meeting.MeetingParameter;
 import com.gongsp.api.response.meeting.MeetingEnterPostRes;
+import com.gongsp.api.response.meeting.MeetingListGetRes;
+import com.gongsp.api.response.meeting.MeetingRes;
 import com.gongsp.api.service.LogTimeService;
 import com.gongsp.api.service.MeetingOnairService;
 import com.gongsp.api.service.MeetingService;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.xml.bind.SchemaOutputResolver;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -56,16 +60,36 @@ public class MeetingController {
         this.openVidu = new OpenVidu(OPENVIDU_URL, SECRET);
     }
 
+    // 자유열람실 목록 조회
+    @GetMapping
+    public ResponseEntity<? extends BaseResponseBody> getMeetingList(MeetingParameter meetingParameter) {
+        if (meetingParameter.getPage() == null)
+            return ResponseEntity.ok(MeetingListGetRes.of(409, "Fail : Get Meeting List. No page"));
+        if (meetingParameter.getType() == null)
+            return ResponseEntity.ok(MeetingListGetRes.of(409, "Fail : Get Meeting List. No Category type"));
+        List<MeetingRes> data = meetingService.getMeetingList(meetingParameter);
+        return ResponseEntity.ok(MeetingListGetRes.of(200, "Success : Get Meeting List", meetingParameter, data.size(), data));
+    }
+
     // 자유열람실 생성
     @PostMapping
-    public ResponseEntity<? extends BaseResponseBody> createMeeting(){
-        System.out.println("연결완료");
-
+    public ResponseEntity<? extends BaseResponseBody> createMeeting() {
         return ResponseEntity.ok(BaseResponseBody.of(200, "Success : Create meeting room"));
     }
 
+    // 자유열람실 상세조회
+    @GetMapping("/{meeting-seq}")
+    public ResponseEntity<? extends BaseResponseBody> getMeetingDetail(@PathVariable("meeting-seq") Integer meetingSeq, Authentication authentication) {
+        return ResponseEntity.ok(BaseResponseBody.of(200, "Success : Create meeting room"));
+    }
 
-//    getmapping 완성해서
+    // 자유열람실 강퇴
+    @GetMapping("/{meeting-seq}/kick/{user-seq}")
+    public ResponseEntity<? extends BaseResponseBody> kickUserFromMeeting(@PathVariable("meeting-seq") Integer meetingSeq, @PathVariable("user-seq") Integer userSeq, Authentication authentication) {
+        return ResponseEntity.ok(BaseResponseBody.of(200, "Success : Create meeting room"));
+    }
+
+//    getapping 완성해서
 //    getToken안에서는
 //    meeting 객체를 얻어오게 한 후에
 //    meetingService에 인자로 meeting 넣어서 보냄!
@@ -77,24 +101,24 @@ public class MeetingController {
         // 존재하는 자유열람실만 입실 할 수 있음
         Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
         Optional<Meeting> opMeeting = meetingService.getMeeting(meetingSeq);
-        if(!opMeeting.isPresent())
+        if (!opMeeting.isPresent())
             return ResponseEntity.ok(MeetingEnterPostRes.of(404, "Fail : Not valid meetingSeq"));
 
         // 이미 방에 들어가 있는경우 입실 불가능
-        if(meetingOnairService.existsOnair(userSeq, meetingSeq)){
+        if (meetingOnairService.existsOnair(userSeq, meetingSeq)) {
             return ResponseEntity.ok(MeetingEnterPostRes.of(406, "Fail : Already exists in meeting room"));
         }
 
         // 호스트 유무에 따른 정원
         Meeting meeting = opMeeting.get();
         Boolean isHost = meeting.getHostSeq().equals(userSeq);
-        if(!isHost){
+        if (!isHost) {
             //호스트가 방에 없으면 11명 이상인경우 못들어감
             int capacity = 11;
             //호스트가 방에 있으면 12명 이상인경우 못들어감
-            if(meetingOnairService.existsOnair(meeting.getHostSeq(), meetingSeq))
+            if (meetingOnairService.existsOnair(meeting.getHostSeq(), meetingSeq))
                 capacity = 12;
-            if(meeting.getMeetingHeadcount()>=capacity)
+            if (meeting.getMeetingHeadcount() >= capacity)
                 return ResponseEntity.ok(MeetingEnterPostRes.of(405, "Fail : meeting room is full"));
         }
 
@@ -109,12 +133,12 @@ public class MeetingController {
         meetingService.updateMeeting(meetingSeq, 1);
 
         //당일 최초로 공부를 시작한 사용자
-        if(!logTimeService.existsLog(userSeq, LocalDate.now())) {
+        if (!logTimeService.existsLog(userSeq, LocalDate.now())) {
 //            System.out.println("공부기록삽입");
             logTimeService.createLogTime(userSeq);
         }
 
-       if (token.equals("InternalError"))
+        if (token.equals("InternalError"))
             return ResponseEntity.ok(MeetingEnterPostRes.of(409, "Fail : OpenViduJavaClientException", null));
 
         if (token.equals("GenError"))
@@ -140,7 +164,7 @@ public class MeetingController {
 
         // session, connection 해제
         String result = meetingService.removeUser(sessionName, token, meetingSeq);
-        if("Error".equals(result))
+        if ("Error".equals(result))
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(BaseResponseBody.of(409, "Fail : Remove user"));
 
         // tb_meeting_onair 칼럼 삭제

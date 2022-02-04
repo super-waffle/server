@@ -16,7 +16,10 @@ public class Meeting {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer meetingSeq;
     private Integer hostSeq;
-    private Integer categorySeq;
+//    private Integer categorySeq;
+    @OneToOne
+    @JoinColumn(name = "categorySeq")
+    private Category category;
     private String meetingTitle;
     private String meetingDesc;
     private String meetingImg;

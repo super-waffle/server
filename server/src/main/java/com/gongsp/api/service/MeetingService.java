@@ -1,10 +1,13 @@
 package com.gongsp.api.service;
 
+import com.gongsp.api.request.meeting.MeetingParameter;
+import com.gongsp.api.response.meeting.MeetingRes;
 import com.gongsp.db.entity.Meeting;
 import com.gongsp.db.entity.MeetingOnair;
 import io.openvidu.java.client.OpenVidu;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 public interface MeetingService {
@@ -15,5 +18,5 @@ public interface MeetingService {
 
     Optional<Meeting> getMeeting(Integer meetingSeq);
     void updateMeeting(Integer meetingSeq, int flag);
-
+    List<MeetingRes> getMeetingList(MeetingParameter meetingParameter);
 }
