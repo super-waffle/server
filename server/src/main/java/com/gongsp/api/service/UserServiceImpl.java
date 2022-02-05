@@ -1,5 +1,6 @@
 package com.gongsp.api.service;
 
+import com.gongsp.api.request.user.UserStudyUpdatePatchReq;
 import com.gongsp.api.response.user.my_study.StudyRes;
 import com.gongsp.db.entity.*;
 import com.gongsp.db.repository.*;
@@ -7,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -104,5 +106,34 @@ public class UserServiceImpl implements UserService{
             result.setDays(studyDays.get());
 
         return Optional.of(result);
+    }
+
+    @Override
+    public Optional<Study> getStudyInfo(int studySeq) {
+        return studyRepository.selectStudyDetailInfo(studySeq);
+    }
+
+    @Override
+    @Transactional
+    public void patchStudyInfo(Study study, UserStudyUpdatePatchReq studyPatchInfo) {
+        study.setCategorySeq(studyPatchInfo.getCategorySeq());
+        study.setTitle(studyPatchInfo.getTitle());
+        study.setShortDescription(studyPatchInfo.getShortDescription());
+        study.setDescription(studyPatchInfo.getDescription());
+        study.setLateTime(studyPatchInfo.getLateTime());
+        studyRepository.save(study);
+
+        if (studyPatchInfo.getDays().isPresent()) {
+            StudyDay[] days = studyPatchInfo.getDays().get();
+
+            for (StudyDay day : days) {
+                if (day.getDaySeq() != -1)
+                    studyDayRepository.save(day);
+                else {
+                    day.setDaySeq(0);
+                    studyDayRepository.save(day);
+                }
+            }
+        }
     }
 }
