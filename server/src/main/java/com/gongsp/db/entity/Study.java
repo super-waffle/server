@@ -17,8 +17,9 @@ public class Study {
     @Id
     private Integer studySeq;
     private Integer hostSeq;
+    private Integer categorySeq;
 
-    @Column(name = "category_name")
+    @Column(name = "category_name", updatable = false, insertable = false)
     private String categoryName;
 
     @Column(name = "study_title")
