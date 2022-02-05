@@ -18,4 +18,6 @@ public interface UserService {
     Optional<StudyRes> getUserIncludedDetailStudyInfo(int studySeq);
     Optional<Study> getStudyInfo(int studySeq);
     void patchStudyInfo(Study study, UserStudyUpdatePatchReq studyPatchInfo);
+    void endStudy(Study study);
+    void quitStudy(int userSeq, Study study);
 }
