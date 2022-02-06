@@ -12,4 +12,11 @@ import javax.persistence.*;
 public class BlacklistMeeting {
     @EmbeddedId
     private BlacklistMeetingId blacklistMeetingId;
+
+    public BlacklistMeeting(BlacklistMeetingId blacklistMeetingId) {
+        this.blacklistMeetingId = blacklistMeetingId;
+    }
+
+    public BlacklistMeeting() {
+    }
 }

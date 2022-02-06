@@ -10,6 +10,7 @@ import com.gongsp.api.response.meeting.MeetingRes;
 import com.gongsp.api.service.*;
 import com.gongsp.common.auth.GongUserDetails;
 import com.gongsp.common.model.response.BaseResponseBody;
+import com.gongsp.db.entity.BlacklistMeetingId;
 import com.gongsp.db.entity.Meeting;
 import com.gongsp.db.repository.LogTimeRepository;
 import io.openvidu.java.client.OpenVidu;
@@ -98,7 +99,12 @@ public class MeetingController {
     // 자유열람실 강퇴
     @GetMapping("/{meeting-seq}/kick/{user-seq}")
     public ResponseEntity<? extends BaseResponseBody> kickUserFromMeeting(@PathVariable("meeting-seq") Integer meetingSeq, @PathVariable("user-seq") Integer userSeq, Authentication authentication) {
+        //session 퇴출, connection 만료
+        //이건 프론트에서 강퇴당하는 애 입장에서 자유열람실 퇴실 api호출해줘야 될것 같음! session token 이랑 그 사용자가 공부한시간, 공부 시작한 시간등이 필요해서
+        //퇴실 api호출해주면 onair삭제, 시간누적, meeting update등 호출안에서 이뤄짐
 
+        //블랙리스트 추가
+        blacklistMeetingService.createBlacklist(new BlacklistMeetingId(userSeq, meetingSeq));
         return ResponseEntity.ok(BaseResponseBody.of(200, "Success : Create meeting room"));
     }
 
