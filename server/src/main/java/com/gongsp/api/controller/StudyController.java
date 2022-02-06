@@ -1,5 +1,8 @@
 package com.gongsp.api.controller;
 
+import com.gongsp.common.model.response.BaseResponseBody;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -7,6 +10,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/studies")
 public class StudyController {
     //스터디룸 입실
+    @PostMapping("/{study-seq}/room")
+    public ResponseEntity<? extends BaseResponseBody> enterStudy(){
+        return ResponseEntity.ok();
+    }
     //스터디룸 퇴실
 
     //일시방출
