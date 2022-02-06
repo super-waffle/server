@@ -192,10 +192,13 @@ public class MeetingController {
         String sessionName = meetingSeq.toString();
         String token = meetingExitDeleteReq.getSessionToken();
 
+        if(!meetingOnairService.existsOnair(userSeq, meetingSeq))
+            return ResponseEntity.ok(BaseResponseBody.of(408, "Fail : Remove user. User already deleted."));
+
         // session, connection 해제
         String result = meetingService.removeUser(sessionName, token, meetingSeq);
         if ("Error".equals(result))
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(BaseResponseBody.of(409, "Fail : Remove user"));
+            return ResponseEntity.ok(BaseResponseBody.of(409, "Fail : Remove user"));
 
         // tb_meeting_onair 칼럼 삭제
         meetingOnairService.deleteOnair(userSeq, meetingSeq);
