@@ -103,9 +103,18 @@ public class MeetingController {
         //이건 프론트에서 강퇴당하는 애 입장에서 자유열람실 퇴실 api호출해줘야 될것 같음! session token 이랑 그 사용자가 공부한시간, 공부 시작한 시간등이 필요해서
         //퇴실 api호출해주면 onair삭제, 시간누적, meeting update등 호출안에서 이뤄짐
 
+        Integer hostSeq = Integer.parseInt((String) authentication.getPrincipal());
+        if(!hostSeq.equals(meetingService.getHostSeq(meetingSeq)))
+            return ResponseEntity.ok(BaseResponseBody.of(409, "Fail : Request is not from host"));
+
         //블랙리스트 추가
         blacklistMeetingService.createBlacklist(new BlacklistMeetingId(userSeq, meetingSeq));
-        return ResponseEntity.ok(BaseResponseBody.of(200, "Success : Create meeting room"));
+
+        //사용자가 이미 방을 나간경우?
+        if(meetingOnairService.existsOnair(userSeq, meetingSeq))
+            return ResponseEntity.ok(BaseResponseBody.of(201, "Success : Kick user"));
+
+        return ResponseEntity.ok(BaseResponseBody.of(200, "Success : Kick user"));
     }
 
 //    getapping 완성해서

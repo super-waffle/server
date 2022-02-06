@@ -232,6 +232,14 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
+    public Integer getHostSeq(Integer meetingSeq) {
+        Optional<Meeting> opMeeting = meetingRepository.findMeetingByMeetingSeq(meetingSeq);
+        if(!opMeeting.isPresent())
+            return 0;
+        return opMeeting.get().getHostSeq();
+    }
+
+    @Override
     public String removeUser(String sessionName, String token, Integer meetingSeq) {
         // If the session exists
         if (this.mapSessions.get(sessionName) != null && this.mapSessionNamesTokens.get(sessionName) != null) {

@@ -22,4 +22,5 @@ public interface MeetingService {
     Meeting createMeeting(MeetingCreatePostReq meetingCreatePostReq, Integer userSeq, String uuidFileName);
     MeetingDetailGetRes getMeetingDetail(Integer meetingSeq);
     boolean isUserOwnMeeting(Integer userSeq);
+    Integer getHostSeq(Integer meetingSeq);
 }
