@@ -38,8 +38,9 @@ public class MeetingServiceImpl implements MeetingService {
     public String getToken(OpenVidu openVidu, Integer userSeq, Meeting meeting) {
 //        System.out.println("Getting a token from OpenVidu Server | {Meetingroom name}=" + meeting.getMeetingTitle());
 
-        // sessionName = meetingSeq
+        // sessionName = meetingUrl
         String sessionName = meeting.getMeetingUrl();
+//        System.out.println(sessionName);
         // 근데 아예 Subscriber로 설정하면 화면송출이 안되는듯?? 일단 예제따라서
 //        System.out.println(userSeq + " " + meeting.getHostSeq() + userSeq.equals(meeting.getHostSeq()));
 
@@ -240,8 +241,17 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
+    public String getMeetingUrl(Integer meetingSeq) {
+        Optional<Meeting> opMeeting = meetingRepository.findMeetingByMeetingSeq(meetingSeq);
+        if(!opMeeting.isPresent())
+            return null;
+        return opMeeting.get().getMeetingUrl();
+    }
+
+    @Override
     public String removeUser(String sessionName, String token, Integer meetingSeq) {
         // If the session exists
+        System.out.println(sessionName);
         if (this.mapSessions.get(sessionName) != null && this.mapSessionNamesTokens.get(sessionName) != null) {
             // If the token exists
             if (this.mapSessionNamesTokens.get(sessionName).remove(token) != null) {
@@ -254,6 +264,7 @@ public class MeetingServiceImpl implements MeetingService {
                         Meeting meeting = opMeeting.get();
                         meeting.setMeetingHeadcount(0);
                         meeting.setIsMeetingOnair(false);
+                        meetingRepository.save(meeting);
                     }
                 }
                 return "OK";

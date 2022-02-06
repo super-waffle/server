@@ -8,20 +8,16 @@ import com.gongsp.api.response.meeting.MeetingEnterPostRes;
 import com.gongsp.api.response.meeting.MeetingListGetRes;
 import com.gongsp.api.response.meeting.MeetingRes;
 import com.gongsp.api.service.*;
-import com.gongsp.common.auth.GongUserDetails;
 import com.gongsp.common.model.response.BaseResponseBody;
 import com.gongsp.db.entity.BlacklistMeetingId;
 import com.gongsp.db.entity.Meeting;
-import com.gongsp.db.repository.LogTimeRepository;
 import io.openvidu.java.client.OpenVidu;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import javax.xml.bind.SchemaOutputResolver;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -31,13 +27,6 @@ import java.util.Optional;
 public class MeetingController {
     // OpenVidu object as entrypoint of the SDK
     private OpenVidu openVidu;
-
-//    // Collection to pair session names and OpenVidu Session objects
-//    // ConcurrentHashMap : Multi-Thread 환경에서 사용할 수 있도록 나온 클래스
-//    private Map<String, Session> mapSessions = new ConcurrentHashMap<>();
-//
-//    // Collection to pair session names and tokens (the inner Map pairs tokens and role associated)
-//    private Map<String, Map<String, OpenViduRole>> mapSessionNamesTokens = new ConcurrentHashMap<>();
 
     // URL where our OpenVidu server is listening
     private String OPENVIDU_URL;
@@ -79,10 +68,10 @@ public class MeetingController {
     // 자유열람실 생성
     @PostMapping
     public ResponseEntity<? extends BaseResponseBody> createMeeting(@ModelAttribute MeetingCreatePostReq meetingCreatePostReq, Authentication authentication) {
-        Integer userSeq =  Integer.parseInt((String) authentication.getPrincipal());
-        if(meetingService.isUserOwnMeeting(userSeq))
+        Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
+        if (meetingService.isUserOwnMeeting(userSeq))
             return ResponseEntity.ok(BaseResponseBody.of(408, "Fail : User already has meeting room"));
-        if(meetingService.createMeeting(meetingCreatePostReq, userSeq, storageService.store(meetingCreatePostReq.getMeetingImg()))==null)
+        if (meetingService.createMeeting(meetingCreatePostReq, userSeq, storageService.store(meetingCreatePostReq.getMeetingImg())) == null)
             return ResponseEntity.ok(BaseResponseBody.of(409, "Fail : Create meeting room"));
         return ResponseEntity.ok(BaseResponseBody.of(200, "Success : Create meeting room"));
     }
@@ -91,7 +80,7 @@ public class MeetingController {
     @GetMapping("/{meeting-seq}")
     public ResponseEntity<? extends BaseResponseBody> getMeetingDetail(@PathVariable("meeting-seq") Integer meetingSeq, Authentication authentication) {
         MeetingDetailGetRes meetingDetailGetRes = meetingService.getMeetingDetail(meetingSeq);
-        if(meetingDetailGetRes == null)
+        if (meetingDetailGetRes == null)
             return ResponseEntity.ok(BaseResponseBody.of(409, "Fail : Get meeting detail"));
         return ResponseEntity.ok(MeetingDetailGetRes.of(200, "Success : Get meeting detail", meetingDetailGetRes));
     }
@@ -104,14 +93,14 @@ public class MeetingController {
         //퇴실 api호출해주면 onair삭제, 시간누적, meeting update등 호출안에서 이뤄짐
 
         Integer hostSeq = Integer.parseInt((String) authentication.getPrincipal());
-        if(!hostSeq.equals(meetingService.getHostSeq(meetingSeq)))
+        if (!hostSeq.equals(meetingService.getHostSeq(meetingSeq)))
             return ResponseEntity.ok(BaseResponseBody.of(409, "Fail : Request is not from host"));
 
         //블랙리스트 추가
         blacklistMeetingService.createBlacklist(new BlacklistMeetingId(userSeq, meetingSeq));
 
         //사용자가 이미 방을 나간경우?
-        if(meetingOnairService.existsOnair(userSeq, meetingSeq))
+        if (meetingOnairService.existsOnair(userSeq, meetingSeq))
             return ResponseEntity.ok(BaseResponseBody.of(201, "Success : Kick user"));
 
         return ResponseEntity.ok(BaseResponseBody.of(200, "Success : Kick user"));
@@ -138,7 +127,7 @@ public class MeetingController {
 
         // 블랙리스트인 경우 입실 못함
         // 애초에 목록에서 안보이도록 제외시키긴 했는데 혹시 url로 들어가려는 시도를 할 수 있으니?
-        if(blacklistMeetingService.isUserInBlacklist(userSeq, meetingSeq))
+        if (blacklistMeetingService.isUserInBlacklist(userSeq, meetingSeq))
             return ResponseEntity.ok(MeetingEnterPostRes.of(407, "Fail : User is in blacklist"));
 
         // 호스트 유무에 따른 정원
@@ -148,8 +137,7 @@ public class MeetingController {
             //호스트가 방에 없으면 11명 이상인경우 못들어감
             int capacity = 11;
             //호스트가 방에 있으면 12명 이상인경우 못들어감
-            if (meetingOnairService.existsOnair(meeting.getHostSeq(), meetingSeq))
-                capacity = 12;
+            if (meetingOnairService.existsOnair(meeting.getHostSeq(), meetingSeq)) capacity = 12;
             if (meeting.getMeetingHeadcount() >= capacity)
                 return ResponseEntity.ok(MeetingEnterPostRes.of(405, "Fail : meeting room is full"));
         }
@@ -189,16 +177,15 @@ public class MeetingController {
 //        System.out.println(logTimeRepository.findLogTimeByLogSeq(2));
 //        System.out.println("Removing user | {sessionName, userSeq}=" + "{" + meetingSeq + "," + userSeq + "}");
 
-        String sessionName = meetingSeq.toString();
+        String sessionName = meetingService.getMeetingUrl(meetingSeq);
         String token = meetingExitDeleteReq.getSessionToken();
 
-        if(!meetingOnairService.existsOnair(userSeq, meetingSeq))
+        if (!meetingOnairService.existsOnair(userSeq, meetingSeq))
             return ResponseEntity.ok(BaseResponseBody.of(408, "Fail : Remove user. User already deleted."));
 
         // session, connection 해제
         String result = meetingService.removeUser(sessionName, token, meetingSeq);
-        if ("Error".equals(result))
-            return ResponseEntity.ok(BaseResponseBody.of(409, "Fail : Remove user"));
+        if ("Error".equals(result)) return ResponseEntity.ok(BaseResponseBody.of(409, "Fail : Remove user"));
 
         // tb_meeting_onair 칼럼 삭제
         meetingOnairService.deleteOnair(userSeq, meetingSeq);

@@ -23,4 +23,5 @@ public interface MeetingService {
     MeetingDetailGetRes getMeetingDetail(Integer meetingSeq);
     boolean isUserOwnMeeting(Integer userSeq);
     Integer getHostSeq(Integer meetingSeq);
+    String getMeetingUrl(Integer meetingSeq);
 }
