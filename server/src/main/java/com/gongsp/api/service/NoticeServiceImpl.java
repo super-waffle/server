@@ -44,4 +44,11 @@ public class NoticeServiceImpl implements NoticeService{
         List<Notice> unreadNoticeList = noticeRepository.findAllByIsCheckedFalseAndUserSeq(userSeq);
         return unreadNoticeList.size();
     }
+
+    @Override
+    public Integer getTotalPagesCount(Integer userSeq, Integer page, Integer size) {
+        Pageable paging = PageRequest.of(page, size, Sort.by("noticeDate").descending());
+        Page<Notice> noticePage = noticeRepository.findByUserSeq(userSeq, paging);
+        return noticePage.getTotalPages();
+    }
 }
