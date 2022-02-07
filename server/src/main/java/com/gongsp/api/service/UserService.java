@@ -20,4 +20,5 @@ public interface UserService {
     void patchStudyInfo(Study study, UserStudyUpdatePatchReq studyPatchInfo);
     void endStudy(Study study);
     void quitStudy(int userSeq, Study study);
+    void endStudyRecruit(Study study);
 }

@@ -155,4 +155,32 @@ public class UserController {
 
         return ResponseEntity.ok(BaseResponseBody.of(200,"Success"));
     }
+
+    // API U-010
+
+    // API U-011
+    @PatchMapping("studies/{studySeq}/recruit-end")
+    public ResponseEntity<BaseResponseBody> endStudyRecruit(Authentication authentication, @PathVariable(value = "studySeq") int studySeq) {
+        int userSeq = getUserSeqFromAuthentication(authentication);
+
+        Optional<Study> studyInfo = userService.getStudyInfo(studySeq);
+
+        if (!studyInfo.isPresent())
+            return ResponseEntity.ok(BaseResponseBody.of(404,"No Such Study"));
+
+        Study study = studyInfo.get();
+
+        if (study.getHostSeq() != userSeq)
+            return ResponseEntity.ok(BaseResponseBody.of(409,"Not Authorized : You Are Not The Host"));
+
+        userService.endStudyRecruit(study);
+
+        return ResponseEntity.ok(BaseResponseBody.of(200,"Success"));
+    }
+
+//    // API U-012
+//    @GetMapping("studies/{studySeq}/applicants")
+//    public ResponseEntity<? extends BaseResponseBody> getStudyApplicants(Authentication authentication, @PathVariable(value = "studySeq") int studySeq) {
+//
+//    }
 }

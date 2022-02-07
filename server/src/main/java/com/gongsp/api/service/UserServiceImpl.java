@@ -148,4 +148,10 @@ public class UserServiceImpl implements UserService{
     public void quitStudy(int userSeq, Study study) {
         studyMemberRepository.deleteByUserSeqAndStudySeq(userSeq, study.getStudySeq());
     }
+
+    @Override
+    public void endStudyRecruit(Study study) {
+        study.setRecruitEndDate(LocalDate.now());
+        studyRepository.save(study);
+    }
 }
