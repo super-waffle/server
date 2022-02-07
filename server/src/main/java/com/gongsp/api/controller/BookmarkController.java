@@ -38,8 +38,22 @@ public class BookmarkController {
         Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
         Boolean added = bookmarkService.addMeetingToBookmark(userSeq, meetingSeq);
         if (added) {
-            return ResponseEntity.ok(BaseResponseBody.of(201, "Added to Bookmark"));
+            return ResponseEntity.ok(BaseResponseBody.of(201, "Added to bookmark"));
         }
-        return ResponseEntity.ok(BaseResponseBody.of(400, "Failed to add meeting to Bookmark"));
+        return ResponseEntity.ok(BaseResponseBody.of(400, "Failed to add meeting to bookmark"));
+    }
+
+    // 즐겨찾기 취소
+    @DeleteMapping("/{meeting_seq}")
+    public ResponseEntity<? extends BaseResponseBody> cancelBookmark(Authentication authentication, @PathVariable("meeting_seq") Integer meetingSeq) {
+        if (authentication == null) {
+            return ResponseEntity.ok(BaseResponseBody.of(403, "Access Denied"));
+        }
+        Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
+        Boolean cancelled = bookmarkService.deleteMeetingFromBookmark(userSeq, meetingSeq);
+        if (cancelled) {
+            return ResponseEntity.ok(BaseResponseBody.of(204, "Deleted from bookmark"));
+        }
+        return ResponseEntity.ok(BaseResponseBody.of(400, "Failed to delete meeting from bookmark"));
     }
 }

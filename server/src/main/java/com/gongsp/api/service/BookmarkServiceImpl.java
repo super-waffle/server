@@ -6,6 +6,7 @@ import com.gongsp.db.entity.User;
 import com.gongsp.db.repository.BookmarkRepository;
 import com.gongsp.db.repository.MeetingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,19 +34,31 @@ public class BookmarkServiceImpl implements BookmarkService {
     @Override
     public Boolean addMeetingToBookmark(Integer userSeq, Integer meetingSeq) {
         // 등록
-        Bookmark bookmark = new Bookmark();
-        User user = userService.getUserByUserSeq(userSeq).orElse(null);
-        Meeting meeting = meetingService.getMeeting(meetingSeq).orElse(null);
-        bookmark.setUser(user);
-        bookmark.setMeeting(meeting);
-        if (bookmark.getUser() == null || bookmark.getMeeting() == null) {
+        try {
+            Bookmark bookmark = new Bookmark();
+            User user = userService.getUserByUserSeq(userSeq).orElse(null);
+            Meeting meeting = meetingService.getMeeting(meetingSeq).orElse(null);
+            bookmark.setUser(user);
+            bookmark.setMeeting(meeting);
+            bookmarkRepository.save(bookmark);
+        } catch (Exception e) {
             return false;
         }
-        bookmarkRepository.save(bookmark);
-        // 확인
-        if (bookmarkRepository.findBookmarkByUserAndMeeting(userSeq, meetingSeq) != null) {
-            return true;
+        return true;
+    }
+
+    @Override
+    public Boolean deleteMeetingFromBookmark(Integer userSeq, Integer meetingSeq) {
+        // 삭제
+        Bookmark bookmark = bookmarkRepository.findBookmarkByUserAndMeeting(userSeq, meetingSeq);
+        if (bookmark == null) {
+            return false;
         }
-        return false;
+        try {
+            bookmarkRepository.delete(bookmark);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
     }
 }
