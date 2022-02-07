@@ -23,10 +23,11 @@ public class NoticeController {
     public ResponseEntity<NoticeListGetRes> getNotice(Authentication authentication, @RequestParam("page") Integer page, @RequestParam("size") Integer size) {
         List<Notice> noticeList = noticeService.findByUserSeq(Integer.parseInt((String) authentication.getPrincipal()), page-1, size);
         Integer unreadNoticeCount = noticeService.getUnreadNotice(Integer.parseInt((String) authentication.getPrincipal()));
+        Integer totalPagesCount = noticeService.getTotalPagesCount(Integer.parseInt((String) authentication.getPrincipal()), page-1, size);
         if (noticeList.isEmpty()) {
-            return ResponseEntity.ok(NoticeListGetRes.of(204, "No Content", null, 0));
+            return ResponseEntity.ok(NoticeListGetRes.of(204, "No Content", null, 0, 0));
         }
-        return ResponseEntity.ok(NoticeListGetRes.of(200, "Success", noticeList, unreadNoticeCount));
+        return ResponseEntity.ok(NoticeListGetRes.of(200, "Success", noticeList, unreadNoticeCount, totalPagesCount));
     }
 
     // 알림 완료 토글
