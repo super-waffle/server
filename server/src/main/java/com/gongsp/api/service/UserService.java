@@ -13,6 +13,7 @@ public interface UserService {
     Optional<User> getUserByUserSeq(Integer userSeq);
     Boolean isUserExists(Integer userSeq);
     Optional<OtherUserProfile> getOtherProfile(Integer userSeq);
+    void updateUserLogTime(Integer userSeq, Integer logTime);
     boolean updateUserTimeGoal(int userSeq, int timeGoal);
     Optional<List<StudyRes>> getUserIncludedStudies(int userSeq);
     Optional<StudyRes> getUserIncludedDetailStudyInfo(int studySeq);

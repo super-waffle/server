@@ -10,20 +10,20 @@ import javax.persistence.*;
 @Getter
 @Setter
 @DynamicInsert
-@Table(name="tb_meeting")
-public class Meeting {
+@Table(name = "tb_meeting")
+public class MeetingDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer meetingSeq;
-    private Integer hostSeq;
-//    private Integer categorySeq;
+    @OneToOne
+    @JoinColumn(name = "hostSeq")
+    private User user;
     @OneToOne
     @JoinColumn(name = "categorySeq")
     private Category category;
     private String meetingTitle;
     private String meetingDesc;
     private String meetingImg;
-    private Integer meetingCapacity;
     private Integer meetingHeadcount;
     private String meetingUrl;
     // 0 : X, 1: 얼굴, 2: 손, 3: 노캠

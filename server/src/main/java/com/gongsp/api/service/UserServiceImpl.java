@@ -47,6 +47,18 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    public void updateUserLogTime(Integer userSeq, Integer logTime) {
+        Optional<User> opUser = userRepository.findUserByUserSeq(userSeq);
+        if (!opUser.isPresent()) {
+            System.out.println("Error : Not valid userSeq");
+            return;
+        }
+        User user = opUser.get();
+        user.setUserTimeTotal(user.getUserTimeTotal() + logTime);
+        userRepository.save(user);
+    }
+
+    @Override
     public boolean updateUserTimeGoal(int userSeq, int timeGoal) {
         Optional<User> userInfo = userRepository.findUserByUserSeq(userSeq);
         if (userInfo.isPresent()) {
