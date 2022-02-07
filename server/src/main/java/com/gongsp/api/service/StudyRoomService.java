@@ -1,5 +1,6 @@
 package com.gongsp.api.service;
 
+import com.gongsp.api.request.study.StudyCreatePostReq;
 import com.gongsp.api.request.study.StudyParameter;
 import com.gongsp.api.response.study.StudyRes;
 import com.gongsp.db.entity.StudyDay;
@@ -16,4 +17,5 @@ public interface StudyRoomService {
     int getStudyMemberNum(Integer studySeq);
     int getStudyCnt(StudyParameter studyParameter);
     Optional<StudyRoom> getStudyDetail(Integer studySeq);
+    StudyRoom createStudy(StudyCreatePostReq studyCreatePostReq, Integer userSeq);
 }

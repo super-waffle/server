@@ -1,5 +1,7 @@
 package com.gongsp.api.controller;
 
+import com.gongsp.api.request.meeting.MeetingCreatePostReq;
+import com.gongsp.api.request.study.StudyCreatePostReq;
 import com.gongsp.api.request.study.StudyParameter;
 import com.gongsp.api.response.meeting.MeetingDetailGetRes;
 import com.gongsp.api.response.study.StudyDetailGetRes;
@@ -138,6 +140,15 @@ public class StudyController {
     }
 
     // 스터디 게시물 작성 = 스터디룸 생성
-    
+    @PostMapping
+    public ResponseEntity<? extends BaseResponseBody> createStudy(@RequestBody StudyCreatePostReq studyCreatePostReq, Authentication authentication) {
+        Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
+        StudyRoom studyRoom =studyRoomService.createStudy(studyCreatePostReq, userSeq);
+        if (studyRoom == null)
+            return ResponseEntity.ok(BaseResponseBody.of(409, "Fail : Create study room"));
+        studyDayService.createStudyDays(studyCreatePostReq.getDay(), studyRoom.getStudySeq());
+        return ResponseEntity.ok(BaseResponseBody.of(200, "Success : Create study room"));
+    }
+
     // 스터디 신청
 }

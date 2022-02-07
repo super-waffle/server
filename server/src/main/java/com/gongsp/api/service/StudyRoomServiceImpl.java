@@ -1,15 +1,16 @@
 package com.gongsp.api.service;
 
+import com.gongsp.api.request.study.StudyCreatePostReq;
 import com.gongsp.api.request.study.StudyParameter;
 import com.gongsp.api.response.study.StudyRes;
-import com.gongsp.db.entity.StudyDay;
-import com.gongsp.db.entity.StudyRoom;
+import com.gongsp.db.entity.*;
 import com.gongsp.db.repository.StudyMemberRepository;
 import com.gongsp.db.repository.StudyRoomRepository;
 import io.openvidu.java.client.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -166,5 +167,23 @@ public class StudyRoomServiceImpl implements StudyRoomService {
     @Override
     public Optional<StudyRoom> getStudyDetail(Integer studySeq) {
         return studyRoomRepository.findStudyByStudySeq(studySeq);
+    }
+
+    @Override
+    public StudyRoom createStudy(StudyCreatePostReq studyCreatePostReq, Integer userSeq) {
+        StudyRoom studyRoom = new StudyRoom();
+        studyRoom.setHost(new User(userSeq));
+        studyRoom.setCategory(new Category(studyCreatePostReq.getCategorySeq()));
+        studyRoom.setStudyTitle(studyCreatePostReq.getStudyTitle());
+        studyRoom.setStudyShortDesc(studyCreatePostReq.getStudyShortDesc());
+        studyRoom.setStudyDesc(studyCreatePostReq.getStudyDesc());
+        studyRoom.setStudyCapacity(1);
+        studyRoom.setStudyUrl(studyCreatePostReq.getStudyTitle()+userSeq);
+        studyRoom.setStudyLate(10);
+        studyRoom.setStudyDateStart(null);
+        studyRoom.setStudyDateEnd(null);
+        studyRoom.setStudyRecruitStart(LocalDate.now());
+        studyRoom.setStudyRecruitEnd(studyCreatePostReq.getStudyRecruitEnd());
+        return studyRoomRepository.save(studyRoom);
     }
 }

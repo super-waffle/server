@@ -35,4 +35,11 @@ public class User {
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String userPassword;
+
+    public User(Integer userSeq) {
+        this.userSeq = userSeq;
+    }
+
+    public User() {
+    }
 }

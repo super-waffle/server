@@ -3,6 +3,7 @@ package com.gongsp.db.entity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 @Setter
 @Getter
 @ToString
+@DynamicInsert
 @Table(name = "tb_study")
 public class StudyRoom {
 
