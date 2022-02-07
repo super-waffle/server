@@ -6,14 +6,13 @@ import com.gongsp.api.response.study.StudyDetailGetRes;
 import com.gongsp.api.response.study.StudyEnterPostRes;
 import com.gongsp.api.response.study.StudyListGetRes;
 import com.gongsp.api.response.study.StudyRes;
-import com.gongsp.api.service.LogTimeService;
-import com.gongsp.api.service.StudyHistoryService;
-import com.gongsp.api.service.StudyMemberService;
-import com.gongsp.api.service.StudyRoomService;
+import com.gongsp.api.service.*;
 import com.gongsp.common.model.response.BaseResponseBody;
+import com.gongsp.db.entity.Study;
 import com.gongsp.db.entity.StudyDay;
 import com.gongsp.db.entity.StudyRoom;
 import io.openvidu.java.client.OpenVidu;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,6 +44,8 @@ public class StudyController {
     LogTimeService logTimeService;
     @Autowired
     StudyHistoryService studyHistoryService;
+    @Autowired
+    StudyDayService studyDayService;
 
     public StudyController(@Value("${openvidu.secret}") String secret, @Value("${openvidu.url}") String openviduUrl) {
         this.SECRET = secret;
@@ -128,12 +130,14 @@ public class StudyController {
         if (!opStudyRoom.isPresent())
             return ResponseEntity.ok(BaseResponseBody.of(409, "Fail : Get study detail"));
         StudyRoom studyRoom = opStudyRoom.get();
-        StudyDay[] studyDays = studyRoomService.getStudyDay(studySeq);
-        if(studyDays == null)
+        Optional<StudyDay[]> opStudyDays = studyDayService.getStudyDay(studySeq);
+        if(!opStudyDays.isPresent())
             return ResponseEntity.ok(BaseResponseBody.of(409, "Fail : Get study days"));
-        return ResponseEntity.ok(StudyDetailGetRes.of(200, "Success : Get study detail", studyRoom, studyRoomService.getStudyMemberNum(studySeq), studyDays));
+        System.out.println(Arrays.toString(opStudyDays.get()));
+        return ResponseEntity.ok(StudyDetailGetRes.of(200, "Success : Get study detail", studyRoom, studyRoomService.getStudyMemberNum(studySeq), opStudyDays.get()));
     }
 
     // 스터디 게시물 작성 = 스터디룸 생성
+    
     // 스터디 신청
 }

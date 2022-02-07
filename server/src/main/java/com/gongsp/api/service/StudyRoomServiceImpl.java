@@ -167,9 +167,4 @@ public class StudyRoomServiceImpl implements StudyRoomService {
     public Optional<StudyRoom> getStudyDetail(Integer studySeq) {
         return studyRoomRepository.findStudyByStudySeq(studySeq);
     }
-
-    @Override
-    public StudyDay[] getStudyDay(Integer studySeq) {
-        return new StudyDay[0];
-    }
 }

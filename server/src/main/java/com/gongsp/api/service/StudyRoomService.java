@@ -16,5 +16,4 @@ public interface StudyRoomService {
     int getStudyMemberNum(Integer studySeq);
     int getStudyCnt(StudyParameter studyParameter);
     Optional<StudyRoom> getStudyDetail(Integer studySeq);
-    StudyDay[] getStudyDay(Integer studySeq);
 }

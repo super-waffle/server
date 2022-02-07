@@ -2,6 +2,7 @@ package com.gongsp.db.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.Column;
@@ -13,6 +14,7 @@ import java.time.LocalTime;
 @Entity
 @Getter
 @Setter
+@ToString
 @DynamicInsert
 @Table(name = "tb_day_study")
 public class StudyDay {

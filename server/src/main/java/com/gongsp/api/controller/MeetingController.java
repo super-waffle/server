@@ -187,15 +187,15 @@ public class MeetingController {
         if (!meetingOnairService.existsOnair(userSeq, meetingSeq))
             return ResponseEntity.ok(BaseResponseBody.of(408, "Fail : Remove user. User already deleted."));
 
-        // session, connection 해제
-        String result = meetingService.removeUser(sessionName, token, meetingSeq);
-        if ("Error".equals(result)) return ResponseEntity.ok(BaseResponseBody.of(409, "Fail : Remove user"));
-
         // tb_meeting_onair 칼럼 삭제
         meetingOnairService.deleteOnair(userSeq, meetingSeq);
 
         // tb_meeting 의 meetingHeadcount --
         meetingService.updateMeeting(meetingSeq, -1);
+
+        // session, connection 해제
+        String result = meetingService.removeUser(sessionName, token, meetingSeq);
+        if ("Error".equals(result)) return ResponseEntity.ok(BaseResponseBody.of(409, "Fail : Remove user"));
 
         // 시간 넘어온거 누적
         logTimeService.updateMeetingLogTime(userSeq, meetingExitDeleteReq.getLogMeeting(), meetingExitDeleteReq.getLogStartTime());

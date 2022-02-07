@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,11 +22,11 @@ public class StudyDetailGetRes extends BaseResponseBody {
     private LocalDate studyRecruitEnd;
     private List<Day> day;
 
-    static class Day {
-        private Integer dayNumber;
-        private LocalTime timeStart;
-        private LocalTime timeEnd;
-    }
+//    static class Day {
+//        private Integer dayNumber;
+//        private LocalTime timeStart;
+//        private LocalTime timeEnd;
+//    }
 
     public static StudyDetailGetRes of(Integer statusCode, String message, StudyRoom studyRoom, Integer studyHeadcount, StudyDay[] studyDays) {
         StudyDetailGetRes res = new StudyDetailGetRes();
@@ -40,14 +39,15 @@ public class StudyDetailGetRes extends BaseResponseBody {
         res.studyDesc = studyRoom.getStudyDesc();
         res.studyHeadcount = studyHeadcount;
         res.studyRecruitEnd = studyRoom.getStudyRecruitEnd();
-        res.day = new ArrayList<>();
+        List<Day> dayList = new ArrayList<>();
         for (StudyDay studyDay : studyDays) {
             Day day = new Day();
-            day.dayNumber = studyDay.getDayNumber();
-            day.timeStart = studyDay.getStartTime();
-            day.timeEnd = studyDay.getEndTime();
-            res.day.add(day);
+            day.setDayNumber(studyDay.getDayNumber());
+            day.setTimeStart(studyDay.getStartTime());
+            day.setTimeEnd(studyDay.getEndTime());
+            dayList.add(day);
         }
+        res.day = dayList;
         return res;
     }
 }
