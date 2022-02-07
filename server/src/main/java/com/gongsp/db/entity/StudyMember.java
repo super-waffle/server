@@ -19,7 +19,7 @@ public class StudyMember {
     private Integer userSeq;
     @JsonIgnore
     private Integer studySeq;
-    @Column(updatable = false)
+    @Column(updatable = false, insertable = false)
     private String userNickname;
     @Column(name = "member_eject_count")
     private Integer ejectCount;
