@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface BookmarkService {
     List<Meeting> findAllByUserSeq(Integer userSeq);
+    Boolean addMeetingToBookmark(Integer userSeq, Integer meetingSeq);
 }
