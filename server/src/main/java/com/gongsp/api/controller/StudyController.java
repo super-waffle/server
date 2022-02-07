@@ -11,6 +11,7 @@ import com.gongsp.api.response.study.StudyRes;
 import com.gongsp.api.service.*;
 import com.gongsp.common.model.response.BaseResponseBody;
 import com.gongsp.db.entity.Study;
+import com.gongsp.db.entity.StudyApplyId;
 import com.gongsp.db.entity.StudyDay;
 import com.gongsp.db.entity.StudyRoom;
 import io.openvidu.java.client.OpenVidu;
@@ -48,6 +49,8 @@ public class StudyController {
     StudyHistoryService studyHistoryService;
     @Autowired
     StudyDayService studyDayService;
+    @Autowired
+    StudyApplyService studyApplyService;
 
     public StudyController(@Value("${openvidu.secret}") String secret, @Value("${openvidu.url}") String openviduUrl) {
         this.SECRET = secret;
@@ -154,8 +157,9 @@ public class StudyController {
     @PostMapping("{study-seq}/application")
     public ResponseEntity<? extends BaseResponseBody> applyStudy(@PathVariable("study-seq") Integer studySeq, Authentication authentication){
         Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
-
-
+        if(studyApplyService.existsStudyById(new StudyApplyId(userSeq, studySeq)))
+            return ResponseEntity.ok(BaseResponseBody.of(409, "Fail : Already applied"));
+        studyApplyService.createApplicant(new StudyApplyId(userSeq, studySeq));
         return ResponseEntity.ok(BaseResponseBody.of(200, "Success : Apply study"));
     }
 }
