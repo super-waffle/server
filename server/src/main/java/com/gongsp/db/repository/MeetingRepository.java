@@ -1,12 +1,10 @@
 package com.gongsp.db.repository;
 
 import com.gongsp.db.entity.Meeting;
-import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.awt.print.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,4 +46,9 @@ public interface MeetingRepository extends JpaRepository<Meeting, Integer> {
             "order by meeting_seq desc limit :start, :spp ")
     List<Meeting> searchByKeyAndCategory(@Param("key") String key, @Param("categorySeq") Integer categorySeq, @Param("start") Integer start, @Param("spp") Integer spp, @Param("userSeq") Integer userSeq);
     boolean existsMeetingByHostSeq(Integer userSeq);
+
+    // 즐겨찾기한 자유열람실 목록 조회
+    @Query(nativeQuery = true, value = "(SELECT * FROM tb_meeting WHERE meeting_seq in " +
+            "(SELECT meeting_seq FROM tb_bookmark WHERE user_seq = :userSeq)) ")
+    List<Meeting> findAllByUser(@Param("userSeq") Integer userSeq);
 }
