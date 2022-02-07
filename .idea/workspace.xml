@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="407e7d55-30f4-404b-bf21-0f647068b2e1" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/server/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/server/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/java/com/gongsp/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/com/gongsp/config/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/java/com/gongsp/api/controller/MeetingController.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/com/gongsp/api/controller/MeetingController.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,6 +37,7 @@
       <workItem from="1643796077401" duration="76000" />
       <workItem from="1643853803529" duration="52000" />
       <workItem from="1643853936547" duration="15000" />
+      <workItem from="1644121625069" duration="463000" />
     </task>
     <servers />
   </component>
