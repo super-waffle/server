@@ -1,2 +1,9 @@
-package com.gongsp.api.service;public interface BookmarkService {
+package com.gongsp.api.service;
+
+import com.gongsp.db.entity.Meeting;
+
+import java.util.List;
+
+public interface BookmarkService {
+    List<Meeting> findAllByUserSeq(Integer userSeq);
 }
