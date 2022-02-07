@@ -12,12 +12,15 @@ import java.util.List;
 public class NoticeListGetRes extends BaseResponseBody {
     private List<Notice> noticeList;
     private Integer unreadNoticeCount;
+    private Integer totalPagesCount;
 
-    public static com.gongsp.api.response.notice.NoticeListGetRes of(Integer statusCode, String message, List<Notice> noticeList, Integer unreadNoticeCount) {
+    public static com.gongsp.api.response.notice.NoticeListGetRes
+    of(Integer statusCode, String message, List<Notice> noticeList, Integer unreadNoticeCount, Integer totalPagesCount) {
         com.gongsp.api.response.notice.NoticeListGetRes res = new com.gongsp.api.response.notice.NoticeListGetRes();
         res.setStatusCode(statusCode);
         res.setMessage(message);
         res.setNoticeList(noticeList);
+        res.setTotalPagesCount(totalPagesCount);
         res.setUnreadNoticeCount(unreadNoticeCount);
         return res;
     }

@@ -69,5 +69,11 @@ public class TodoServiceImpl implements TodoService{
         return false;
     }
 
+    // 완료한 투두 개수 조회
+    @Override
+    public Integer getCompletedTodoCount(Integer userSeq, LocalDate date) {
+        return todoRepository.findAllByUserSeqAndTodoDateAndTodoCompletedIsTrue(userSeq, date).size();
+    }
+
 
 }

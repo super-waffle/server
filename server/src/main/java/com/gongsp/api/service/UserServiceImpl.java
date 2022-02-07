@@ -10,9 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service("userService")
 @RequiredArgsConstructor
@@ -30,6 +28,9 @@ public class UserServiceImpl implements UserService{
     private StudyMemberRepository studyMemberRepository;
     @Autowired
     private StudyDayRepository studyDayRepository;
+
+    @Autowired
+    private ApplicantRepository applicantRepository;
 
     @Override
     public Optional<User> getUserByUserSeq(Integer userSeq) {
@@ -159,5 +160,51 @@ public class UserServiceImpl implements UserService{
     @Override
     public void quitStudy(int userSeq, Study study) {
         studyMemberRepository.deleteByUserSeqAndStudySeq(userSeq, study.getStudySeq());
+    }
+
+    @Override
+    public void endStudyRecruit(Study study) {
+        study.setRecruitEndDate(LocalDate.now());
+        studyRepository.save(study);
+    }
+
+    @Override
+    public Optional<Collection<User>> getApplicantByStudySeq(int studySeq) {
+        Optional<Collection<Applicant>> applicants = applicantRepository.findAllByStudySeq(studySeq);
+        if (!applicants.isPresent())
+            return Optional.empty();
+        Collection<User> users = new ArrayList<>();
+
+        for (Applicant applicant : applicants.get()) {
+            users.add(applicant.getApplicant());
+        }
+
+        return Optional.of(users);
+    }
+
+    @Override
+    public void startStudy(int userSeq, Study study) {
+        StringBuilder sessionURLBuilder = new StringBuilder();
+        sessionURLBuilder.append("Study").append(study.getStudySeq()).append("hst").append(userSeq).append("linkURL");
+        study.setUrl(sessionURLBuilder.toString());
+        study.setStartDate(LocalDate.now());
+        studyRepository.save(study);
+    }
+
+    @Override
+    @Transactional
+    public void grantApplicant(int studySeq, int applicantSeq) {
+        studyMemberRepository.insertNewMember(studySeq, applicantSeq);
+        applicantRepository.deleteApplicant(studySeq, applicantSeq);
+    }
+
+    @Override
+    public void rejectApplicant(int studySeq, int applicantSeq) {
+        applicantRepository.deleteApplicant(studySeq, applicantSeq);
+    }
+
+    @Override
+    public void kickMember(int studySeq, int kickSeq) {
+        studyMemberRepository.kickMember(studySeq, kickSeq);
     }
 }

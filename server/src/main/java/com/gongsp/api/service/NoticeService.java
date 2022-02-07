@@ -9,4 +9,5 @@ public interface NoticeService {
     List<Notice> findByUserSeq(Integer userSeq, Integer page, Integer size);
     Boolean toggleNotice(Integer userSeq, Integer noticeSeq);
     Integer getUnreadNotice(Integer userSeq);
+    Integer getTotalPagesCount(Integer userSeq, Integer page, Integer size);
 }

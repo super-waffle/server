@@ -11,12 +11,17 @@ import java.util.List;
 @Setter
 public class TodoListGetRes extends BaseResponseBody {
     private List<Todo> todoList;
+    private Integer totalTodoCount;
+    private Integer completedTodoCount;
 
-    public static com.gongsp.api.response.todo.TodoListGetRes of(Integer statusCode, String message, List<Todo> todoList) {
+    public static com.gongsp.api.response.todo.TodoListGetRes
+    of (Integer statusCode, String message, List<Todo> todoList, Integer totalTodoCount, Integer completedTodoCount) {
         com.gongsp.api.response.todo.TodoListGetRes res = new com.gongsp.api.response.todo.TodoListGetRes();
         res.setStatusCode(statusCode);
         res.setMessage(message);
         res.setTodoList(todoList);
+        res.setTotalTodoCount(totalTodoCount);
+        res.setCompletedTodoCount(completedTodoCount);
         return res;
     }
 }
