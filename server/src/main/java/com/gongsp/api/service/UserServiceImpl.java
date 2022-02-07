@@ -178,4 +178,16 @@ public class UserServiceImpl implements UserService{
         study.setStartDate(LocalDate.now());
         studyRepository.save(study);
     }
+
+    @Override
+    @Transactional
+    public void grantApplicant(int studySeq, int applicantSeq) {
+        studyMemberRepository.insertNewMember(studySeq, applicantSeq);
+        applicantRepository.deleteApplicant(studySeq, applicantSeq);
+    }
+
+    @Override
+    public void rejectApplicant(int studySeq, int applicantSeq) {
+        applicantRepository.deleteApplicant(studySeq, applicantSeq);
+    }
 }

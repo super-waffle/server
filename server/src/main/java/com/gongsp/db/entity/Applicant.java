@@ -20,6 +20,6 @@ public class Applicant {
     private Integer userSeq;
 
     @OneToOne
-    @JoinColumn(name = "user_seq")
+    @JoinColumn(name = "user_seq", updatable = false, insertable = false)
     private User applicant;
 }

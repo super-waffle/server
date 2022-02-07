@@ -25,4 +25,6 @@ public interface UserService {
     void endStudyRecruit(Study study);
     Optional<Collection<User>> getApplicantByStudySeq(int studySeq);
     void startStudy(int userSeq, Study study);
+    void grantApplicant(int studySeq, int applicantSeq);
+    void rejectApplicant(int studySeq, int applicantSeq);
 }

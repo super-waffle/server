@@ -220,4 +220,48 @@ public class UserController {
             return ResponseEntity.ok(ApplicantsListGetRes.of(204,"No List Exist", null));
         return ResponseEntity.ok(ApplicantsListGetRes.of(200,"Success", applicants.get()));
     }
+
+    // API U-013
+    @PostMapping("/studies/{studySeq}/applicants/{applicantSeq}")
+    public ResponseEntity<BaseResponseBody> grantApplicant(Authentication authentication,
+                                                           @PathVariable(value = "studySeq") int studySeq,
+                                                           @PathVariable(value = "applicantSeq") int applicantSeq) {
+        int userSeq = getUserSeqFromAuthentication(authentication);
+
+        Optional<Study> studyInfo = userService.getStudyInfo(studySeq);
+
+        if (!studyInfo.isPresent())
+            return ResponseEntity.ok(BaseResponseBody.of(404,"No Such Study"));
+
+        Study study = studyInfo.get();
+
+        if (study.getHostSeq() != userSeq)
+            return ResponseEntity.ok(BaseResponseBody.of(409,"Not Authorized : You Are Not The Host"));
+
+        userService.grantApplicant(studySeq, applicantSeq);
+
+        return ResponseEntity.ok(BaseResponseBody.of(200,"Success"));
+    }
+
+    // API U-014
+    @DeleteMapping("/studies/{studySeq}/applicants/{applicantSeq}")
+    public ResponseEntity<BaseResponseBody> rejectApplicant(Authentication authentication,
+                                                           @PathVariable(value = "studySeq") int studySeq,
+                                                           @PathVariable(value = "applicantSeq") int applicantSeq) {
+        int userSeq = getUserSeqFromAuthentication(authentication);
+
+        Optional<Study> studyInfo = userService.getStudyInfo(studySeq);
+
+        if (!studyInfo.isPresent())
+            return ResponseEntity.ok(BaseResponseBody.of(404,"No Such Study"));
+
+        Study study = studyInfo.get();
+
+        if (study.getHostSeq() != userSeq)
+            return ResponseEntity.ok(BaseResponseBody.of(409,"Not Authorized : You Are Not The Host"));
+
+        userService.rejectApplicant(studySeq, applicantSeq);
+
+        return ResponseEntity.ok(BaseResponseBody.of(200,"Success"));
+    }
 }

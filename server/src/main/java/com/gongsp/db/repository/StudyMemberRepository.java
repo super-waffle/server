@@ -22,4 +22,9 @@ public interface StudyMemberRepository extends JpaRepository<StudyMember, Intege
     @Query(value = "delete from tb_member_study where user_seq = :userSeq and study_seq = :studySeq ;",
             nativeQuery = true)
     void deleteByUserSeqAndStudySeq(@Param(value = "userSeq") int userSeq, @Param(value = "studySeq") int studySeq);
+
+    @Modifying
+    @Transactional
+    @Query(value = "insert into tb_member_study values (:applicantSeq, :studySeq, 0, false)", nativeQuery = true)
+    void insertNewMember(@Param(value = "studySeq")int studySeq, @Param(value = "applicantSeq") int applicantSeq);
 }
