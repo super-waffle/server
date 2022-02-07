@@ -251,11 +251,11 @@ public class MeetingServiceImpl implements MeetingService {
     @Override
     public String removeUser(String sessionName, String token, Integer meetingSeq) {
         // If the session exists
-        System.out.println(sessionName);
         if (this.mapSessions.get(sessionName) != null && this.mapSessionNamesTokens.get(sessionName) != null) {
             // If the token exists
             if (this.mapSessionNamesTokens.get(sessionName).remove(token) != null) {
                 // User left the session
+                System.out.println("세션 종료여부: " + this.mapSessionNamesTokens.get(sessionName).isEmpty());
                 if (this.mapSessionNamesTokens.get(sessionName).isEmpty()) {
                     // Last user left: session must be removed
                     this.mapSessions.remove(sessionName);
