@@ -10,10 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service("userService")
 @RequiredArgsConstructor
@@ -171,5 +168,14 @@ public class UserServiceImpl implements UserService{
         }
 
         return Optional.of(users);
+    }
+
+    @Override
+    public void startStudy(int userSeq, Study study) {
+        StringBuilder sessionURLBuilder = new StringBuilder();
+        sessionURLBuilder.append("Study").append(study.getStudySeq()).append("hst").append(userSeq).append("linkURL");
+        study.setUrl(sessionURLBuilder.toString());
+        study.setStartDate(LocalDate.now());
+        studyRepository.save(study);
     }
 }

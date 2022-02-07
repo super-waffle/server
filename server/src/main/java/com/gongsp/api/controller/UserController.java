@@ -160,6 +160,24 @@ public class UserController {
     }
 
     // API U-010
+    @PatchMapping("studies/{studySeq}/start")
+    public ResponseEntity<BaseResponseBody> startStudy(Authentication authentication, @PathVariable(value = "studySeq") int studySeq) {
+        int userSeq = getUserSeqFromAuthentication(authentication);
+
+        Optional<Study> studyInfo = userService.getStudyInfo(studySeq);
+
+        if (!studyInfo.isPresent())
+            return ResponseEntity.ok(BaseResponseBody.of(404,"No Such Study"));
+
+        Study study = studyInfo.get();
+
+        if (study.getHostSeq() != userSeq)
+            return ResponseEntity.ok(BaseResponseBody.of(409,"Not Authorized : You Are Not The Host"));
+
+        userService.startStudy(userSeq, study);
+
+        return ResponseEntity.ok(BaseResponseBody.of(200,"Success"));
+    }
 
     // API U-011
     @PatchMapping("studies/{studySeq}/recruit-end")
