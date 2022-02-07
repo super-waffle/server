@@ -151,4 +151,11 @@ public class StudyController {
     }
 
     // 스터디 신청
+    @PostMapping("{study-seq}/application")
+    public ResponseEntity<? extends BaseResponseBody> applyStudy(@PathVariable("study-seq") Integer studySeq, Authentication authentication){
+        Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
+
+
+        return ResponseEntity.ok(BaseResponseBody.of(200, "Success : Apply study"));
+    }
 }
