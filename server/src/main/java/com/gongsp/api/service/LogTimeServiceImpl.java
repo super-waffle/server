@@ -39,7 +39,7 @@ public class LogTimeServiceImpl implements LogTimeService {
         if(!opLog.isPresent()){
             System.out.println("Error : LogTime 기록이 안된 사용자");
             createLogTime(userSeq);
-            return;
+            opLog = logTimeRepository.findTop1ByUserSeqOrderByLogDateDesc(userSeq);
         }
 
         LogTime logTime = opLog.get();
@@ -51,33 +51,40 @@ public class LogTimeServiceImpl implements LogTimeService {
             logTime.setLogEndTime(curTime);
             logTimeRepository.save(logTime);
         } else {
+            // 공부기록이 오늘보다 작으면 오늘에 넣고
+            // 공부기록이 오늘보다 크면 오늘에 넣고 남은걸 어제로 넣음 -> 더 남으면 더 이전날로
             int todayMin = curTime.getHour() * 60 + curTime.getMinute();
-            int firstDay = (24-logStart.getHour())*60 - logStart.getMinute() - 1;
-            int beforeToday = logMeeting - todayMin - firstDay;
-            LocalDate localDate = logTime.getLogDate();
-            // 첫날
-            logTime.setLogMeeting((short)(logTime.getLogMeeting() + firstDay));
-            logTime.setLogEndTime(LocalTime.of(23, 59, 59));
-            logTimeRepository.save(logTime);
-            // 24시간 = 60*24 = 1440
-            while(beforeToday >= 1440){
-                LogTime log = new LogTime();
-                log.setUserSeq(userSeq);
-                log.setLogDate(localDate.plusDays(1));
-                log.setLogMeeting((short)1440);
-                log.setLogStartTime(LocalTime.of(0, 0, 0));
-                log.setLogEndTime(LocalTime.of(23, 59, 59));
-                logTimeRepository.save(log);
-                beforeToday -= 1440;
-            }
-            //오늘
             LogTime log = new LogTime();
             log.setUserSeq(userSeq);
             log.setLogDate(curDate);
-            log.setLogMeeting((short)todayMin);
             log.setLogStartTime(LocalTime.of(0, 0, 0));
             log.setLogEndTime(curTime);
-            logTimeRepository.save(log);
+            if(todayMin > logMeeting){
+                log.setLogMeeting(logMeeting.shortValue());
+                logTimeRepository.save(log);
+            }else{
+                log.setLogMeeting((short)todayMin);
+                logTimeRepository.save(log);
+
+                logMeeting -= todayMin;
+                while(logMeeting >= 1440){ //하루 넘어갔음
+                    log = new LogTime();
+                    log.setUserSeq(userSeq);
+                    log.setLogDate(curDate.plusDays(-1));
+                    log.setLogMeeting((short)1440);
+                    log.setLogStartTime(LocalTime.of(0, 0, 0));
+                    log.setLogEndTime(LocalTime.of(23, 59, 59));
+                    logTimeRepository.save(log);
+                    logMeeting -= 1440;
+                }
+                log = new LogTime();
+                log.setUserSeq(userSeq);
+                log.setLogDate(curDate.plusDays(-1));
+                log.setLogMeeting(logMeeting.shortValue());
+                log.setLogStartTime(logStart);
+                log.setLogEndTime(LocalTime.of(23, 59, 59));
+                logTimeRepository.save(log);
+            }
         }
     }
 }

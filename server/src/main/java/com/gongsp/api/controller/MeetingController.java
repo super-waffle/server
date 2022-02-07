@@ -121,9 +121,9 @@ public class MeetingController {
         if (!opMeeting.isPresent())
             return ResponseEntity.ok(MeetingEnterPostRes.of(404, "Fail : Not valid meetingSeq"));
 
-        // 이미 방에 들어가 있는경우 입실 불가능 -> 이거 처리 다시해야될거같긴 한데..
-        if (meetingOnairService.existsOnair(userSeq, meetingSeq))
-            return ResponseEntity.ok(MeetingEnterPostRes.of(406, "Fail : Already exists in meeting room"));
+//        // 이미 방에 들어가 있는경우 입실 불가능 -> 이거 처리 다시해야될거같긴 한데..
+//        if (meetingOnairService.existsOnair(userSeq, meetingSeq))
+//            return ResponseEntity.ok(MeetingEnterPostRes.of(406, "Fail : Already exists in meeting room"));
 
         // 블랙리스트인 경우 입실 못함
         // 애초에 목록에서 안보이도록 제외시키긴 했는데 혹시 url로 들어가려는 시도를 할 수 있으니?
@@ -146,17 +146,21 @@ public class MeetingController {
         String token = meetingService.getToken(openVidu, userSeq, meeting);
 //        System.out.println("토큰!!" + token);
 
-        //tb_meeting_onair 칼럼추가
-        meetingOnairService.createOnair(userSeq, meetingSeq, isHost);
+        // 이런식으로 처리하면 안닫히는 세션들이 많이 생길거같긴한데..... 프론트에서 어떻게 처리되는지 몰라서..
+        if (!meetingOnairService.existsOnair(userSeq, meetingSeq)){
+            //tb_meeting_onair 칼럼추가
+            meetingOnairService.createOnair(userSeq, meetingSeq, isHost);
 
-        //tb_meeting 의 meetingHeadcount ++
-        meetingService.updateMeeting(meetingSeq, 1);
+            //tb_meeting 의 meetingHeadcount ++
+            meetingService.updateMeeting(meetingSeq, 1);
 
-        //당일 최초로 공부를 시작한 사용자
-        if (!logTimeService.existsLog(userSeq, LocalDate.now())) {
+            //당일 최초로 공부를 시작한 사용자
+            if (!logTimeService.existsLog(userSeq, LocalDate.now())) {
 //            System.out.println("공부기록삽입");
-            logTimeService.createLogTime(userSeq);
+                logTimeService.createLogTime(userSeq);
+            }
         }
+
 
         if (token.equals("InternalError"))
             return ResponseEntity.ok(MeetingEnterPostRes.of(409, "Fail : OpenViduJavaClientException", null));
@@ -164,7 +168,7 @@ public class MeetingController {
         if (token.equals("GenError"))
             return ResponseEntity.ok(MeetingEnterPostRes.of(409, "Fail : Generate meeting room", null));
 
-        return ResponseEntity.ok(MeetingEnterPostRes.of(200, "Success : Entry meeting room", token, meeting, isHost));
+        return ResponseEntity.ok(MeetingEnterPostRes.of(200, "Success : Enter meeting room", token, meeting, isHost));
     }
 
     // 자유열람실 퇴실

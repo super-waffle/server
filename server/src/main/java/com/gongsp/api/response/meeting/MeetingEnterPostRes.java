@@ -42,6 +42,8 @@ public class MeetingEnterPostRes extends BaseResponseBody {
         res.setMeetingDesc(meeting.getMeetingDesc());
         res.setMeetingCapacity(meeting.getMeetingCapacity());
         res.setMeetingHeadcount(meeting.getMeetingHeadcount());
+        res.setMeetingDate(LocalDate.now());
+        res.setMeetingStartTime(LocalTime.now());
         return res;
     }
 }
