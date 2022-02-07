@@ -32,15 +32,15 @@ public class StudyRoomServiceImpl implements StudyRoomService {
 
 
     @Override
-    public Optional<StudyRoom> getStudy(Integer studySeq) {
+    public Optional<StudyRoom> getStudyRoom(Integer studySeq) {
         return studyRoomRepository.findStudyByStudySeq(studySeq);
     }
 
     @Override
-    public String getToken(OpenVidu openVidu, Integer userSeq, StudyRoom study) {
+    public String getToken(OpenVidu openVidu, Integer userSeq, StudyRoom studyRoom) {
 
         // sessionName = studyUrl
-        String sessionName = study.getStudyUrl();
+        String sessionName = studyRoom.getStudyUrl();
         OpenViduRole role = OpenViduRole.PUBLISHER;
         String serverData = "{\"serverData\": \"" + userSeq + "\"}";
 

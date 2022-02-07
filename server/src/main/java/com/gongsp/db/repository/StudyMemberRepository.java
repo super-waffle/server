@@ -36,4 +36,11 @@ public interface StudyMemberRepository extends JpaRepository<StudyMember, Intege
     @Query(value = "delete from tb_member_study where study_seq = :studySeq and user_seq = :userSeq",
             nativeQuery = true)
     void kickMember(@Param(value = "studySeq")int studySeq, @Param(value = "userSeq") int userSeq);
+
+    @Query(value = "select *\n" +
+            "from tb_user u left outer join tb_member_study sm\n" +
+            "using (user_seq)\n" +
+            "where user_seq = :userSeq and study_seq = :studySeq ",
+            nativeQuery = true)
+    Optional<StudyMember> findStudyMemberByUserSeqAndStudySeq(@Param(value = "userSeq")int userSeq, @Param(value = "studySeq")int studySeq);
 }

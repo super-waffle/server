@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface StudyRoomService {
-    Optional<StudyRoom> getStudy(Integer studySeq);
-    String getToken(OpenVidu openVidu, Integer userSeq, StudyRoom study);
+    Optional<StudyRoom> getStudyRoom(Integer studySeq);
+    String getToken(OpenVidu openVidu, Integer userSeq, StudyRoom studyRoom);
     List<StudyRes> getStudyList(StudyParameter studyParameter, int userSeq);
     int getStudyMemberNum(Integer studySeq);
     int getStudyCnt(StudyParameter studyParameter);
