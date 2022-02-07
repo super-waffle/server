@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +31,9 @@ public class UserServiceImpl implements UserService{
     private StudyMemberRepository studyMemberRepository;
     @Autowired
     private StudyDayRepository studyDayRepository;
+
+    @Autowired
+    private ApplicantRepository applicantRepository;
 
     @Override
     public Optional<User> getUserByUserSeq(Integer userSeq) {
@@ -153,5 +157,19 @@ public class UserServiceImpl implements UserService{
     public void endStudyRecruit(Study study) {
         study.setRecruitEndDate(LocalDate.now());
         studyRepository.save(study);
+    }
+
+    @Override
+    public Optional<Collection<User>> getApplicantByStudySeq(int studySeq) {
+        Optional<Collection<Applicant>> applicants = applicantRepository.findAllByStudySeq(studySeq);
+        if (!applicants.isPresent())
+            return Optional.empty();
+        Collection<User> users = new ArrayList<>();
+
+        for (Applicant applicant : applicants.get()) {
+            users.add(applicant.getApplicant());
+        }
+
+        return Optional.of(users);
     }
 }
