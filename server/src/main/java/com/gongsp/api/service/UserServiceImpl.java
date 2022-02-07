@@ -190,4 +190,9 @@ public class UserServiceImpl implements UserService{
     public void rejectApplicant(int studySeq, int applicantSeq) {
         applicantRepository.deleteApplicant(studySeq, applicantSeq);
     }
+
+    @Override
+    public void kickMember(int studySeq, int kickSeq) {
+        studyMemberRepository.kickMember(studySeq, kickSeq);
+    }
 }

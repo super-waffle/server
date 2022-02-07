@@ -264,4 +264,26 @@ public class UserController {
 
         return ResponseEntity.ok(BaseResponseBody.of(200,"Success"));
     }
+
+    // API U-015
+    @DeleteMapping("/studies/{studySeq}/kick/{kickSeq}")
+    public ResponseEntity<BaseResponseBody> kickMember(Authentication authentication,
+                                                            @PathVariable(value = "studySeq") int studySeq,
+                                                            @PathVariable(value = "kickSeq") int kickSeq) {
+        int userSeq = getUserSeqFromAuthentication(authentication);
+
+        Optional<Study> studyInfo = userService.getStudyInfo(studySeq);
+
+        if (!studyInfo.isPresent())
+            return ResponseEntity.ok(BaseResponseBody.of(404,"No Such Study"));
+
+        Study study = studyInfo.get();
+
+        if (study.getHostSeq() != userSeq)
+            return ResponseEntity.ok(BaseResponseBody.of(409,"Not Authorized : You Are Not The Host"));
+
+        userService.kickMember(studySeq, kickSeq);
+
+        return ResponseEntity.ok(BaseResponseBody.of(200,"Success"));
+    }
 }

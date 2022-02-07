@@ -27,4 +27,5 @@ public interface UserService {
     void startStudy(int userSeq, Study study);
     void grantApplicant(int studySeq, int applicantSeq);
     void rejectApplicant(int studySeq, int applicantSeq);
+    void kickMember(int studySeq, int kickSeq);
 }
