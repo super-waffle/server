@@ -67,10 +67,18 @@ public class TodoController {
    // 투두리스트 조회
     @GetMapping()
     public ResponseEntity<TodoListGetRes> todoList(Authentication authentication, @RequestParam String date) {
-        List<Todo> todoList = todoService.getTodoList(Integer.parseInt((String) authentication.getPrincipal()), LocalDate.parse(date, DateTimeFormatter.ISO_DATE));
+        Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
+        LocalDate todoDate = LocalDate.parse(date, DateTimeFormatter.ISO_DATE);
+        // 투두 목록
+        List<Todo> todoList = todoService.getTodoList(userSeq, todoDate);
+        // 전체 항목 개수
+        Integer totalTodoCount = todoList.size();
+        // 완료된 항목 개수
+        Integer completedTodoCount = todoService.getCompletedTodoCount(userSeq, todoDate);
+
         if (todoList.isEmpty()) {
-            return ResponseEntity.ok(TodoListGetRes.of(204, "No Content", null));
+            return ResponseEntity.ok(TodoListGetRes.of(204, "No Content", null, 0, 0));
         }
-        return ResponseEntity.ok(TodoListGetRes.of(200, "Success", todoList));
+        return ResponseEntity.ok(TodoListGetRes.of(200, "Success", todoList, totalTodoCount, completedTodoCount));
     }
 }

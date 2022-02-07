@@ -13,4 +13,5 @@ public interface TodoService {
     List<Todo> getTodoList(Integer userSeq, LocalDate date);
     Boolean deleteTodo(Integer userSeq, Integer todoSeq);
     Boolean updateTodo(Integer userSeq, Integer todoSeq, TodoUpdatePatchReq updateInfo);
+    Integer getCompletedTodoCount(Integer userSeq, LocalDate date);
 }
