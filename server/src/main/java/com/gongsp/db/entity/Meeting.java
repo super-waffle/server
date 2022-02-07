@@ -1,5 +1,6 @@
 package com.gongsp.db.entity;
 
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.DynamicInsert;
@@ -16,9 +17,10 @@ public class Meeting {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer meetingSeq;
     private Integer hostSeq;
-//    private Integer categorySeq;
+    @Ignore
+    private Integer categorySeq;
     @OneToOne
-    @JoinColumn(name = "categorySeq")
+    @JoinColumn(name = "categorySeq", updatable = false, insertable = false)
     private Category category;
     private String meetingTitle;
     private String meetingDesc;

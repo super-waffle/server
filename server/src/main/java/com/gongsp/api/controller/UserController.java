@@ -1,9 +1,11 @@
 package com.gongsp.api.controller;
 
+import com.gongsp.api.request.user.UserMeetingPatchReq;
 import com.gongsp.api.request.user.UserStudyUpdatePatchReq;
 import com.gongsp.api.request.user.UserTimeGoalPatchReq;
 import com.gongsp.api.response.study.StudyDetailInfoGetRes;
 import com.gongsp.api.response.user.ApplicantsListGetRes;
+import com.gongsp.api.response.user.MyMeetingGetRes;
 import com.gongsp.api.response.user.OtherUserProfileGetRes;
 import com.gongsp.api.response.user.UserProfileGetRes;
 import com.gongsp.api.response.user.my_study.MyStudyListGetRes;
@@ -11,10 +13,7 @@ import com.gongsp.api.response.user.my_study.StudyRes;
 import com.gongsp.api.service.UserService;
 import com.gongsp.common.auth.GongUserDetails;
 import com.gongsp.common.model.response.BaseResponseBody;
-import com.gongsp.db.entity.Applicant;
-import com.gongsp.db.entity.OtherUserProfile;
-import com.gongsp.db.entity.Study;
-import com.gongsp.db.entity.User;
+import com.gongsp.db.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -285,5 +284,39 @@ public class UserController {
         userService.kickMember(studySeq, kickSeq);
 
         return ResponseEntity.ok(BaseResponseBody.of(200,"Success"));
+    }
+
+    // API U-016
+    @GetMapping("/meetings")
+    public ResponseEntity<? extends BaseResponseBody> getMyMeetingRoom(Authentication authentication) {
+        int userSeq = getUserSeqFromAuthentication(authentication);
+
+        Optional<Meeting> meeting = userService.getMyMeetingRoomInfo(userSeq);
+
+        if (!meeting.isPresent())
+            return ResponseEntity.ok(MyMeetingGetRes.of(404, "No MeetingRoom Info", null));
+
+        return ResponseEntity.ok(MyMeetingGetRes.of(200, "Success", meeting.get()));
+    }
+
+    // API U-017
+    @PatchMapping("/meetings/{meetingSeq}")
+    public ResponseEntity<BaseResponseBody> patchMyMeetingRoom(Authentication authentication,
+                                                               @ModelAttribute UserMeetingPatchReq meetingPatchReq) {
+        int userSeq = getUserSeqFromAuthentication(authentication);
+
+        Optional<Meeting> meeting = userService.getMyMeetingRoomInfo(userSeq);
+
+        if (!meeting.isPresent())
+            return ResponseEntity.ok(BaseResponseBody.of(404, "No Such Meeting Info"));
+
+        Meeting meetingInfo = meeting.get();
+
+        if (meetingInfo.getHostSeq() != userSeq)
+            return ResponseEntity.ok(BaseResponseBody.of(409, "Not Authorized : You Are Not The Host"));
+
+        userService.updateMeetingInfo(meetingInfo, meetingPatchReq);
+
+        return  ResponseEntity.ok(BaseResponseBody.of(200,"Success"));
     }
 }

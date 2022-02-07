@@ -1,5 +1,6 @@
 package com.gongsp.api.service;
 
+import com.gongsp.api.request.user.UserMeetingPatchReq;
 import com.gongsp.api.request.user.UserStudyUpdatePatchReq;
 import com.gongsp.api.response.user.my_study.StudyRes;
 import com.gongsp.db.entity.*;
@@ -17,6 +18,9 @@ import java.util.*;
 public class UserServiceImpl implements UserService{
 
     @Autowired
+    private StorageService storageService;
+
+    @Autowired
     private UserRepository userRepository;
     @Autowired
     private OtherProfileRepository otherProfileRepository;
@@ -28,9 +32,11 @@ public class UserServiceImpl implements UserService{
     private StudyMemberRepository studyMemberRepository;
     @Autowired
     private StudyDayRepository studyDayRepository;
-
     @Autowired
     private ApplicantRepository applicantRepository;
+
+    @Autowired
+    private MeetingRepository meetingRepository;
 
     @Override
     public Optional<User> getUserByUserSeq(Integer userSeq) {
@@ -206,5 +212,25 @@ public class UserServiceImpl implements UserService{
     @Override
     public void kickMember(int studySeq, int kickSeq) {
         studyMemberRepository.kickMember(studySeq, kickSeq);
+    }
+
+    @Override
+    public Optional<Meeting> getMyMeetingRoomInfo(int userSeq) {
+        return meetingRepository.findTopByHostSeq(userSeq);
+    }
+
+    @Override
+    public void updateMeetingInfo(Meeting meetingInfo, UserMeetingPatchReq meetingPatchReq) {
+        storageService.delete(meetingInfo.getMeetingImg());
+        String imagePath = storageService.store(meetingPatchReq.getMeetingImg());
+
+        meetingInfo.setMeetingTitle(meetingPatchReq.getMeetingTitle());
+        meetingInfo.setMeetingDesc(meetingPatchReq.getMeetingDesc());
+        meetingInfo.setMeetingCamType(meetingPatchReq.getMeetingCamType());
+        meetingInfo.setMeetingMicType(meetingPatchReq.getMeetingMicType());
+        meetingInfo.setCategorySeq(meetingPatchReq.getCategorySeq());
+        meetingInfo.setMeetingImg(imagePath);
+
+        meetingRepository.save(meetingInfo);
     }
 }
