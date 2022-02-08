@@ -175,6 +175,8 @@ public class MeetingController {
     // 자유열람실 퇴실
     @DeleteMapping("/{meeting-seq}/room")
     public ResponseEntity<? extends BaseResponseBody> removeUser(@PathVariable("meeting-seq") Integer meetingSeq, @RequestBody MeetingExitDeleteReq meetingExitDeleteReq, Authentication authentication) {
+        if(authentication == null)
+            return ResponseEntity.ok(BaseResponseBody.of(403, "Access denied"));
 
         Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
 

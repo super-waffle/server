@@ -113,7 +113,8 @@ public class StudyController {
     //스터디룸 퇴실
     @PatchMapping("/{study-seq}/room")
     public ResponseEntity<? extends BaseResponseBody> removeUser(@PathVariable("study-seq") Integer studySeq, @RequestBody StudyExitPatchReq studyExitPatchReq, Authentication authentication) {
-
+        if(authentication == null)
+            return ResponseEntity.ok(BaseResponseBody.of(403, "Access denied"));
         Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
 
         String sessionName = studyRoomService.getStudyUrl(studySeq);
@@ -152,6 +153,8 @@ public class StudyController {
     //스터디원 일시방출하기
     @PatchMapping("{study-seq}/ban/{user-seq}")
     public ResponseEntity<? extends BaseResponseBody> banUserFromStudy(@PathVariable("study-seq") Integer studySeq, @PathVariable("user-seq") Integer userSeq, Authentication authentication) {
+        if(authentication == null)
+            return ResponseEntity.ok(BaseResponseBody.of(403, "Access denied"));
         Optional<StudyRoomMember> opStudyMember = studyMemberService.getStudyMember(userSeq, studySeq);
         if (!opStudyMember.isPresent())
             return ResponseEntity.ok(BaseResponseBody.of(409, "Fail : Not valid studySeq or userSeq"));
