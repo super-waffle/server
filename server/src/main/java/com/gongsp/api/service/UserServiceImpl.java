@@ -35,8 +35,13 @@ public class UserServiceImpl implements UserService{
     @Autowired
     private ApplicantRepository applicantRepository;
 
+    // Meeting Related Repositories
     @Autowired
     private MeetingRepository meetingRepository;
+    @Autowired
+    private BookmarkRepository bookmarkRepository;
+    @Autowired
+    private BlacklistMeetingRepository blacklistMeetingRepository;
 
     @Override
     public Optional<User> getUserByUserSeq(Integer userSeq) {
@@ -232,5 +237,13 @@ public class UserServiceImpl implements UserService{
         meetingInfo.setMeetingImg(imagePath);
 
         meetingRepository.save(meetingInfo);
+    }
+
+    @Override
+    @Transactional
+    public void deleteMeeting(Meeting meetingInfo) {
+        blacklistMeetingRepository.deleteAllByMeetingSeq(meetingInfo.getMeetingSeq());
+        bookmarkRepository.deleteAllByMeetingSeq(meetingInfo.getMeetingSeq());
+        meetingRepository.delete(meetingInfo);
     }
 }

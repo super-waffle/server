@@ -319,4 +319,25 @@ public class UserController {
 
         return  ResponseEntity.ok(BaseResponseBody.of(200,"Success"));
     }
+
+    // API U-018
+    @DeleteMapping("/meetings/{meetingSeq}")
+    public ResponseEntity<BaseResponseBody> deleteMyMeetingRoom(Authentication authentication,
+                                                                @PathVariable(value = "meetingSeq") int meetingSeq) {
+        int userSeq = getUserSeqFromAuthentication(authentication);
+
+        Optional<Meeting> meeting = userService.getMyMeetingRoomInfo(userSeq);
+
+        if (!meeting.isPresent())
+            return ResponseEntity.ok(BaseResponseBody.of(404, "No Such Meeting Info"));
+
+        Meeting meetingInfo = meeting.get();
+
+        if (meetingInfo.getHostSeq() != userSeq)
+            return ResponseEntity.ok(BaseResponseBody.of(409, "Not Authorized : You Are Not The Host"));
+
+        userService.deleteMeeting(meetingInfo);
+
+        return  ResponseEntity.ok(BaseResponseBody.of(200,"Success"));
+    }
 }

@@ -29,4 +29,5 @@ public interface UserService {
     void kickMember(int studySeq, int kickSeq);
     Optional<Meeting> getMyMeetingRoomInfo(int userSeq);
     void updateMeetingInfo(Meeting meetingInfo, UserMeetingPatchReq meetingPatchReq);
+    void deleteMeeting(Meeting meetingInfo);
 }
