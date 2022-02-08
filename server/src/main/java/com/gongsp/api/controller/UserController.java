@@ -66,7 +66,8 @@ public class UserController {
 
     // API U-005
     @PatchMapping("/nickname")
-    public ResponseEntity<BaseResponseBody> updateUserTimeGoal(Authentication authentication, @RequestBody UserNicknamePatchReq nickname) {
+    public ResponseEntity<BaseResponseBody> updateUserTimeGoal(Authentication authentication,
+                                                               @RequestBody UserNicknamePatchReq nickname) {
         int userSeq = getUserSeqFromAuthentication(authentication);
 
         if (userService.updateUserNickname(userSeq, nickname.getNickname()))
