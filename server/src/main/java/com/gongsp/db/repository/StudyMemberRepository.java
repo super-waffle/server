@@ -24,7 +24,7 @@ public interface StudyMemberRepository extends JpaRepository<StudyMember, Intege
     void deleteByUserSeqAndStudySeq(@Param(value = "userSeq") int userSeq, @Param(value = "studySeq") int studySeq);
 
     boolean existsStudyMemberByUserSeqAndStudySeq(int userSeq, int studySeq);
-    int countStudyMemberByStudySeq(int userSeq);
+    int countStudyMemberByStudySeq(int studySeq);
 
     @Modifying
     @Transactional

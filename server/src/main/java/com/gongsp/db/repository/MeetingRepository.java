@@ -22,6 +22,13 @@ public interface MeetingRepository extends JpaRepository<Meeting, Integer> {
             "order by meeting_seq desc limit :start, :spp ")
     List<Meeting> searchAll(@Param("start") Integer start, @Param("spp") Integer spp, @Param("userSeq") Integer userSeq);
 
+    @Query(nativeQuery = true, value = "select count(*) from tb_meeting " +
+            "where category_seq = :categorySeq " +
+            "and meeting_seq not in " +
+            "(select meeting_seq from tb_blacklist_meeting where user_seq = :userSeq) " +
+            "order by meeting_seq desc limit :start, :spp ")
+    int countByCategory(@Param("categorySeq") int categorySeq);
+
     //    Optional<List<Meeting>> findByMeetingTitleContainingOrMeetingDescContaining(String meetingTitle, String meetingDesc, Pageable pageable);
     @Query(nativeQuery = true, value = "select * from tb_meeting " +
             "where category_seq = :categorySeq " +
@@ -30,6 +37,10 @@ public interface MeetingRepository extends JpaRepository<Meeting, Integer> {
             "order by meeting_seq desc limit :start, :spp ")
     List<Meeting> searchByCategorySeq(@Param("categorySeq") Integer categorySeq, @Param("start") Integer start, @Param("spp") Integer spp, @Param("userSeq") Integer userSeq);
 //    Optional<List<Meeting>> findByMeetingTitleContainingOrMeetingDescContainingAndCategorySeq(String meetingTitle, String meetingDesc, Integer categorySeq, Pageable pageable);
+
+    @Query(nativeQuery = true, value = "select count(*) from tb_study " +
+            "where (study_title like %:key% or study_desc like %:key% or study_short_desc like %:key% ) ")
+    int countByLike(@Param("key") String key);
 
     @Query(nativeQuery = true, value = "select * from tb_meeting " +
             "where (meeting_title like %:key% or meeting_desc like %:key% ) " +

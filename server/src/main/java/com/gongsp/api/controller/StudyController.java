@@ -205,6 +205,7 @@ public class StudyController {
         if(studyCreatePostReq.getCategorySeq() == null)
             return ResponseEntity.ok(BaseResponseBody.of(406, "Fail : Not valid category"));
         studyDayService.createStudyDays(studyCreatePostReq.getDay(), studyRoom.getStudySeq());
+        studyMemberService.createMember(userSeq, studyRoom.getStudySeq());
         return ResponseEntity.ok(BaseResponseBody.of(200, "Success : Create study room"));
     }
 

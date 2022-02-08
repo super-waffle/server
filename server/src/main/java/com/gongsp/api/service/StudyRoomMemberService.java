@@ -10,4 +10,5 @@ public interface StudyRoomMemberService {
     void banMember(Integer userSeq, Integer studySeq);
     void updateMemberOnair(Integer userSeq, Integer studySeq, boolean isOnair);
     int getStudyOnairCnt(Integer studySeq);
+    void createMember(Integer userSeq, Integer studySeq);
 }

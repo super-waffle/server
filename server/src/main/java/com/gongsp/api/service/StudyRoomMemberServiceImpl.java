@@ -44,4 +44,9 @@ public class StudyRoomMemberServiceImpl implements StudyRoomMemberService {
     public int getStudyOnairCnt(Integer studySeq) {
         return studyRoomMemberRepository.countStudyRoomMemberByStudySeqAndOnair(studySeq);
     }
+
+    @Override
+    public void createMember(Integer userSeq, Integer studySeq) {
+        studyRoomMemberRepository.save(new StudyRoomMember(new StudyRoomMemberId(userSeq, studySeq), 0, false));
+    }
 }

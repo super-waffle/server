@@ -186,7 +186,7 @@ public class StudyRoomServiceImpl implements StudyRoomService {
         else
             studyRoom.setStudyShortDesc(studyCreatePostReq.getStudyShortDesc());
         studyRoom.setStudyDesc(studyCreatePostReq.getStudyDesc());
-        studyRoom.setStudyCapacity(1);
+        studyRoom.setStudyCapacity(6);
         studyRoom.setStudyUrl(studyCreatePostReq.getStudyTitle() + userSeq);
         studyRoom.setStudyLate(10);
         studyRoom.setStudyDateStart(null);
