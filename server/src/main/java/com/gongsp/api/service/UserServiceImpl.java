@@ -1,5 +1,7 @@
 package com.gongsp.api.service;
 
+import com.gongsp.api.request.user.UserInfoPatchReq;
+import com.gongsp.api.request.user.UserMeetingPatchReq;
 import com.gongsp.api.request.user.UserStudyUpdatePatchReq;
 import com.gongsp.api.response.user.my_study.StudyRes;
 import com.gongsp.db.entity.*;
@@ -17,6 +19,9 @@ import java.util.*;
 public class UserServiceImpl implements UserService{
 
     @Autowired
+    private StorageService storageService;
+
+    @Autowired
     private UserRepository userRepository;
     @Autowired
     private OtherProfileRepository otherProfileRepository;
@@ -28,9 +33,16 @@ public class UserServiceImpl implements UserService{
     private StudyMemberRepository studyMemberRepository;
     @Autowired
     private StudyDayRepository studyDayRepository;
-
     @Autowired
     private ApplicantRepository applicantRepository;
+
+    // Meeting Related Repositories
+    @Autowired
+    private MeetingRepository meetingRepository;
+    @Autowired
+    private BookmarkRepository bookmarkRepository;
+    @Autowired
+    private BlacklistMeetingRepository blacklistMeetingRepository;
 
     @Override
     public Optional<User> getUserByUserSeq(Integer userSeq) {
@@ -60,11 +72,11 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public boolean updateUserTimeGoal(int userSeq, int timeGoal) {
+    public boolean updateUserNickname(int userSeq, String nickname) {
         Optional<User> userInfo = userRepository.findUserByUserSeq(userSeq);
         if (userInfo.isPresent()) {
             User user = userInfo.get();
-            user.setUserTimeGoal(timeGoal);
+            user.setUserNickname(nickname);
             userRepository.save(user);
             return true;
         }
@@ -206,5 +218,56 @@ public class UserServiceImpl implements UserService{
     @Override
     public void kickMember(int studySeq, int kickSeq) {
         studyMemberRepository.kickMember(studySeq, kickSeq);
+    }
+
+    @Override
+    public Optional<Meeting> getMyMeetingRoomInfo(int userSeq) {
+        return meetingRepository.findTopByHostSeq(userSeq);
+    }
+
+    @Override
+    public void updateMeetingInfo(Meeting meetingInfo, UserMeetingPatchReq meetingPatchReq) {
+        storageService.delete(meetingInfo.getMeetingImg());
+        String imagePath = storageService.store(meetingPatchReq.getMeetingImg());
+
+        meetingInfo.setMeetingTitle(meetingPatchReq.getMeetingTitle());
+        meetingInfo.setMeetingDesc(meetingPatchReq.getMeetingDesc());
+        meetingInfo.setMeetingCamType(meetingPatchReq.getMeetingCamType());
+        meetingInfo.setMeetingMicType(meetingPatchReq.getMeetingMicType());
+        meetingInfo.setCategorySeq(meetingPatchReq.getCategorySeq());
+        meetingInfo.setMeetingImg(imagePath);
+
+        meetingRepository.save(meetingInfo);
+    }
+
+    @Override
+    @Transactional
+    public void deleteMeeting(Meeting meetingInfo) {
+        blacklistMeetingRepository.deleteAllByMeetingSeq(meetingInfo.getMeetingSeq());
+        bookmarkRepository.deleteAllByMeetingSeq(meetingInfo.getMeetingSeq());
+        meetingRepository.delete(meetingInfo);
+    }
+
+    @Override
+    public void updateUserPassword(User user, String newPassword) {
+        user.setUserPassword(newPassword);
+        userRepository.save(user);
+    }
+
+    @Override
+    public void updateUserProfile(User user, UserInfoPatchReq infoPatchReq) {
+        if (infoPatchReq.getTimeGoal() != null)
+            user.setUserTimeGoal(infoPatchReq.getTimeGoal());
+        if (infoPatchReq.getProfileMessage() != null)
+            user.setUserProfileMsg(infoPatchReq.getProfileMessage());
+        if (infoPatchReq.getProfileImage() != null) {
+            String path = user.getUserImg();
+            if (path != null)
+                storageService.delete(path);
+            String newPath = storageService.store(infoPatchReq.getProfileImage());
+            user.setUserImg(newPath);
+        }
+
+        userRepository.save(user);
     }
 }
