@@ -71,11 +71,11 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public boolean updateUserTimeGoal(int userSeq, int timeGoal) {
+    public boolean updateUserNickname(int userSeq, String nickname) {
         Optional<User> userInfo = userRepository.findUserByUserSeq(userSeq);
         if (userInfo.isPresent()) {
             User user = userInfo.get();
-            user.setUserTimeGoal(timeGoal);
+            user.setUserNickname(nickname);
             userRepository.save(user);
             return true;
         }

@@ -14,7 +14,7 @@ public interface UserService {
     Boolean isUserExists(Integer userSeq);
     Optional<OtherUserProfile> getOtherProfile(Integer userSeq);
     void updateUserLogTime(Integer userSeq, Integer logTime);
-    boolean updateUserTimeGoal(int userSeq, int timeGoal);
+    boolean updateUserNickname(int userSeq, String nickname);
     Optional<List<StudyRes>> getUserIncludedStudies(int userSeq);
     Optional<StudyRes> getUserIncludedDetailStudyInfo(int studySeq);
     Optional<Study> getStudyInfo(int studySeq);

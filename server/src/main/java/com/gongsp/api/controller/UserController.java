@@ -1,8 +1,8 @@
 package com.gongsp.api.controller;
 
 import com.gongsp.api.request.user.UserMeetingPatchReq;
+import com.gongsp.api.request.user.UserNicknamePatchReq;
 import com.gongsp.api.request.user.UserStudyUpdatePatchReq;
-import com.gongsp.api.request.user.UserTimeGoalPatchReq;
 import com.gongsp.api.response.study.StudyDetailInfoGetRes;
 import com.gongsp.api.response.user.ApplicantsListGetRes;
 import com.gongsp.api.response.user.MyMeetingGetRes;
@@ -65,11 +65,11 @@ public class UserController {
     // API U-004
 
     // API U-005
-    @PatchMapping("/goal")
-    public ResponseEntity<BaseResponseBody> updateUserTimeGoal(Authentication authentication, @RequestBody UserTimeGoalPatchReq timeGoal) {
+    @PatchMapping("/nickname")
+    public ResponseEntity<BaseResponseBody> updateUserTimeGoal(Authentication authentication, @RequestBody UserNicknamePatchReq nickname) {
         int userSeq = getUserSeqFromAuthentication(authentication);
 
-        if (userService.updateUserTimeGoal(userSeq, timeGoal.getTimeGoal()))
+        if (userService.updateUserNickname(userSeq, nickname.getNickname()))
             return ResponseEntity.ok(BaseResponseBody.of(200,"Success"));
         return ResponseEntity.ok(BaseResponseBody.of(404, "No Such User"));
     }
