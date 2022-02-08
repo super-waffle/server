@@ -197,7 +197,13 @@ public class StudyController {
         Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
         StudyRoom studyRoom = studyRoomService.createStudy(studyCreatePostReq, userSeq);
         if (studyRoom == null)
-            return ResponseEntity.ok(BaseResponseBody.of(409, "Fail : Create study room"));
+            return ResponseEntity.ok(BaseResponseBody.of(409, "Fail : Don't saved"));
+        if(studyCreatePostReq.getDay().size() == 0)
+            return ResponseEntity.ok(BaseResponseBody.of(408, "Fail : Don't select day"));
+        if(studyCreatePostReq.getStudyTitle() == null || studyCreatePostReq.getStudyDesc()==null || studyCreatePostReq.getStudyShortDesc()==null)
+            return ResponseEntity.ok(BaseResponseBody.of(407, "Fail : Not valid input"));
+        if(studyCreatePostReq.getCategorySeq() == null)
+            return ResponseEntity.ok(BaseResponseBody.of(406, "Fail : Not valid category"));
         studyDayService.createStudyDays(studyCreatePostReq.getDay(), studyRoom.getStudySeq());
         return ResponseEntity.ok(BaseResponseBody.of(200, "Success : Create study room"));
     }
