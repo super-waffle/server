@@ -2,6 +2,7 @@ package com.gongsp.api.service;
 
 import com.gongsp.api.request.meeting.MeetingCreatePostReq;
 import com.gongsp.api.request.meeting.MeetingParameter;
+import com.gongsp.api.request.study.StudyParameter;
 import com.gongsp.api.response.meeting.MeetingDetailGetRes;
 import com.gongsp.api.response.meeting.MeetingRes;
 import com.gongsp.db.entity.Category;
@@ -175,6 +176,29 @@ public class MeetingServiceImpl implements MeetingService {
             meetingResList.add(meetingRes);
         }
         return meetingResList;
+    }
+
+    @Override
+    public int getMeetingCnt(MeetingParameter meetingParameter, Integer userSeq) {
+        //카테고리 선택안한경우
+        if (meetingParameter.getType() == 0) {
+            //검색어 없음 = 전체목록
+            if (meetingParameter.getKey() == null || meetingParameter.getKey().equals("")) {
+//                System.out.println("카테고리X 검색어X");
+                return (int) meetingRepository.count();
+            } else {
+                //검색어 있음 - 필터링(글제목, 글내용)
+                return meetingRepository.countByKey(meetingParameter.getKey(), userSeq);
+            }
+        } else {    //카테고리 선택한경우
+            //검색어 없음 = 선택한 카테고리 모두
+            if (meetingParameter.getKey() == null || meetingParameter.getKey().equals("")) {
+                return meetingRepository.countByCategory(meetingParameter.getType(), userSeq);
+            } else {
+                //검색어 있음 - 필터링(글제목, 글내용)
+                return meetingRepository.countByKeyAndCategory(meetingParameter.getKey(), meetingParameter.getType(), userSeq);
+            }
+        }
     }
 
     @Override

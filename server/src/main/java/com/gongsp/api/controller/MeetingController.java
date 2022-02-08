@@ -57,12 +57,13 @@ public class MeetingController {
     // 자유열람실 목록 조회
     @GetMapping
     public ResponseEntity<? extends BaseResponseBody> getMeetingList(MeetingParameter meetingParameter, Authentication authentication) {
+        Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
         if (meetingParameter.getPage() == null)
             return ResponseEntity.ok(MeetingListGetRes.of(409, "Fail : Get Meeting List. No page"));
         if (meetingParameter.getType() == null)
             return ResponseEntity.ok(MeetingListGetRes.of(409, "Fail : Get Meeting List. No Category type"));
         List<MeetingRes> data = meetingService.getMeetingList(meetingParameter, Integer.parseInt((String) authentication.getPrincipal()));
-        return ResponseEntity.ok(MeetingListGetRes.of(200, "Success : Get Meeting List", meetingParameter, data.size(), data));
+        return ResponseEntity.ok(MeetingListGetRes.of(200, "Success : Get Meeting List", meetingParameter, meetingService.getMeetingCnt(meetingParameter, userSeq), data));
     }
 
     // 자유열람실 생성

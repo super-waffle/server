@@ -24,4 +24,5 @@ public interface MeetingService {
     boolean isUserOwnMeeting(Integer userSeq);
     Integer getHostSeq(Integer meetingSeq);
     String getMeetingUrl(Integer meetingSeq);
+    int getMeetingCnt(MeetingParameter meetingParameter, Integer userSeq);
 }
