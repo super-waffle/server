@@ -140,27 +140,27 @@ public class MeetingServiceImpl implements MeetingService {
             //검색어 없음 = 전체목록
             if (meetingParameter.getKey() == null || meetingParameter.getKey().equals("")) {
 //                System.out.println("카테고리X 검색어X");
-                meetingList = meetingRepository.searchAll(start, 10, userSeq);
+                meetingList = meetingRepository.searchAll(start, meetingParameter.getSpp(), userSeq);
             } else {
                 //검색어 있음 - 필터링(글제목, 글내용)
 //                Optional<List<Meeting>> optionalMeetings = meetingRepository.findByMeetingTitleContainingOrMeetingDescContaining(meetingParameter.getKey(), meetingParameter.getKey(), pageRequest);
 //                if (optionalMeetings.isPresent())
 //                    meetingList = optionalMeetings.get();
 //                System.out.println("카테고리X 검색어O");
-                meetingList = meetingRepository.searchByKey(meetingParameter.getKey(), start, 10, userSeq);
+                meetingList = meetingRepository.searchByKey(meetingParameter.getKey(), start,  meetingParameter.getSpp(), userSeq);
             }
         } else {    //카테고리 선택한경우
             //검색어 없음 = 선택한 카테고리 모두
             if (meetingParameter.getKey() == null || meetingParameter.getKey().equals("")) {
 //                System.out.println("카테고리O 검색어X");
-                meetingList = meetingRepository.searchByCategorySeq(meetingParameter.getType(), start, 10, userSeq);
+                meetingList = meetingRepository.searchByCategorySeq(meetingParameter.getType(), start,  meetingParameter.getSpp(), userSeq);
             } else {
                 //검색어 있음 - 필터링(글제목, 글내용)
 //                Optional<List<Meeting>> optionalMeetings = meetingRepository.findByMeetingTitleContainingOrMeetingDescContaining(meetingParameter.getKey(), meetingParameter.getKey(), pageRequest);
 //                if (optionalMeetings.isPresent())
 //                    meetingList = optionalMeetings.get();
 //                System.out.println("카테고리O 검색어O");
-                meetingList = meetingRepository.searchByKeyAndCategory(meetingParameter.getKey(), meetingParameter.getType(), start, 10, userSeq);
+                meetingList = meetingRepository.searchByKeyAndCategory(meetingParameter.getKey(), meetingParameter.getType(), start,  meetingParameter.getSpp(), userSeq);
             }
         }
 
@@ -182,7 +182,10 @@ public class MeetingServiceImpl implements MeetingService {
         Meeting meeting = new Meeting();
         meeting.setHostSeq(userSeq);
         meeting.setCategory(new Category(meetingCreatePostReq.getCategorySeq()));
-        meeting.setMeetingTitle(meetingCreatePostReq.getMeetingTitle());
+        if(meetingCreatePostReq.getMeetingTitle().length()>50)
+            meeting.setMeetingTitle(meetingCreatePostReq.getMeetingTitle().substring(50));
+        else
+            meeting.setMeetingTitle(meetingCreatePostReq.getMeetingTitle());
         meeting.setMeetingDesc(meetingCreatePostReq.getMeetingDesc());
         meeting.setMeetingUrl(meetingCreatePostReq.getMeetingTitle() + userSeq);
         meeting.setMeetingCamType(meetingCreatePostReq.getMeetingCamType());

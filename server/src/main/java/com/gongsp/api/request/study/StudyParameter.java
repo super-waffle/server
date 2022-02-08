@@ -19,6 +19,6 @@ public class StudyParameter {
 
     public StudyParameter() {
         this.page = 1;
-        this.spp = 10;
+        this.spp = 20;
     }
 }

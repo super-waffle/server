@@ -107,21 +107,21 @@ public class StudyRoomServiceImpl implements StudyRoomService {
             //검색어 없음 = 전체목록
             if (studyParameter.getKey() == null || studyParameter.getKey().equals("")) {
 //                System.out.println("카테고리X 검색어X");
-                studyList = studyRoomRepository.searchAll(start, 10);
+                studyList = studyRoomRepository.searchAll(start, studyParameter.getSpp());
             } else {
                 //검색어 있음 - 필터링(글제목, 글내용)
 //                System.out.println("카테고리X 검색어O");
-                studyList = studyRoomRepository.searchByKey(studyParameter.getKey(), start, 10);
+                studyList = studyRoomRepository.searchByKey(studyParameter.getKey(), start, studyParameter.getSpp());
             }
         } else {    //카테고리 선택한경우
             //검색어 없음 = 선택한 카테고리 모두
             if (studyParameter.getKey() == null || studyParameter.getKey().equals("")) {
 //                System.out.println("카테고리O 검색어X");
-                studyList = studyRoomRepository.searchByCategorySeq(studyParameter.getType(), start, 10);
+                studyList = studyRoomRepository.searchByCategorySeq(studyParameter.getType(), start, studyParameter.getSpp());
             } else {
                 //검색어 있음 - 필터링(글제목, 글내용)
 //                System.out.println("카테고리O 검색어O");
-                studyList = studyRoomRepository.searchByKeyAndCategory(studyParameter.getKey(), studyParameter.getType(), start, 10);
+                studyList = studyRoomRepository.searchByKeyAndCategory(studyParameter.getKey(), studyParameter.getType(), start, studyParameter.getSpp());
             }
         }
 
@@ -177,8 +177,14 @@ public class StudyRoomServiceImpl implements StudyRoomService {
         StudyRoom studyRoom = new StudyRoom();
         studyRoom.setHost(new User(userSeq));
         studyRoom.setCategory(new Category(studyCreatePostReq.getCategorySeq()));
-        studyRoom.setStudyTitle(studyCreatePostReq.getStudyTitle());
-        studyRoom.setStudyShortDesc(studyCreatePostReq.getStudyShortDesc());
+        if(studyCreatePostReq.getStudyTitle().length()>50)
+            studyRoom.setStudyTitle(studyCreatePostReq.getStudyTitle().substring(50));
+        else
+            studyRoom.setStudyTitle(studyCreatePostReq.getStudyTitle());
+        if(studyCreatePostReq.getStudyShortDesc().length()>50)
+            studyRoom.setStudyShortDesc(studyCreatePostReq.getStudyShortDesc().substring(50));
+        else
+            studyRoom.setStudyShortDesc(studyCreatePostReq.getStudyShortDesc());
         studyRoom.setStudyDesc(studyCreatePostReq.getStudyDesc());
         studyRoom.setStudyCapacity(1);
         studyRoom.setStudyUrl(studyCreatePostReq.getStudyTitle() + userSeq);
