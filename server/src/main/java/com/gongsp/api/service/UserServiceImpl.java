@@ -1,5 +1,6 @@
 package com.gongsp.api.service;
 
+import com.gongsp.api.request.user.UserInfoPatchReq;
 import com.gongsp.api.request.user.UserMeetingPatchReq;
 import com.gongsp.api.request.user.UserStudyUpdatePatchReq;
 import com.gongsp.api.response.user.my_study.StudyRes;
@@ -250,6 +251,23 @@ public class UserServiceImpl implements UserService{
     @Override
     public void updateUserPassword(User user, String newPassword) {
         user.setUserPassword(newPassword);
+        userRepository.save(user);
+    }
+
+    @Override
+    public void updateUserProfile(User user, UserInfoPatchReq infoPatchReq) {
+        if (infoPatchReq.getTimeGoal() != null)
+            user.setUserTimeGoal(infoPatchReq.getTimeGoal());
+        if (infoPatchReq.getProfileMessage() != null)
+            user.setUserProfileMsg(infoPatchReq.getProfileMessage());
+        if (infoPatchReq.getProfileImage() != null) {
+            String path = user.getUserImg();
+            if (path != null)
+                storageService.delete(path);
+            String newPath = storageService.store(infoPatchReq.getProfileImage());
+            user.setUserImg(newPath);
+        }
+
         userRepository.save(user);
     }
 }

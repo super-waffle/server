@@ -1,5 +1,6 @@
 package com.gongsp.api.service;
 
+import com.gongsp.api.request.user.UserInfoPatchReq;
 import com.gongsp.api.request.user.UserMeetingPatchReq;
 import com.gongsp.api.request.user.UserStudyUpdatePatchReq;
 import com.gongsp.api.response.user.my_study.StudyRes;
@@ -31,4 +32,5 @@ public interface UserService {
     void updateMeetingInfo(Meeting meetingInfo, UserMeetingPatchReq meetingPatchReq);
     void deleteMeeting(Meeting meetingInfo);
     void updateUserPassword(User user, String newPassword);
+    void updateUserProfile(User user, UserInfoPatchReq infoPatchReq);
 }

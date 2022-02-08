@@ -1,9 +1,6 @@
 package com.gongsp.api.controller;
 
-import com.gongsp.api.request.user.UserMeetingPatchReq;
-import com.gongsp.api.request.user.UserNicknamePatchReq;
-import com.gongsp.api.request.user.UserPasswordPatchReq;
-import com.gongsp.api.request.user.UserStudyUpdatePatchReq;
+import com.gongsp.api.request.user.*;
 import com.gongsp.api.response.study.StudyDetailInfoGetRes;
 import com.gongsp.api.response.user.ApplicantsListGetRes;
 import com.gongsp.api.response.user.MyMeetingGetRes;
@@ -66,6 +63,23 @@ public class UserController {
     }
 
     // API U-003
+    @PatchMapping("")
+    public ResponseEntity<BaseResponseBody> updateUserProfile(Authentication authentication,
+                                                              @ModelAttribute UserInfoPatchReq infoPatchReq) {
+        int userSeq = getUserSeqFromAuthentication(authentication);
+
+        Optional<User> userInfo = userService.getUserByUserSeq(userSeq);
+
+        if (!userInfo.isPresent())
+            return ResponseEntity.ok(BaseResponseBody.of(404, "No Such User"));
+
+        User user = userInfo.get();
+
+        userService.updateUserProfile(user, infoPatchReq);
+
+        return ResponseEntity.ok(BaseResponseBody.of(200, "Success"));
+    }
+
     // API U-004
     @PatchMapping("/password")
     public ResponseEntity<BaseResponseBody> updateUserPassword(Authentication authentication,
