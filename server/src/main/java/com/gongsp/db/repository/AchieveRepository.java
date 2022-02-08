@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface AchieveRepository extends JpaRepository<UserAchieve, Integer> {
 
@@ -16,4 +17,16 @@ public interface AchieveRepository extends JpaRepository<UserAchieve, Integer> {
             "WHERE u.user_seq = :userSeq ;",
             nativeQuery = true)
     List<UserAchieve> findAllByUserSeq(@Param(value = "userSeq") Integer userSeq);
+
+    @Query(value = "SELECT *\n" +
+            "FROM tb_user_achieve\n" +
+            "WHERE user_seq = :userSeq AND achieve_seq = :achieveSeq ;",
+            nativeQuery = true)
+    Optional<UserAchieve> findByAchieveAndUser(@Param(value="userSeq") Integer userSeq, @Param(value="achieveSeq") Integer achieveSeq);
+
+    @Query(value = "SELECT *\n" +
+            "FROM tb_user_achieve\n" +
+            "WHERE user_seq = :userSeq AND achieve_seq = :achieveSeq AND is_achieve_activate = true;",
+            nativeQuery = true)
+    Optional<UserAchieve> findActivatedAchieveByAchieveAndUser(@Param(value="userSeq") Integer userSeq, @Param(value="achieveSeq") Integer achieveSeq);
 }
