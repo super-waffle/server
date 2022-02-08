@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 public interface StudyRepository extends JpaRepository<Study, Integer> {
@@ -23,4 +25,14 @@ public interface StudyRepository extends JpaRepository<Study, Integer> {
             "where study_seq = :seq ;",
             nativeQuery = true)
     Optional<Study> selectStudyDetailInfo(@Param(value = "seq") int studySeq);
+
+    @Query(value = "SELECT st.*, c.category_name\n" +
+            "FROM tb_study st\n" +
+            "LEFT JOIN tb_member_study m ON st.study_seq = m.study_seq\n" +
+            "LEFT JOIN tb_category c ON st.category_seq = c.category_seq\n" +
+            "LEFT JOIN tb_day_study d ON st.study_seq = d.study_seq\n" +
+            "WHERE m.user_seq = :userSeq AND st.study_date_start <= :date <= st.study_date_end\n" +
+            "AND d.day_number = :day ;",
+            nativeQuery = true)
+    List<Study> findAllByUserSeq(@Param(value="userSeq") Integer userSeq, @Param(value="date") LocalDate date, @Param(value="day") Integer day);
 }
