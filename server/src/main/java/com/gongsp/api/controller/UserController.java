@@ -2,6 +2,7 @@ package com.gongsp.api.controller;
 
 import com.gongsp.api.request.user.UserMeetingPatchReq;
 import com.gongsp.api.request.user.UserNicknamePatchReq;
+import com.gongsp.api.request.user.UserPasswordPatchReq;
 import com.gongsp.api.request.user.UserStudyUpdatePatchReq;
 import com.gongsp.api.response.study.StudyDetailInfoGetRes;
 import com.gongsp.api.response.user.ApplicantsListGetRes;
@@ -17,6 +18,7 @@ import com.gongsp.db.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -36,6 +38,8 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     // API U-001
     @GetMapping("")
@@ -63,6 +67,25 @@ public class UserController {
 
     // API U-003
     // API U-004
+    @PatchMapping("/password")
+    public ResponseEntity<BaseResponseBody> updateUserPassword(Authentication authentication,
+                                                               @RequestBody UserPasswordPatchReq passwordPatchReq) {
+        int userSeq = getUserSeqFromAuthentication(authentication);
+
+        Optional<User> userInfo = userService.getUserByUserSeq(userSeq);
+
+        if (!userInfo.isPresent())
+            return ResponseEntity.ok(BaseResponseBody.of(404, "No Such User"));
+
+        User user = userInfo.get();
+
+        if (!passwordEncoder.matches(passwordPatchReq.getPassword(), user.getUserPassword()))
+            return ResponseEntity.ok(BaseResponseBody.of(409, "Not Authorized"));
+
+        userService.updateUserPassword(user, passwordEncoder.encode(passwordPatchReq.getNewPassword()));
+
+        return ResponseEntity.ok(BaseResponseBody.of(200, "Success"));
+    }
 
     // API U-005
     @PatchMapping("/nickname")

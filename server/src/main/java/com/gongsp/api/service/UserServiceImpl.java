@@ -246,4 +246,10 @@ public class UserServiceImpl implements UserService{
         bookmarkRepository.deleteAllByMeetingSeq(meetingInfo.getMeetingSeq());
         meetingRepository.delete(meetingInfo);
     }
+
+    @Override
+    public void updateUserPassword(User user, String newPassword) {
+        user.setUserPassword(newPassword);
+        userRepository.save(user);
+    }
 }

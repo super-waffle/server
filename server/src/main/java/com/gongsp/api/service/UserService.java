@@ -30,4 +30,5 @@ public interface UserService {
     Optional<Meeting> getMyMeetingRoomInfo(int userSeq);
     void updateMeetingInfo(Meeting meetingInfo, UserMeetingPatchReq meetingPatchReq);
     void deleteMeeting(Meeting meetingInfo);
+    void updateUserPassword(User user, String newPassword);
 }
