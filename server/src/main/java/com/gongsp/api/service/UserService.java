@@ -1,11 +1,10 @@
 package com.gongsp.api.service;
 
+import com.gongsp.api.request.user.UserInfoPatchReq;
+import com.gongsp.api.request.user.UserMeetingPatchReq;
 import com.gongsp.api.request.user.UserStudyUpdatePatchReq;
 import com.gongsp.api.response.user.my_study.StudyRes;
-import com.gongsp.db.entity.Applicant;
-import com.gongsp.db.entity.OtherUserProfile;
-import com.gongsp.db.entity.Study;
-import com.gongsp.db.entity.User;
+import com.gongsp.db.entity.*;
 
 import java.util.Collection;
 import java.util.List;
@@ -16,7 +15,7 @@ public interface UserService {
     Boolean isUserExists(Integer userSeq);
     Optional<OtherUserProfile> getOtherProfile(Integer userSeq);
     void updateUserLogTime(Integer userSeq, Integer logTime);
-    boolean updateUserTimeGoal(int userSeq, int timeGoal);
+    boolean updateUserNickname(int userSeq, String nickname);
     Optional<List<StudyRes>> getUserIncludedStudies(int userSeq);
     Optional<StudyRes> getUserIncludedDetailStudyInfo(int studySeq);
     Optional<Study> getStudyInfo(int studySeq);
@@ -29,4 +28,9 @@ public interface UserService {
     void grantApplicant(int studySeq, int applicantSeq);
     void rejectApplicant(int studySeq, int applicantSeq);
     void kickMember(int studySeq, int kickSeq);
+    Optional<Meeting> getMyMeetingRoomInfo(int userSeq);
+    void updateMeetingInfo(Meeting meetingInfo, UserMeetingPatchReq meetingPatchReq);
+    void deleteMeeting(Meeting meetingInfo);
+    void updateUserPassword(User user, String newPassword);
+    void updateUserProfile(User user, UserInfoPatchReq infoPatchReq);
 }

@@ -18,11 +18,11 @@ public class User {
     private Integer userSeq;
 
     @OneToOne
-    @JoinColumn (name = "level_seq")
+    @JoinColumn (name = "level_seq", updatable = false, insertable = false)
     private Level userLevel;
 
     @OneToOne
-    @JoinColumn (name = "level_img_seq")
+    @JoinColumn (name = "level_img_seq", updatable = false, insertable = false)
     private Level userImageLevel;
     private Boolean isAdmin;
     private String userEmail;

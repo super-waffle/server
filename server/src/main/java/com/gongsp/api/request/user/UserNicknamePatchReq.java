@@ -7,6 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @Generated
-public class UserTimeGoalPatchReq {
-    Integer timeGoal;
+public class UserNicknamePatchReq {
+    private String nickname;
 }
