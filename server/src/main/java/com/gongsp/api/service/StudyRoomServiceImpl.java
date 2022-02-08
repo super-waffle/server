@@ -3,7 +3,10 @@ package com.gongsp.api.service;
 import com.gongsp.api.request.study.StudyCreatePostReq;
 import com.gongsp.api.request.study.StudyParameter;
 import com.gongsp.api.response.study.StudyRes;
-import com.gongsp.db.entity.*;
+import com.gongsp.db.entity.Category;
+import com.gongsp.db.entity.Meeting;
+import com.gongsp.db.entity.StudyRoom;
+import com.gongsp.db.entity.User;
 import com.gongsp.db.repository.StudyMemberRepository;
 import com.gongsp.db.repository.StudyRoomRepository;
 import io.openvidu.java.client.*;
@@ -148,7 +151,7 @@ public class StudyRoomServiceImpl implements StudyRoomService {
             //검색어 없음 = 전체목록
             if (studyParameter.getKey() == null || studyParameter.getKey().equals("")) {
 //                System.out.println("카테고리X 검색어X");
-                return (int)studyRoomRepository.count();
+                return (int) studyRoomRepository.count();
             } else {
                 //검색어 있음 - 필터링(글제목, 글내용)
                 return studyRoomRepository.countByLike(studyParameter.getKey());
@@ -178,12 +181,59 @@ public class StudyRoomServiceImpl implements StudyRoomService {
         studyRoom.setStudyShortDesc(studyCreatePostReq.getStudyShortDesc());
         studyRoom.setStudyDesc(studyCreatePostReq.getStudyDesc());
         studyRoom.setStudyCapacity(1);
-        studyRoom.setStudyUrl(studyCreatePostReq.getStudyTitle()+userSeq);
+        studyRoom.setStudyUrl(studyCreatePostReq.getStudyTitle() + userSeq);
         studyRoom.setStudyLate(10);
         studyRoom.setStudyDateStart(null);
         studyRoom.setStudyDateEnd(null);
         studyRoom.setStudyRecruitStart(LocalDate.now());
         studyRoom.setStudyRecruitEnd(studyCreatePostReq.getStudyRecruitEnd());
         return studyRoomRepository.save(studyRoom);
+    }
+
+    @Override
+    public String getStudyUrl(Integer studySeq) {
+        Optional<StudyRoom> opStudyRoom = studyRoomRepository.findStudyByStudySeq(studySeq);
+        if (!opStudyRoom.isPresent()) {
+            return null;
+        }
+        return opStudyRoom.get().getStudyUrl();
+    }
+
+    @Override
+    public void updateStudyOnair(Integer studySeq, int onairCnt) {
+        Optional<StudyRoom> opStudyRoom = studyRoomRepository.findStudyByStudySeq(studySeq);
+        if (!opStudyRoom.isPresent())
+            return;
+        StudyRoom studyRoom = opStudyRoom.get();
+        if (onairCnt == 0)
+            studyRoom.setIsStudyOnair(false);
+        else
+            studyRoom.setIsStudyOnair(true);
+        studyRoomRepository.save(studyRoom);
+    }
+
+    @Override
+    public String removeUser(String sessionName, String token, Integer studySeq) {
+        // If the session exists
+        if (this.mapSessions.get(sessionName) != null && this.mapSessionNamesTokens.get(sessionName) != null) {
+            // If the token exists
+            if (this.mapSessionNamesTokens.get(sessionName).remove(token) != null) {
+                // User left the session
+                System.out.println("세션 종료여부: " + this.mapSessionNamesTokens.get(sessionName).isEmpty());
+                if (this.mapSessionNamesTokens.get(sessionName).isEmpty()) {
+                    // Last user left: session must be removed
+                    this.mapSessions.remove(sessionName);
+                }
+                return "OK";
+            } else {
+                // The TOKEN wasn't valid
+                System.out.println("Problems in the app server: the TOKEN wasn't valid");
+                return "Error";
+            }
+        } else {
+            // The SESSION does not exist
+            System.out.println("Problems in the app server: the SESSION does not exist");
+            return "Error";
+        }
     }
 }

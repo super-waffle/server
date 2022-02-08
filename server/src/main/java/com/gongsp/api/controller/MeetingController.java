@@ -182,6 +182,8 @@ public class MeetingController {
 //        System.out.println("Removing user | {sessionName, userSeq}=" + "{" + meetingSeq + "," + userSeq + "}");
 
         String sessionName = meetingService.getMeetingUrl(meetingSeq);
+        if(sessionName == null)
+            return ResponseEntity.ok(BaseResponseBody.of(407, "Fail : Not valid meeting seq."));
         String token = meetingExitDeleteReq.getSessionToken();
 
         if (!meetingOnairService.existsOnair(userSeq, meetingSeq))
@@ -202,6 +204,8 @@ public class MeetingController {
         userService.updateUserLogTime(userSeq, meetingExitDeleteReq.getLogMeeting());
 
         // 만석인 방에서 나갈경우 알림보내기
+
+        // 인원 0명일경우 onair업데이트
 
         return ResponseEntity.ok(BaseResponseBody.of(200, "Success : Remove user"));
     }

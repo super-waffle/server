@@ -9,4 +9,5 @@ public interface StudyHistoryService {
     boolean createHistory(Integer userSeq, Integer studySeq, boolean isEjected);
     void updateHistoryEjected(Integer userSeq, Integer studySeq, LocalDate curDate, boolean isEjected);
     boolean isMemberLate(Integer userSeq, Integer studySeq, LocalDate curDate);
+    boolean existsAnyoneToday(Integer studySeq, LocalDate curDate);
 }

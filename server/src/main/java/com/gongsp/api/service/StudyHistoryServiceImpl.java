@@ -83,4 +83,9 @@ public class StudyHistoryServiceImpl implements StudyHistoryService {
         StudyHistory studyHistory = studyHistoryRepository.findStudyHistoryByUserSeqAndStudySeqAndHistoryDate(userSeq, studySeq, curDate).get();
         return studyHistory.getHistoryLate();
     }
+
+    @Override
+    public boolean existsAnyoneToday(Integer studySeq, LocalDate curDate) {
+        return studyHistoryRepository.existsStudyHistoryByStudySeqAndHistoryDate(studySeq, curDate);
+    }
 }
