@@ -215,12 +215,9 @@ public class StudyController {
     // 스터디 신청
     @PostMapping("{study-seq}/application")
     public ResponseEntity<? extends BaseResponseBody> applyStudy(@PathVariable("study-seq") Integer studySeq, Authentication authentication) {
-        System.out.println("0번");
         Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
-        System.out.println("1번");
         if (studyApplyService.existsStudyById(new StudyApplyId(userSeq, studySeq)))
             return ResponseEntity.ok(BaseResponseBody.of(409, "Fail : Already applied"));
-        System.out.println("2번");
         studyApplyService.createApplicant(new StudyApplyId(userSeq, studySeq));
         return ResponseEntity.ok(BaseResponseBody.of(200, "Success : Apply study"));
     }
