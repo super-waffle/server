@@ -1,5 +1,7 @@
 package com.gongsp.api.service;
 
+import com.gongsp.db.entity.Notice;
+import com.gongsp.db.repository.NoticeRepository;
 import com.gongsp.db.repository.StudyRoomMemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -24,6 +26,9 @@ public class SseServiceImpl implements SseService {
     @Autowired
     StudyRoomMemberRepository studyRoomMemberRepository;
 
+    @Autowired
+    NoticeRepository noticeRepository;
+
     @Override
     public void sendMeetingVacancyNotice(List<Integer> userList, Integer meetingSeq, String meetingTitle) {
         for (Integer userSeq : userList) {
@@ -37,6 +42,7 @@ public class SseServiceImpl implements SseService {
                     sseEmitters.remove(userSeq);
                 }
             }
+            noticeRepository.save(new Notice(userSeq, 103, LocalDate.now(), "[" + meetingTitle + "] 자유열람실에 공석이 생겼습니다.", false));
         }
     }
 
@@ -50,6 +56,7 @@ public class SseServiceImpl implements SseService {
                 sseEmitters.remove(userSeq);
             }
         }
+        noticeRepository.save(new Notice(userSeq, 102, LocalDate.now(), "[" + studyTitle + "] 스터디에 ["+username+"] 회원이 참가를 신청하였습니다.", false));
     }
 
     @Override
@@ -57,11 +64,12 @@ public class SseServiceImpl implements SseService {
         if (sseEmitters.containsKey(userSeq)) {
             SseEmitter sseEmitter = sseEmitters.get(userSeq);
             try {
-                sseEmitter.send(SseEmitter.event().name("StudyApply").data(studySeq + "_" + title));
+                sseEmitter.send(SseEmitter.event().name("StudyGrant").data(studySeq + "_" + title));
             } catch (Exception e) {
                 sseEmitters.remove(userSeq);
             }
         }
+        noticeRepository.save(new Notice(userSeq, 102, LocalDate.now(), "[" + title + "] 스터디에 참가되었습니다.", false));
     }
 
     @Override
@@ -69,11 +77,12 @@ public class SseServiceImpl implements SseService {
         if (sseEmitters.containsKey(userSeq)) {
             SseEmitter sseEmitter = sseEmitters.get(userSeq);
             try {
-                sseEmitter.send(SseEmitter.event().name("StudyApply").data(studySeq + "_" + title));
+                sseEmitter.send(SseEmitter.event().name("StudyReject").data(studySeq + "_" + title));
             } catch (Exception e) {
                 sseEmitters.remove(userSeq);
             }
         }
+        noticeRepository.save(new Notice(userSeq, 102, LocalDate.now(), "[" + title + "] 스터디에 거절당했습니다.", false));
     }
 
     @Override
@@ -90,6 +99,7 @@ public class SseServiceImpl implements SseService {
                         sseEmitters.remove(userSeq);
                     }
                 }
+                noticeRepository.save(new Notice(userSeq, 102, LocalDate.now(), "스터디 시작시간 10분 전입니다.", false));
             }
         }
     }

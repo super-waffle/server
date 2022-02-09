@@ -17,7 +17,19 @@ public class Notice {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer noticeSeq;
     private Integer userSeq;
+    private Integer categorySeq;
     private LocalDate noticeDate;
     private String noticeContent;
     private Boolean isChecked;
+
+    public Notice() {
+    }
+
+    public Notice(Integer userSeq, Integer categorySeq, LocalDate noticeDate, String noticeContent, Boolean isChecked) {
+        this.userSeq = userSeq;
+        this.noticeDate = noticeDate;
+        this.categorySeq = categorySeq;
+        this.noticeContent = noticeContent;
+        this.isChecked = isChecked;
+    }
 }

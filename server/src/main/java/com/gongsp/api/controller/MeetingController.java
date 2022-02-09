@@ -176,23 +176,23 @@ public class MeetingController {
         return ResponseEntity.ok(MeetingEnterPostRes.of(200, "Success : Enter meeting room", token, meeting, isHost));
     }
 
-//    @GetMapping("sse/{meeting-seq}")
-//    public ResponseEntity<? extends BaseResponseBody> notice(@PathVariable("meeting-seq") Integer meetingSeq, Authentication authentication) {
-//        Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
-//
-//        Optional<Meeting> opMeeting = meetingService.getMeeting(meetingSeq);
-//        Meeting meeting = opMeeting.get();
-//        Boolean isHost = meeting.getHostSeq().equals(userSeq);
-//        Integer full = 12;
-////        if (!isHost) {
-////            if (!meetingOnairService.existsOnair(meeting.getHostSeq(), meetingSeq)) full = 11;
-////        }
-////        if (meeting.getMeetingHeadcount().equals(full)) {
-//            List<Integer> userList = bookmarkService.findUserByMeetingSeq(meeting.getMeetingSeq());
-//            sseService.sendMeetingVacancyNotice(userList, meeting.getMeetingSeq(), meeting.getMeetingTitle());
-////        }
-//        return ResponseEntity.ok(BaseResponseBody.of(200, "Success : SSE!"));
-//    }
+    @GetMapping("sse/{meeting-seq}")
+    public ResponseEntity<? extends BaseResponseBody> notice(@PathVariable("meeting-seq") Integer meetingSeq, Authentication authentication) {
+        Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
+
+        Optional<Meeting> opMeeting = meetingService.getMeeting(meetingSeq);
+        Meeting meeting = opMeeting.get();
+        Boolean isHost = meeting.getHostSeq().equals(userSeq);
+        Integer full = 12;
+//        if (!isHost) {
+//            if (!meetingOnairService.existsOnair(meeting.getHostSeq(), meetingSeq)) full = 11;
+//        }
+//        if (meeting.getMeetingHeadcount().equals(full)) {
+            List<Integer> userList = bookmarkService.findUserByMeetingSeq(meeting.getMeetingSeq());
+            sseService.sendMeetingVacancyNotice(userList, meeting.getMeetingSeq(), meeting.getMeetingTitle());
+//        }
+        return ResponseEntity.ok(BaseResponseBody.of(200, "Success : SSE!"));
+    }
 
     // 자유열람실 퇴실
     @DeleteMapping("/{meeting-seq}/room")
