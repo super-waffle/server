@@ -2,6 +2,7 @@ package com.gongsp.api.service;
 
 import com.gongsp.api.request.meeting.MeetingCreatePostReq;
 import com.gongsp.api.request.meeting.MeetingParameter;
+import com.gongsp.api.request.study.StudyParameter;
 import com.gongsp.api.response.meeting.MeetingDetailGetRes;
 import com.gongsp.api.response.meeting.MeetingRes;
 import com.gongsp.db.entity.Category;
@@ -49,7 +50,7 @@ public class MeetingServiceImpl implements MeetingService {
 //        OpenViduRole role = userSeq.equals(meeting.getHostSeq()) ? OpenViduRole.PUBLISHER : OpenViduRole.SUBSCRIBER;
 //        System.out.println("역할:" + role);
         String serverData = "{\"serverData\": \"" + userSeq + "\"}";
-
+        System.out.println(serverData);
         // Build connectionProperties object with the serverData and the role
         ConnectionProperties connectionProperties = new ConnectionProperties.Builder().type(ConnectionType.WEBRTC).data(serverData).role(role).build();
 
@@ -59,11 +60,13 @@ public class MeetingServiceImpl implements MeetingService {
             try {
                 // Generate a new Connection with the recently created connectionProperties
                 String token = this.mapSessions.get(sessionName).createConnection(connectionProperties).getToken();
+                System.out.println("토큰: " + token);
                 // Update our collection storing the new token
                 this.mapSessionNamesTokens.get(sessionName).put(token, role);
                 return token;
             } catch (OpenViduJavaClientException e1) {
                 // If internal error generate an error message and return it to client
+                System.out.println("에러1");
                 System.out.println(e1.getStackTrace());
                 System.out.println("cause: " + e1.getCause());
                 System.out.println("error: " + e1.getMessage());
@@ -71,6 +74,7 @@ public class MeetingServiceImpl implements MeetingService {
                 return "InternalError";
             } catch (OpenViduHttpException e2) {
                 if (404 == e2.getStatus()) {
+                    System.out.println("에러2");
                     // Invalid sessionId (user left unexpectedly). Session object is not valid
                     // anymore. Clean collections and continue as new session
                     this.mapSessions.remove(sessionName);
@@ -86,8 +90,9 @@ public class MeetingServiceImpl implements MeetingService {
             // Create a new OpenVidu Session
             Session session = openVidu.createSession();
             // Generate a new Connection with the recently created connectionProperties
+            System.out.println("세선생성 성공");
             String token = session.createConnection(connectionProperties).getToken();
-
+            System.out.println("토큰" + token);
             // Store the session and the token in our collections
             this.mapSessions.put(sessionName, session);
             this.mapSessionNamesTokens.put(sessionName, new ConcurrentHashMap<>());
@@ -95,6 +100,8 @@ public class MeetingServiceImpl implements MeetingService {
 
             return token;
         } catch (Exception e) {
+            System.out.println("session 생성 에러");
+            e.printStackTrace();
             // If error generate an error message and return it to client
             return "GenError";
         }
@@ -134,27 +141,27 @@ public class MeetingServiceImpl implements MeetingService {
             //검색어 없음 = 전체목록
             if (meetingParameter.getKey() == null || meetingParameter.getKey().equals("")) {
 //                System.out.println("카테고리X 검색어X");
-                meetingList = meetingRepository.searchAll(start, 10, userSeq);
+                meetingList = meetingRepository.searchAll(start, meetingParameter.getSpp(), userSeq);
             } else {
                 //검색어 있음 - 필터링(글제목, 글내용)
 //                Optional<List<Meeting>> optionalMeetings = meetingRepository.findByMeetingTitleContainingOrMeetingDescContaining(meetingParameter.getKey(), meetingParameter.getKey(), pageRequest);
 //                if (optionalMeetings.isPresent())
 //                    meetingList = optionalMeetings.get();
 //                System.out.println("카테고리X 검색어O");
-                meetingList = meetingRepository.searchByKey(meetingParameter.getKey(), start, 10, userSeq);
+                meetingList = meetingRepository.searchByKey(meetingParameter.getKey(), start,  meetingParameter.getSpp(), userSeq);
             }
         } else {    //카테고리 선택한경우
             //검색어 없음 = 선택한 카테고리 모두
             if (meetingParameter.getKey() == null || meetingParameter.getKey().equals("")) {
 //                System.out.println("카테고리O 검색어X");
-                meetingList = meetingRepository.searchByCategorySeq(meetingParameter.getType(), start, 10, userSeq);
+                meetingList = meetingRepository.searchByCategorySeq(meetingParameter.getType(), start,  meetingParameter.getSpp(), userSeq);
             } else {
                 //검색어 있음 - 필터링(글제목, 글내용)
 //                Optional<List<Meeting>> optionalMeetings = meetingRepository.findByMeetingTitleContainingOrMeetingDescContaining(meetingParameter.getKey(), meetingParameter.getKey(), pageRequest);
 //                if (optionalMeetings.isPresent())
 //                    meetingList = optionalMeetings.get();
 //                System.out.println("카테고리O 검색어O");
-                meetingList = meetingRepository.searchByKeyAndCategory(meetingParameter.getKey(), meetingParameter.getType(), start, 10, userSeq);
+                meetingList = meetingRepository.searchByKeyAndCategory(meetingParameter.getKey(), meetingParameter.getType(), start,  meetingParameter.getSpp(), userSeq);
             }
         }
 
@@ -172,11 +179,37 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
+    public int getMeetingCnt(MeetingParameter meetingParameter, Integer userSeq) {
+        //카테고리 선택안한경우
+        if (meetingParameter.getType() == 0) {
+            //검색어 없음 = 전체목록
+            if (meetingParameter.getKey() == null || meetingParameter.getKey().equals("")) {
+//                System.out.println("카테고리X 검색어X");
+                return (int) meetingRepository.count();
+            } else {
+                //검색어 있음 - 필터링(글제목, 글내용)
+                return meetingRepository.countByKey(meetingParameter.getKey(), userSeq);
+            }
+        } else {    //카테고리 선택한경우
+            //검색어 없음 = 선택한 카테고리 모두
+            if (meetingParameter.getKey() == null || meetingParameter.getKey().equals("")) {
+                return meetingRepository.countByCategory(meetingParameter.getType(), userSeq);
+            } else {
+                //검색어 있음 - 필터링(글제목, 글내용)
+                return meetingRepository.countByKeyAndCategory(meetingParameter.getKey(), meetingParameter.getType(), userSeq);
+            }
+        }
+    }
+
+    @Override
     public Meeting createMeeting(MeetingCreatePostReq meetingCreatePostReq, Integer userSeq, String uuidFilename) {
         Meeting meeting = new Meeting();
         meeting.setHostSeq(userSeq);
         meeting.setCategory(new Category(meetingCreatePostReq.getCategorySeq()));
-        meeting.setMeetingTitle(meetingCreatePostReq.getMeetingTitle());
+        if(meetingCreatePostReq.getMeetingTitle().length()>50)
+            meeting.setMeetingTitle(meetingCreatePostReq.getMeetingTitle().substring(50));
+        else
+            meeting.setMeetingTitle(meetingCreatePostReq.getMeetingTitle());
         meeting.setMeetingDesc(meetingCreatePostReq.getMeetingDesc());
         meeting.setMeetingUrl(meetingCreatePostReq.getMeetingTitle() + userSeq);
         meeting.setMeetingCamType(meetingCreatePostReq.getMeetingCamType());

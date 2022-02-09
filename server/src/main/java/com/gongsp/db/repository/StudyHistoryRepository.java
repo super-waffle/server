@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface StudyHistoryRepository extends JpaRepository<StudyHistory, Integer> {
     boolean existsStudyHistoryByUserSeqAndStudySeqAndHistoryDate(int userSeq, int studySeq, LocalDate now);
     Optional<StudyHistory> findStudyHistoryByUserSeqAndStudySeqAndHistoryDate(int userSeq, int studySeq, LocalDate now);
+    boolean existsStudyHistoryByStudySeqAndHistoryDate(int studySeq, LocalDate curDate);
 }

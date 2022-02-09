@@ -25,4 +25,14 @@ public class StudyMember {
     private Integer ejectCount;
     @Column(name = "is_member_onair")
     private Boolean isOnAir;
+
+    public StudyMember(Integer userSeq, Integer studySeq, Integer ejectCount, Boolean isOnAir) {
+        this.userSeq = userSeq;
+        this.studySeq = studySeq;
+        this.ejectCount = ejectCount;
+        this.isOnAir = isOnAir;
+    }
+
+    public StudyMember() {
+    }
 }

@@ -57,12 +57,13 @@ public class MeetingController {
     // 자유열람실 목록 조회
     @GetMapping
     public ResponseEntity<? extends BaseResponseBody> getMeetingList(MeetingParameter meetingParameter, Authentication authentication) {
+        Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
         if (meetingParameter.getPage() == null)
             return ResponseEntity.ok(MeetingListGetRes.of(409, "Fail : Get Meeting List. No page"));
         if (meetingParameter.getType() == null)
             return ResponseEntity.ok(MeetingListGetRes.of(409, "Fail : Get Meeting List. No Category type"));
         List<MeetingRes> data = meetingService.getMeetingList(meetingParameter, Integer.parseInt((String) authentication.getPrincipal()));
-        return ResponseEntity.ok(MeetingListGetRes.of(200, "Success : Get Meeting List", meetingParameter, data.size(), data));
+        return ResponseEntity.ok(MeetingListGetRes.of(200, "Success : Get Meeting List", meetingParameter, meetingService.getMeetingCnt(meetingParameter, userSeq), data));
     }
 
     // 자유열람실 생성
@@ -174,6 +175,8 @@ public class MeetingController {
     // 자유열람실 퇴실
     @DeleteMapping("/{meeting-seq}/room")
     public ResponseEntity<? extends BaseResponseBody> removeUser(@PathVariable("meeting-seq") Integer meetingSeq, @RequestBody MeetingExitDeleteReq meetingExitDeleteReq, Authentication authentication) {
+        if(authentication == null)
+            return ResponseEntity.ok(BaseResponseBody.of(403, "Access denied"));
 
         Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
 
@@ -182,6 +185,8 @@ public class MeetingController {
 //        System.out.println("Removing user | {sessionName, userSeq}=" + "{" + meetingSeq + "," + userSeq + "}");
 
         String sessionName = meetingService.getMeetingUrl(meetingSeq);
+        if(sessionName == null)
+            return ResponseEntity.ok(BaseResponseBody.of(407, "Fail : Not valid meeting seq."));
         String token = meetingExitDeleteReq.getSessionToken();
 
         if (!meetingOnairService.existsOnair(userSeq, meetingSeq))
@@ -202,6 +207,8 @@ public class MeetingController {
         userService.updateUserLogTime(userSeq, meetingExitDeleteReq.getLogMeeting());
 
         // 만석인 방에서 나갈경우 알림보내기
+
+        // 인원 0명일경우 onair업데이트
 
         return ResponseEntity.ok(BaseResponseBody.of(200, "Success : Remove user"));
     }
