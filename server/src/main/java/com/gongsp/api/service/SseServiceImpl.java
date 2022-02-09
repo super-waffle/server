@@ -1,20 +1,32 @@
 package com.gongsp.api.service;
 
+import com.gongsp.db.repository.StudyRoomMemberRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service("sseService")
+@EnableScheduling
 public class SseServiceImpl implements SseService {
 
     public static Map<Integer, SseEmitter> sseEmitters = new ConcurrentHashMap<>();
 
+    @Autowired
+    StudyRoomMemberRepository studyRoomMemberRepository;
+
     @Override
     public void sendMeetingVacancyNotice(List<Integer> userList, Integer meetingSeq, String meetingTitle) {
-        for (Integer userSeq : userList) {d
+        for (Integer userSeq : userList) {
             if (sseEmitters.containsKey(userSeq)) {
                 SseEmitter sseEmitter = sseEmitters.get(userSeq);
                 try {
@@ -29,6 +41,60 @@ public class SseServiceImpl implements SseService {
     }
 
     @Override
+    public void sendStudyApplyNotice(Integer userSeq, Integer studySeq, String username, String studyTitle) {
+        if (sseEmitters.containsKey(userSeq)) {
+            SseEmitter sseEmitter = sseEmitters.get(userSeq);
+            try {
+                sseEmitter.send(SseEmitter.event().name("StudyApply").data(studySeq + "_" + username + "_" + studyTitle));
+            } catch (Exception e) {
+                sseEmitters.remove(userSeq);
+            }
+        }
+    }
+
+    @Override
+    public void sendStudyGrantNotice(int userSeq, int studySeq, String title) {
+        if (sseEmitters.containsKey(userSeq)) {
+            SseEmitter sseEmitter = sseEmitters.get(userSeq);
+            try {
+                sseEmitter.send(SseEmitter.event().name("StudyApply").data(studySeq + "_" + title));
+            } catch (Exception e) {
+                sseEmitters.remove(userSeq);
+            }
+        }
+    }
+
+    @Override
+    public void sendStudyRejectNotice(int userSeq, int studySeq, String title) {
+        if (sseEmitters.containsKey(userSeq)) {
+            SseEmitter sseEmitter = sseEmitters.get(userSeq);
+            try {
+                sseEmitter.send(SseEmitter.event().name("StudyApply").data(studySeq + "_" + title));
+            } catch (Exception e) {
+                sseEmitters.remove(userSeq);
+            }
+        }
+    }
+
+    @Override
+    @Scheduled(cron = "* */10 * * * *")
+    public void studyTimeNotice() {
+        List<Integer> userSeqs = studyRoomMemberRepository.findUserSeqByTime(LocalDate.now().getDayOfWeek().getValue(), LocalTime.now());
+        if (userSeqs != null) {
+            for (Integer userSeq : userSeqs) {
+                if (sseEmitters.containsKey(userSeq)) {
+                    SseEmitter sseEmitter = sseEmitters.get(userSeq);
+                    try {
+                        sseEmitter.send(SseEmitter.event().name("StudyTime").data("스터디 시작 10분전"));
+                    } catch (Exception e) {
+                        sseEmitters.remove(userSeq);
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
     public void register(SseEmitter sseEmitter, Integer userSeq) {
         //userSeq를 key로해서 SseEmitter 저장
         sseEmitters.put(userSeq, sseEmitter);
@@ -36,4 +102,5 @@ public class SseServiceImpl implements SseService {
         sseEmitter.onTimeout(() -> sseEmitters.remove(userSeq));
         sseEmitter.onError((e) -> sseEmitters.remove(userSeq));
     }
+
 }

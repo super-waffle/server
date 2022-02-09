@@ -8,6 +8,7 @@ import com.gongsp.api.response.study.StudyDetailGetRes;
 import com.gongsp.api.response.study.StudyEnterPostRes;
 import com.gongsp.api.response.study.StudyListGetRes;
 import com.gongsp.api.service.*;
+import com.gongsp.common.auth.GongUserDetails;
 import com.gongsp.common.model.response.BaseResponseBody;
 import com.gongsp.db.entity.*;
 import io.openvidu.java.client.OpenVidu;
@@ -47,6 +48,8 @@ public class StudyController {
     StudyApplyService studyApplyService;
     @Autowired
     UserService userService;
+    @Autowired
+    SseService sseService;
 
     public StudyController(@Value("${openvidu.secret}") String secret, @Value("${openvidu.url}") String openviduUrl) {
         this.SECRET = secret;
@@ -216,9 +219,15 @@ public class StudyController {
     @PostMapping("{study-seq}/application")
     public ResponseEntity<? extends BaseResponseBody> applyStudy(@PathVariable("study-seq") Integer studySeq, Authentication authentication) {
         Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
+        Optional<StudyRoom> opStudyRoom = studyRoomService.getStudyRoom(studySeq);
+        if (!opStudyRoom.isPresent())
+            return ResponseEntity.ok(StudyEnterPostRes.of(404, "Fail : Not valid studySeq"));
         if (studyApplyService.existsStudyById(new StudyApplyId(userSeq, studySeq)))
             return ResponseEntity.ok(BaseResponseBody.of(409, "Fail : Already applied"));
         studyApplyService.createApplicant(new StudyApplyId(userSeq, studySeq));
+        StudyRoom studyRoom = opStudyRoom.get();
+        GongUserDetails gongUserDetails = (GongUserDetails) authentication.getDetails();
+        sseService.sendStudyApplyNotice(studyRoom.getHost().getUserSeq(), studyRoom.getStudySeq(), ((GongUserDetails) authentication.getDetails()).getUsername(), studyRoom.getStudyTitle());
         return ResponseEntity.ok(BaseResponseBody.of(200, "Success : Apply study"));
     }
 }
