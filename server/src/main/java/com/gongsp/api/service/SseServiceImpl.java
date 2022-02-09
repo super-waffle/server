@@ -14,12 +14,14 @@ public class SseServiceImpl implements SseService {
 
     @Override
     public void sendMeetingVacancyNotice(List<Integer> userList, Integer meetingSeq, String meetingTitle) {
-        for (Integer userSeq : userList) {
+        for (Integer userSeq : userList) {d
             if (sseEmitters.containsKey(userSeq)) {
                 SseEmitter sseEmitter = sseEmitters.get(userSeq);
                 try {
-                    sseEmitter.send(SseEmitter.event().name("MeetingVacancy").data(meetingTitle).id(meetingSeq.toString()));
+//                    System.out.println(userSeq +"한테"+meetingTitle + " "  + meetingSeq + "보내는중");
+                    sseEmitter.send(SseEmitter.event().name("MeetingVacancy").data(meetingSeq + "_" + meetingTitle));
                 } catch (Exception e) {
+//                    System.out.println("근데 에러남");
                     sseEmitters.remove(userSeq);
                 }
             }

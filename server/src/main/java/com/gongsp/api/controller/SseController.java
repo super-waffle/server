@@ -23,7 +23,7 @@ public class SseController {
         //현재 클라이언트를 위한 SseEmitter 생성
         SseEmitter sseEmitter = new SseEmitter(Long.MAX_VALUE);
         sseService.register(sseEmitter, userSeq);
-        System.out.println();
+        System.out.println("sseEmitter 생성");
         try {
             sseEmitter.send(SseEmitter.event().name("connect").data("data 들어갑니까?"));
         } catch (Exception e){
