@@ -197,16 +197,16 @@ public class StudyController {
     // 스터디 게시물 작성 = 스터디룸 생성
     @PostMapping
     public ResponseEntity<? extends BaseResponseBody> createStudy(@RequestBody StudyCreatePostReq studyCreatePostReq, Authentication authentication) {
-        Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
-        StudyRoom studyRoom = studyRoomService.createStudy(studyCreatePostReq, userSeq);
-        if (studyRoom == null)
-            return ResponseEntity.ok(BaseResponseBody.of(409, "Fail : Don't saved"));
         if(studyCreatePostReq.getDay().size() == 0)
             return ResponseEntity.ok(BaseResponseBody.of(408, "Fail : Don't select day"));
         if(studyCreatePostReq.getStudyTitle() == null || studyCreatePostReq.getStudyDesc()==null || studyCreatePostReq.getStudyShortDesc()==null)
             return ResponseEntity.ok(BaseResponseBody.of(407, "Fail : Not valid input"));
         if(studyCreatePostReq.getCategorySeq() == null)
             return ResponseEntity.ok(BaseResponseBody.of(406, "Fail : Not valid category"));
+        Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
+        StudyRoom studyRoom = studyRoomService.createStudy(studyCreatePostReq, userSeq);
+        if (studyRoom == null)
+            return ResponseEntity.ok(BaseResponseBody.of(409, "Fail : Don't saved"));
         studyDayService.createStudyDays(studyCreatePostReq.getDay(), studyRoom.getStudySeq());
         studyMemberService.createMember(userSeq, studyRoom.getStudySeq());
         return ResponseEntity.ok(BaseResponseBody.of(200, "Success : Create study room"));
@@ -215,9 +215,12 @@ public class StudyController {
     // 스터디 신청
     @PostMapping("{study-seq}/application")
     public ResponseEntity<? extends BaseResponseBody> applyStudy(@PathVariable("study-seq") Integer studySeq, Authentication authentication) {
+        System.out.println("0번");
         Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
+        System.out.println("1번");
         if (studyApplyService.existsStudyById(new StudyApplyId(userSeq, studySeq)))
             return ResponseEntity.ok(BaseResponseBody.of(409, "Fail : Already applied"));
+        System.out.println("2번");
         studyApplyService.createApplicant(new StudyApplyId(userSeq, studySeq));
         return ResponseEntity.ok(BaseResponseBody.of(200, "Success : Apply study"));
     }

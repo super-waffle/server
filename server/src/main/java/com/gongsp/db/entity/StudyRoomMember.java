@@ -3,12 +3,14 @@ package com.gongsp.db.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 
 @Entity
 @Setter
 @Getter
+@ToString
 @Table(name = "tb_member_study")
 public class StudyRoomMember {
     @EmbeddedId

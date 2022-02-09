@@ -74,7 +74,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/schedules").authenticated()
                 .antMatchers("/diaries").authenticated()
                 .antMatchers("/stats").authenticated()
-                .antMatchers("/categories").authenticated()       //인증이 필요한 URL과 필요하지 않은 URL에 대하여 설정
+                .antMatchers("/categories").authenticated()
+                .antMatchers("/sse").permitAll()       //인증이 필요한 URL과 필요하지 않은 URL에 대하여 설정
                 .anyRequest().permitAll()
                 .and().cors();
     }
