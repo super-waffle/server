@@ -1,9 +1,9 @@
 package com.gongsp.api.controller;
 
-import com.gongsp.api.request.user.UserStudyUpdatePatchReq;
-import com.gongsp.api.request.user.UserTimeGoalPatchReq;
+import com.gongsp.api.request.user.*;
 import com.gongsp.api.response.study.StudyDetailInfoGetRes;
 import com.gongsp.api.response.user.ApplicantsListGetRes;
+import com.gongsp.api.response.user.MyMeetingGetRes;
 import com.gongsp.api.response.user.OtherUserProfileGetRes;
 import com.gongsp.api.response.user.UserProfileGetRes;
 import com.gongsp.api.response.user.my_study.MyStudyListGetRes;
@@ -11,13 +11,11 @@ import com.gongsp.api.response.user.my_study.StudyRes;
 import com.gongsp.api.service.UserService;
 import com.gongsp.common.auth.GongUserDetails;
 import com.gongsp.common.model.response.BaseResponseBody;
-import com.gongsp.db.entity.Applicant;
-import com.gongsp.db.entity.OtherUserProfile;
-import com.gongsp.db.entity.Study;
-import com.gongsp.db.entity.User;
+import com.gongsp.db.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -37,6 +35,8 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     // API U-001
     @GetMapping("")
@@ -63,14 +63,51 @@ public class UserController {
     }
 
     // API U-003
-    // API U-004
-
-    // API U-005
-    @PatchMapping("/goal")
-    public ResponseEntity<BaseResponseBody> updateUserTimeGoal(Authentication authentication, @RequestBody UserTimeGoalPatchReq timeGoal) {
+    @PatchMapping("")
+    public ResponseEntity<BaseResponseBody> updateUserProfile(Authentication authentication,
+                                                              @ModelAttribute UserInfoPatchReq infoPatchReq) {
         int userSeq = getUserSeqFromAuthentication(authentication);
 
-        if (userService.updateUserTimeGoal(userSeq, timeGoal.getTimeGoal()))
+        Optional<User> userInfo = userService.getUserByUserSeq(userSeq);
+
+        if (!userInfo.isPresent())
+            return ResponseEntity.ok(BaseResponseBody.of(404, "No Such User"));
+
+        User user = userInfo.get();
+
+        userService.updateUserProfile(user, infoPatchReq);
+
+        return ResponseEntity.ok(BaseResponseBody.of(200, "Success"));
+    }
+
+    // API U-004
+    @PatchMapping("/password")
+    public ResponseEntity<BaseResponseBody> updateUserPassword(Authentication authentication,
+                                                               @RequestBody UserPasswordPatchReq passwordPatchReq) {
+        int userSeq = getUserSeqFromAuthentication(authentication);
+
+        Optional<User> userInfo = userService.getUserByUserSeq(userSeq);
+
+        if (!userInfo.isPresent())
+            return ResponseEntity.ok(BaseResponseBody.of(404, "No Such User"));
+
+        User user = userInfo.get();
+
+        if (!passwordEncoder.matches(passwordPatchReq.getPassword(), user.getUserPassword()))
+            return ResponseEntity.ok(BaseResponseBody.of(409, "Not Authorized"));
+
+        userService.updateUserPassword(user, passwordEncoder.encode(passwordPatchReq.getNewPassword()));
+
+        return ResponseEntity.ok(BaseResponseBody.of(200, "Success"));
+    }
+
+    // API U-005
+    @PatchMapping("/nickname")
+    public ResponseEntity<BaseResponseBody> updateUserTimeGoal(Authentication authentication,
+                                                               @RequestBody UserNicknamePatchReq nickname) {
+        int userSeq = getUserSeqFromAuthentication(authentication);
+
+        if (userService.updateUserNickname(userSeq, nickname.getNickname()))
             return ResponseEntity.ok(BaseResponseBody.of(200,"Success"));
         return ResponseEntity.ok(BaseResponseBody.of(404, "No Such User"));
     }
@@ -285,5 +322,60 @@ public class UserController {
         userService.kickMember(studySeq, kickSeq);
 
         return ResponseEntity.ok(BaseResponseBody.of(200,"Success"));
+    }
+
+    // API U-016
+    @GetMapping("/meetings")
+    public ResponseEntity<? extends BaseResponseBody> getMyMeetingRoom(Authentication authentication) {
+        int userSeq = getUserSeqFromAuthentication(authentication);
+
+        Optional<Meeting> meeting = userService.getMyMeetingRoomInfo(userSeq);
+
+        if (!meeting.isPresent())
+            return ResponseEntity.ok(MyMeetingGetRes.of(404, "No MeetingRoom Info", null));
+
+        return ResponseEntity.ok(MyMeetingGetRes.of(200, "Success", meeting.get()));
+    }
+
+    // API U-017
+    @PatchMapping("/meetings/{meetingSeq}")
+    public ResponseEntity<BaseResponseBody> patchMyMeetingRoom(Authentication authentication,
+                                                               @ModelAttribute UserMeetingPatchReq meetingPatchReq) {
+        int userSeq = getUserSeqFromAuthentication(authentication);
+
+        Optional<Meeting> meeting = userService.getMyMeetingRoomInfo(userSeq);
+
+        if (!meeting.isPresent())
+            return ResponseEntity.ok(BaseResponseBody.of(404, "No Such Meeting Info"));
+
+        Meeting meetingInfo = meeting.get();
+
+        if (meetingInfo.getHostSeq() != userSeq)
+            return ResponseEntity.ok(BaseResponseBody.of(409, "Not Authorized : You Are Not The Host"));
+
+        userService.updateMeetingInfo(meetingInfo, meetingPatchReq);
+
+        return  ResponseEntity.ok(BaseResponseBody.of(200,"Success"));
+    }
+
+    // API U-018
+    @DeleteMapping("/meetings/{meetingSeq}")
+    public ResponseEntity<BaseResponseBody> deleteMyMeetingRoom(Authentication authentication,
+                                                                @PathVariable(value = "meetingSeq") int meetingSeq) {
+        int userSeq = getUserSeqFromAuthentication(authentication);
+
+        Optional<Meeting> meeting = userService.getMyMeetingRoomInfo(userSeq);
+
+        if (!meeting.isPresent())
+            return ResponseEntity.ok(BaseResponseBody.of(404, "No Such Meeting Info"));
+
+        Meeting meetingInfo = meeting.get();
+
+        if (meetingInfo.getHostSeq() != userSeq)
+            return ResponseEntity.ok(BaseResponseBody.of(409, "Not Authorized : You Are Not The Host"));
+
+        userService.deleteMeeting(meetingInfo);
+
+        return  ResponseEntity.ok(BaseResponseBody.of(200,"Success"));
     }
 }

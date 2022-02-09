@@ -51,4 +51,6 @@ public interface MeetingRepository extends JpaRepository<Meeting, Integer> {
     @Query(nativeQuery = true, value = "(SELECT * FROM tb_meeting WHERE meeting_seq in " +
             "(SELECT meeting_seq FROM tb_bookmark WHERE user_seq = :userSeq)) ")
     List<Meeting> findAllByUser(@Param("userSeq") Integer userSeq);
+
+    Optional<Meeting> findTopByHostSeq(int hostSeq);
 }
