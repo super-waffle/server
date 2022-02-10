@@ -10,6 +10,7 @@ import com.gongsp.api.response.meeting.MeetingRes;
 import com.gongsp.api.service.*;
 import com.gongsp.common.model.response.BaseResponseBody;
 import com.gongsp.db.entity.BlacklistMeetingId;
+import com.gongsp.db.entity.Bookmark;
 import com.gongsp.db.entity.Meeting;
 import io.openvidu.java.client.OpenVidu;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -46,6 +48,10 @@ public class MeetingController {
     private StorageService storageService;
     @Autowired
     private BlacklistMeetingService blacklistMeetingService;
+    @Autowired
+    private SseService sseService;
+    @Autowired
+    private BookmarkService bookmarkService;
 
 
     public MeetingController(@Value("${openvidu.secret}") String secret, @Value("${openvidu.url}") String openviduUrl) {
@@ -180,11 +186,17 @@ public class MeetingController {
 
         Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
 
+        Optional<Meeting> opMeeting = meetingService.getMeeting(meetingSeq);
+        if (!opMeeting.isPresent())
+            return ResponseEntity.ok(MeetingEnterPostRes.of(404, "Fail : Not valid meetingSeq"));
 //        System.out.println(meetingExitDeleteReq.toString());
 //        System.out.println(logTimeRepository.findLogTimeByLogSeq(2));
 //        System.out.println("Removing user | {sessionName, userSeq}=" + "{" + meetingSeq + "," + userSeq + "}");
 
-        String sessionName = meetingService.getMeetingUrl(meetingSeq);
+        Meeting meeting = opMeeting.get();
+        Boolean isHost = meeting.getHostSeq().equals(userSeq);
+//        String sessionName = meetingService.getMeetingUrl(meetingSeq);
+        String sessionName = meeting.getMeetingUrl();
         if(sessionName == null)
             return ResponseEntity.ok(BaseResponseBody.of(407, "Fail : Not valid meeting seq."));
         String token = meetingExitDeleteReq.getSessionToken();
@@ -194,6 +206,19 @@ public class MeetingController {
 
         // tb_meeting_onair 칼럼 삭제
         meetingOnairService.deleteOnair(userSeq, meetingSeq);
+
+        // 만석인 방에서 나갈경우 알림보내기
+        if(!isHost){
+            //호스트가 방에 없으면 11명 이상인경우 못들어감
+            Integer full = 11;
+            //호스트가 방에 있으면 12명 이상인경우 못들어감
+            if (meetingOnairService.existsOnair(meeting.getHostSeq(), meetingSeq)) full = 12;
+            //알림 보내야됨
+            if(meeting.getMeetingHeadcount().equals(full)){
+                List<Integer> userList = bookmarkService.findUserByMeetingSeq(meeting.getMeetingSeq());
+                sseService.sendMeetingVacancyNotice(userList, meeting.getMeetingSeq(), meeting.getMeetingTitle());
+            }
+        }
 
         // tb_meeting 의 meetingHeadcount --
         meetingService.updateMeeting(meetingSeq, -1);
