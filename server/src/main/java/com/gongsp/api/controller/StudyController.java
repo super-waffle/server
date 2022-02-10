@@ -193,7 +193,6 @@ public class StudyController {
         Optional<StudyDay[]> opStudyDays = studyDayService.getStudyDay(studySeq);
         if (!opStudyDays.isPresent())
             return ResponseEntity.ok(BaseResponseBody.of(409, "Fail : Get study days"));
-        System.out.println(Arrays.toString(opStudyDays.get()));
         return ResponseEntity.ok(StudyDetailGetRes.of(200, "Success : Get study detail", studyRoom, studyRoomService.getStudyMemberNum(studySeq), opStudyDays.get()));
     }
 
