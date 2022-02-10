@@ -199,11 +199,12 @@ public class StudyController {
     // 스터디 게시물 작성 = 스터디룸 생성
     @PostMapping
     public ResponseEntity<? extends BaseResponseBody> createStudy(@RequestBody StudyCreatePostReq studyCreatePostReq, Authentication authentication) {
+        System.out.println(studyCreatePostReq.getCategorySeq());
         if(studyCreatePostReq.getDay().size() == 0)
             return ResponseEntity.ok(BaseResponseBody.of(408, "Fail : Don't select day"));
-        if(studyCreatePostReq.getStudyTitle() == null || studyCreatePostReq.getStudyDesc()==null || studyCreatePostReq.getStudyShortDesc()==null)
+        if(studyCreatePostReq.getStudyTitle() == null || studyCreatePostReq.getStudyDesc()==null || studyCreatePostReq.getStudyShortDesc()==null || studyCreatePostReq.getStudyTitle().length()==0 || studyCreatePostReq.getStudyDesc().length()==0 || studyCreatePostReq.getStudyDesc().length()==0)
             return ResponseEntity.ok(BaseResponseBody.of(407, "Fail : Not valid input"));
-        if(studyCreatePostReq.getCategorySeq() == null)
+        if(studyCreatePostReq.getCategorySeq() == null || studyCreatePostReq.getCategorySeq().equals(0))
             return ResponseEntity.ok(BaseResponseBody.of(406, "Fail : Not valid category"));
         Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
         StudyRoom studyRoom = studyRoomService.createStudy(studyCreatePostReq, userSeq);
