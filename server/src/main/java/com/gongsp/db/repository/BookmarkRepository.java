@@ -19,6 +19,8 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Integer> {
     void deleteAllByMeetingSeq(@Param("meetingSeq") int meetingSeq);
 
     @Query(nativeQuery = true, value = "select user_seq from tb_bookmark " +
-            "where meeting_seq = :meetingSeq ")
+            "where meeting_seq = :meetingSeq " +
+            "and user_seq not in (select distinct user_seq from tb_meeting_onair )" +
+            "and user_seq not in (select distinct user_seq from tb_member_study where is_member_onair = 1 )")
     List<Integer> findUserByMeeting(@Param("meetingSeq") Integer meetingSeq);
 }

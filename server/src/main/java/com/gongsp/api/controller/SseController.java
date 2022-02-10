@@ -4,6 +4,7 @@ import com.gongsp.api.service.NoticeService;
 import com.gongsp.api.service.SseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +24,7 @@ public class SseController {
         //현재 클라이언트를 위한 SseEmitter 생성
         SseEmitter sseEmitter = new SseEmitter(Long.MAX_VALUE);
         sseService.register(sseEmitter, userSeq);
-        System.out.println();
+        System.out.println("sseEmitter 생성");
         try {
             sseEmitter.send(SseEmitter.event().name("connect").data("data 들어갑니까?"));
         } catch (Exception e){
