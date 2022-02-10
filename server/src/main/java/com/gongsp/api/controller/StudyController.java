@@ -202,7 +202,7 @@ public class StudyController {
         System.out.println(studyCreatePostReq.getCategorySeq());
         if(studyCreatePostReq.getDay().size() == 0)
             return ResponseEntity.ok(BaseResponseBody.of(408, "Fail : Don't select day"));
-        if(studyCreatePostReq.getStudyTitle() == null || studyCreatePostReq.getStudyDesc()==null || studyCreatePostReq.getStudyShortDesc()==null || studyCreatePostReq.getStudyTitle().length()==0 || studyCreatePostReq.getStudyDesc().length()==0 || studyCreatePostReq.getStudyDesc().length()==0)
+        if(studyCreatePostReq.getStudyTitle() == null || studyCreatePostReq.getStudyDesc()==null || studyCreatePostReq.getStudyShortDesc()==null || studyCreatePostReq.getStudyTitle().length()==0 || studyCreatePostReq.getStudyDesc().length()==0 || studyCreatePostReq.getStudyShortDesc().length()==0)
             return ResponseEntity.ok(BaseResponseBody.of(407, "Fail : Not valid input"));
         if(studyCreatePostReq.getCategorySeq() == null || studyCreatePostReq.getCategorySeq().equals(0))
             return ResponseEntity.ok(BaseResponseBody.of(406, "Fail : Not valid category"));
