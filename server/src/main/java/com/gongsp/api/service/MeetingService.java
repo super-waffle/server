@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public interface MeetingService {
     //미팅룸 입실(session 연결)
-    String getToken(OpenVidu openVidu, Integer userSeq, Meeting meeting);
+    String getToken(OpenVidu openVidu, Integer userSeq, Meeting meeting, boolean isHost);
     //미팅룸 퇴실(session 연결종료)
     String removeUser(String sessionName, String token, Integer meetingSeq);
 

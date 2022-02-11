@@ -50,9 +50,9 @@ public class StudySchedule {
     @Column(name = "is_study_onair")
     private Boolean isOnAir;
     @Column(name = "time_start")
-    private LocalTime StartTime;
+    private String StartTime;
     @Column(name = "time_end")
-    private LocalTime EndTime;
+    private String EndTime;
     @Transient
     private Integer isAttend;
 
