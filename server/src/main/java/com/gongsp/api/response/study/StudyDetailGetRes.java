@@ -14,6 +14,8 @@ import java.util.List;
 @Setter
 public class StudyDetailGetRes extends BaseResponseBody {
     private String hostNickName;
+    private String hostImg;
+    private Integer hostSeq;
     private String categoryName;
     private String studyTitle;
     private String studyShortDesc;
@@ -33,6 +35,8 @@ public class StudyDetailGetRes extends BaseResponseBody {
         res.setStatusCode(statusCode);
         res.setMessage(message);
         res.hostNickName = studyRoom.getHost().getUserNickname();
+        res.hostImg = studyRoom.getHost().getUserImg();
+        res.hostSeq = studyRoom.getHost().getUserSeq();
         res.categoryName = studyRoom.getCategory().getCategoryName();
         res.studyTitle = studyRoom.getStudyTitle();
         res.studyShortDesc = studyRoom.getStudyShortDesc();

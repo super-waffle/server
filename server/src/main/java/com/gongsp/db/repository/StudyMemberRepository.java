@@ -24,7 +24,7 @@ public interface StudyMemberRepository extends JpaRepository<StudyMember, Intege
     void deleteByUserSeqAndStudySeq(@Param(value = "userSeq") int userSeq, @Param(value = "studySeq") int studySeq);
 
     boolean existsStudyMemberByUserSeqAndStudySeq(int userSeq, int studySeq);
-    int countStudyMemberByStudySeq(int userSeq);
+    int countStudyMemberByStudySeq(int studySeq);
 
     @Modifying
     @Transactional
@@ -36,4 +36,5 @@ public interface StudyMemberRepository extends JpaRepository<StudyMember, Intege
     @Query(value = "delete from tb_member_study where study_seq = :studySeq and user_seq = :userSeq",
             nativeQuery = true)
     void kickMember(@Param(value = "studySeq")int studySeq, @Param(value = "userSeq") int userSeq);
+
 }

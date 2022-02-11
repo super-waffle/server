@@ -22,6 +22,12 @@ public interface MeetingRepository extends JpaRepository<Meeting, Integer> {
             "order by meeting_seq desc limit :start, :spp ")
     List<Meeting> searchAll(@Param("start") Integer start, @Param("spp") Integer spp, @Param("userSeq") Integer userSeq);
 
+    @Query(nativeQuery = true, value = "select count(*) from tb_meeting " +
+            "where category_seq = :categorySeq " +
+            "and meeting_seq not in " +
+            "(select meeting_seq from tb_blacklist_meeting where user_seq = :userSeq) ")
+    int countByCategory(@Param("categorySeq") Integer categorySeq, @Param("userSeq") Integer userSeq);
+
     //    Optional<List<Meeting>> findByMeetingTitleContainingOrMeetingDescContaining(String meetingTitle, String meetingDesc, Pageable pageable);
     @Query(nativeQuery = true, value = "select * from tb_meeting " +
             "where category_seq = :categorySeq " +
@@ -31,12 +37,25 @@ public interface MeetingRepository extends JpaRepository<Meeting, Integer> {
     List<Meeting> searchByCategorySeq(@Param("categorySeq") Integer categorySeq, @Param("start") Integer start, @Param("spp") Integer spp, @Param("userSeq") Integer userSeq);
 //    Optional<List<Meeting>> findByMeetingTitleContainingOrMeetingDescContainingAndCategorySeq(String meetingTitle, String meetingDesc, Integer categorySeq, Pageable pageable);
 
+    @Query(nativeQuery = true, value = "select count(*) from tb_meeting " +
+            "where (meeting_title like %:key% or meeting_desc like %:key% ) " +
+            "and meeting_seq not in " +
+            "(select meeting_seq from tb_blacklist_meeting where user_seq = :userSeq) ")
+    int countByKey(@Param("key") String key, @Param("userSeq") Integer userSeq);
+
     @Query(nativeQuery = true, value = "select * from tb_meeting " +
             "where (meeting_title like %:key% or meeting_desc like %:key% ) " +
             "and meeting_seq not in " +
             "(select meeting_seq from tb_blacklist_meeting where user_seq = :userSeq) " +
             "order by meeting_seq desc limit :start, :spp ")
     List<Meeting> searchByKey(@Param("key") String key, @Param("start") Integer start, @Param("spp") Integer spp, @Param("userSeq") Integer userSeq);
+
+    @Query(nativeQuery = true, value = "select count(*) from tb_meeting " +
+            "where (meeting_title like %:key% or meeting_desc like %:key% ) " +
+            "and category_seq = :categorySeq " +
+            "and meeting_seq not in " +
+            "(select meeting_seq from tb_blacklist_meeting where user_seq = :userSeq) ")
+    int countByKeyAndCategory(@Param("key") String key, @Param("categorySeq") Integer categorySeq, @Param("userSeq") Integer userSeq);
 
     @Query(nativeQuery = true, value = "select * from tb_meeting " +
             "where (meeting_title like %:key% or meeting_desc like %:key% ) " +

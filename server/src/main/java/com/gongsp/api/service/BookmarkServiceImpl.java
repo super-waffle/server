@@ -61,4 +61,9 @@ public class BookmarkServiceImpl implements BookmarkService {
         }
         return true;
     }
+
+    @Override
+    public List<Integer> findUserByMeetingSeq(Integer meetingSeq) {
+        return bookmarkRepository.findUserByMeeting(meetingSeq);
+    }
 }

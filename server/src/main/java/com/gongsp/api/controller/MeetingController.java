@@ -46,6 +46,10 @@ public class MeetingController {
     private StorageService storageService;
     @Autowired
     private BlacklistMeetingService blacklistMeetingService;
+    @Autowired
+    private SseService sseService;
+    @Autowired
+    private BookmarkService bookmarkService;
 
 
     public MeetingController(@Value("${openvidu.secret}") String secret, @Value("${openvidu.url}") String openviduUrl) {
@@ -57,12 +61,13 @@ public class MeetingController {
     // 자유열람실 목록 조회
     @GetMapping
     public ResponseEntity<? extends BaseResponseBody> getMeetingList(MeetingParameter meetingParameter, Authentication authentication) {
+        Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
         if (meetingParameter.getPage() == null)
             return ResponseEntity.ok(MeetingListGetRes.of(409, "Fail : Get Meeting List. No page"));
         if (meetingParameter.getType() == null)
             return ResponseEntity.ok(MeetingListGetRes.of(409, "Fail : Get Meeting List. No Category type"));
         List<MeetingRes> data = meetingService.getMeetingList(meetingParameter, Integer.parseInt((String) authentication.getPrincipal()));
-        return ResponseEntity.ok(MeetingListGetRes.of(200, "Success : Get Meeting List", meetingParameter, data.size(), data));
+        return ResponseEntity.ok(MeetingListGetRes.of(200, "Success : Get Meeting List", meetingParameter, meetingService.getMeetingCnt(meetingParameter, userSeq), data));
     }
 
     // 자유열람실 생성
@@ -147,7 +152,7 @@ public class MeetingController {
 //        System.out.println("토큰!!" + token);
 
         // 이런식으로 처리하면 안닫히는 세션들이 많이 생길거같긴한데..... 프론트에서 어떻게 처리되는지 몰라서..
-        if (!meetingOnairService.existsOnair(userSeq, meetingSeq)){
+        if (!meetingOnairService.existsOnair(userSeq, meetingSeq)) {
             //tb_meeting_onair 칼럼추가
             meetingOnairService.createOnair(userSeq, meetingSeq, isHost);
 
@@ -171,17 +176,45 @@ public class MeetingController {
         return ResponseEntity.ok(MeetingEnterPostRes.of(200, "Success : Enter meeting room", token, meeting, isHost));
     }
 
+    @GetMapping("sse/{meeting-seq}")
+    public ResponseEntity<? extends BaseResponseBody> notice(@PathVariable("meeting-seq") Integer meetingSeq, Authentication authentication) {
+        Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
+
+        Optional<Meeting> opMeeting = meetingService.getMeeting(meetingSeq);
+        Meeting meeting = opMeeting.get();
+        Boolean isHost = meeting.getHostSeq().equals(userSeq);
+        Integer full = 12;
+//        if (!isHost) {
+//            if (!meetingOnairService.existsOnair(meeting.getHostSeq(), meetingSeq)) full = 11;
+//        }
+//        if (meeting.getMeetingHeadcount().equals(full)) {
+            List<Integer> userList = bookmarkService.findUserByMeetingSeq(meeting.getMeetingSeq());
+            sseService.sendMeetingVacancyNotice(userList, meeting.getMeetingSeq(), meeting.getMeetingTitle());
+//        }
+        return ResponseEntity.ok(BaseResponseBody.of(200, "Success : SSE!"));
+    }
+
     // 자유열람실 퇴실
     @DeleteMapping("/{meeting-seq}/room")
     public ResponseEntity<? extends BaseResponseBody> removeUser(@PathVariable("meeting-seq") Integer meetingSeq, @RequestBody MeetingExitDeleteReq meetingExitDeleteReq, Authentication authentication) {
+        if (authentication == null)
+            return ResponseEntity.ok(BaseResponseBody.of(403, "Access denied"));
 
         Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
 
+        Optional<Meeting> opMeeting = meetingService.getMeeting(meetingSeq);
+        if (!opMeeting.isPresent())
+            return ResponseEntity.ok(MeetingEnterPostRes.of(404, "Fail : Not valid meetingSeq"));
 //        System.out.println(meetingExitDeleteReq.toString());
 //        System.out.println(logTimeRepository.findLogTimeByLogSeq(2));
 //        System.out.println("Removing user | {sessionName, userSeq}=" + "{" + meetingSeq + "," + userSeq + "}");
 
-        String sessionName = meetingService.getMeetingUrl(meetingSeq);
+        Meeting meeting = opMeeting.get();
+        Boolean isHost = meeting.getHostSeq().equals(userSeq);
+//        String sessionName = meetingService.getMeetingUrl(meetingSeq);
+        String sessionName = meeting.getMeetingUrl();
+        if (sessionName == null)
+            return ResponseEntity.ok(BaseResponseBody.of(407, "Fail : Not valid meeting seq."));
         String token = meetingExitDeleteReq.getSessionToken();
 
         if (!meetingOnairService.existsOnair(userSeq, meetingSeq))
@@ -189,6 +222,19 @@ public class MeetingController {
 
         // tb_meeting_onair 칼럼 삭제
         meetingOnairService.deleteOnair(userSeq, meetingSeq);
+
+        // 만석인 방에서 나갈경우 알림보내기
+        if (!isHost) {
+            //호스트가 방에 없으면 11명 이상인경우 못들어감
+            Integer full = 11;
+            //호스트가 방에 있으면 12명 이상인경우 못들어감
+            if (meetingOnairService.existsOnair(meeting.getHostSeq(), meetingSeq)) full = 12;
+            //알림 보내야됨 - 미팅룸/스터디룸에 들어가있지 않은 사용자에게
+            if (meeting.getMeetingHeadcount().equals(full)) {
+                List<Integer> userList = bookmarkService.findUserByMeetingSeq(meeting.getMeetingSeq());
+                sseService.sendMeetingVacancyNotice(userList, meeting.getMeetingSeq(), meeting.getMeetingTitle());
+            }
+        }
 
         // tb_meeting 의 meetingHeadcount --
         meetingService.updateMeeting(meetingSeq, -1);
@@ -202,6 +248,8 @@ public class MeetingController {
         userService.updateUserLogTime(userSeq, meetingExitDeleteReq.getLogMeeting());
 
         // 만석인 방에서 나갈경우 알림보내기
+
+        // 인원 0명일경우 onair업데이트
 
         return ResponseEntity.ok(BaseResponseBody.of(200, "Success : Remove user"));
     }

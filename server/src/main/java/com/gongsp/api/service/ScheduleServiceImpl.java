@@ -1,7 +1,9 @@
 package com.gongsp.api.service;
 
 import com.gongsp.db.entity.Study;
+import com.gongsp.db.entity.StudySchedule;
 import com.gongsp.db.repository.StudyRepository;
+import com.gongsp.db.repository.StudyScheduleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,11 +14,11 @@ import java.util.List;
 public class ScheduleServiceImpl implements ScheduleService {
 
     @Autowired
-    private StudyRepository studyRepository;
+    private StudyScheduleRepository studyScheduleRepository;
 
     @Override
-    public List<Study> findAllUserIncludedActiveStudies(Integer userSeq, LocalDate date, Integer day) {
-        System.out.println(studyRepository.findAllByUserSeq(userSeq, date, day));
-        return studyRepository.findAllByUserSeq(userSeq, date, day);
+    public List<StudySchedule> findAllUserIncludedActiveStudies(Integer userSeq, LocalDate date, Integer day) {
+//        System.out.println(studyRepository.findAllByUserSeq(userSeq, date, day));
+        return studyScheduleRepository.findAllByUserSeq(userSeq, date, day);
     }
 }

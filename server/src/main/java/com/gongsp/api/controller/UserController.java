@@ -8,10 +8,14 @@ import com.gongsp.api.response.user.OtherUserProfileGetRes;
 import com.gongsp.api.response.user.UserProfileGetRes;
 import com.gongsp.api.response.user.my_study.MyStudyListGetRes;
 import com.gongsp.api.response.user.my_study.StudyRes;
+import com.gongsp.api.service.SseService;
 import com.gongsp.api.service.UserService;
 import com.gongsp.common.auth.GongUserDetails;
 import com.gongsp.common.model.response.BaseResponseBody;
-import com.gongsp.db.entity.*;
+import com.gongsp.db.entity.Meeting;
+import com.gongsp.db.entity.OtherUserProfile;
+import com.gongsp.db.entity.Study;
+import com.gongsp.db.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -37,6 +41,8 @@ public class UserController {
     private UserService userService;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private SseService sseService;
 
     // API U-001
     @GetMapping("")
@@ -108,7 +114,7 @@ public class UserController {
         int userSeq = getUserSeqFromAuthentication(authentication);
 
         if (userService.updateUserNickname(userSeq, nickname.getNickname()))
-            return ResponseEntity.ok(BaseResponseBody.of(200,"Success"));
+            return ResponseEntity.ok(BaseResponseBody.of(200, "Success"));
         return ResponseEntity.ok(BaseResponseBody.of(404, "No Such User"));
     }
 
@@ -144,16 +150,16 @@ public class UserController {
         Optional<Study> studyInfo = userService.getStudyInfo(studySeq);
 
         if (!studyInfo.isPresent())
-            return ResponseEntity.ok(BaseResponseBody.of(404,"No Such Study"));
+            return ResponseEntity.ok(BaseResponseBody.of(404, "No Such Study"));
 
         Study study = studyInfo.get();
 
         if (study.getHostSeq() != userSeq)
-            return ResponseEntity.ok(BaseResponseBody.of(409,"Not Authorized : You Are Not The Host"));
+            return ResponseEntity.ok(BaseResponseBody.of(409, "Not Authorized : You Are Not The Host"));
 
         userService.patchStudyInfo(study, studyPatchInfo);
 
-        return ResponseEntity.ok(BaseResponseBody.of(200,"Success"));
+        return ResponseEntity.ok(BaseResponseBody.of(200, "Success"));
     }
 
     // API U-009-1
@@ -164,16 +170,16 @@ public class UserController {
         Optional<Study> studyInfo = userService.getStudyInfo(studySeq);
 
         if (!studyInfo.isPresent())
-            return ResponseEntity.ok(BaseResponseBody.of(404,"No Such Study"));
+            return ResponseEntity.ok(BaseResponseBody.of(404, "No Such Study"));
 
         Study study = studyInfo.get();
 
         if (study.getHostSeq() != userSeq)
-            return ResponseEntity.ok(BaseResponseBody.of(409,"Not Authorized : You Are Not The Host"));
+            return ResponseEntity.ok(BaseResponseBody.of(409, "Not Authorized : You Are Not The Host"));
 
         userService.endStudy(study);
 
-        return ResponseEntity.ok(BaseResponseBody.of(200,"Success"));
+        return ResponseEntity.ok(BaseResponseBody.of(200, "Success"));
     }
 
     // API U-009-2
@@ -184,16 +190,16 @@ public class UserController {
         Optional<Study> studyInfo = userService.getStudyInfo(studySeq);
 
         if (!studyInfo.isPresent())
-            return ResponseEntity.ok(BaseResponseBody.of(404,"No Such Study"));
+            return ResponseEntity.ok(BaseResponseBody.of(404, "No Such Study"));
 
         Study study = studyInfo.get();
 
         if (study.getHostSeq() == userSeq)
-            return ResponseEntity.ok(BaseResponseBody.of(409,"Not Authorized : You Are The Host"));
+            return ResponseEntity.ok(BaseResponseBody.of(409, "Not Authorized : You Are The Host"));
 
         userService.quitStudy(userSeq, study);
 
-        return ResponseEntity.ok(BaseResponseBody.of(200,"Success"));
+        return ResponseEntity.ok(BaseResponseBody.of(200, "Success"));
     }
 
     // API U-010
@@ -204,16 +210,16 @@ public class UserController {
         Optional<Study> studyInfo = userService.getStudyInfo(studySeq);
 
         if (!studyInfo.isPresent())
-            return ResponseEntity.ok(BaseResponseBody.of(404,"No Such Study"));
+            return ResponseEntity.ok(BaseResponseBody.of(404, "No Such Study"));
 
         Study study = studyInfo.get();
 
         if (study.getHostSeq() != userSeq)
-            return ResponseEntity.ok(BaseResponseBody.of(409,"Not Authorized : You Are Not The Host"));
+            return ResponseEntity.ok(BaseResponseBody.of(409, "Not Authorized : You Are Not The Host"));
 
         userService.startStudy(userSeq, study);
 
-        return ResponseEntity.ok(BaseResponseBody.of(200,"Success"));
+        return ResponseEntity.ok(BaseResponseBody.of(200, "Success"));
     }
 
     // API U-011
@@ -224,16 +230,16 @@ public class UserController {
         Optional<Study> studyInfo = userService.getStudyInfo(studySeq);
 
         if (!studyInfo.isPresent())
-            return ResponseEntity.ok(BaseResponseBody.of(404,"No Such Study"));
+            return ResponseEntity.ok(BaseResponseBody.of(404, "No Such Study"));
 
         Study study = studyInfo.get();
 
         if (study.getHostSeq() != userSeq)
-            return ResponseEntity.ok(BaseResponseBody.of(409,"Not Authorized : You Are Not The Host"));
+            return ResponseEntity.ok(BaseResponseBody.of(409, "Not Authorized : You Are Not The Host"));
 
         userService.endStudyRecruit(study);
 
-        return ResponseEntity.ok(BaseResponseBody.of(200,"Success"));
+        return ResponseEntity.ok(BaseResponseBody.of(200, "Success"));
     }
 
     // API U-012
@@ -244,18 +250,18 @@ public class UserController {
         Optional<Study> studyInfo = userService.getStudyInfo(studySeq);
 
         if (!studyInfo.isPresent())
-            return ResponseEntity.ok(BaseResponseBody.of(404,"No Such Study"));
+            return ResponseEntity.ok(BaseResponseBody.of(404, "No Such Study"));
 
         Study study = studyInfo.get();
 
         if (study.getHostSeq() != userSeq)
-            return ResponseEntity.ok(BaseResponseBody.of(409,"Not Authorized : You Are Not The Host"));
+            return ResponseEntity.ok(BaseResponseBody.of(409, "Not Authorized : You Are Not The Host"));
 
         Optional<Collection<User>> applicants = userService.getApplicantByStudySeq(studySeq);
 
         if (!applicants.isPresent() || applicants.get().isEmpty())
-            return ResponseEntity.ok(ApplicantsListGetRes.of(204,"No List Exist", null));
-        return ResponseEntity.ok(ApplicantsListGetRes.of(200,"Success", applicants.get()));
+            return ResponseEntity.ok(ApplicantsListGetRes.of(204, "No List Exist", null));
+        return ResponseEntity.ok(ApplicantsListGetRes.of(200, "Success", applicants.get()));
     }
 
     // API U-013
@@ -268,60 +274,64 @@ public class UserController {
         Optional<Study> studyInfo = userService.getStudyInfo(studySeq);
 
         if (!studyInfo.isPresent())
-            return ResponseEntity.ok(BaseResponseBody.of(404,"No Such Study"));
+            return ResponseEntity.ok(BaseResponseBody.of(404, "No Such Study"));
 
         Study study = studyInfo.get();
 
         if (study.getHostSeq() != userSeq)
-            return ResponseEntity.ok(BaseResponseBody.of(409,"Not Authorized : You Are Not The Host"));
+            return ResponseEntity.ok(BaseResponseBody.of(409, "Not Authorized : You Are Not The Host"));
 
         userService.grantApplicant(studySeq, applicantSeq);
 
-        return ResponseEntity.ok(BaseResponseBody.of(200,"Success"));
+        sseService.sendStudyGrantNotice(applicantSeq, studySeq, study.getTitle());
+
+        return ResponseEntity.ok(BaseResponseBody.of(200, "Success"));
     }
 
     // API U-014
     @DeleteMapping("/studies/{studySeq}/applicants/{applicantSeq}")
     public ResponseEntity<BaseResponseBody> rejectApplicant(Authentication authentication,
-                                                           @PathVariable(value = "studySeq") int studySeq,
-                                                           @PathVariable(value = "applicantSeq") int applicantSeq) {
+                                                            @PathVariable(value = "studySeq") int studySeq,
+                                                            @PathVariable(value = "applicantSeq") int applicantSeq) {
         int userSeq = getUserSeqFromAuthentication(authentication);
 
         Optional<Study> studyInfo = userService.getStudyInfo(studySeq);
 
         if (!studyInfo.isPresent())
-            return ResponseEntity.ok(BaseResponseBody.of(404,"No Such Study"));
+            return ResponseEntity.ok(BaseResponseBody.of(404, "No Such Study"));
 
         Study study = studyInfo.get();
 
         if (study.getHostSeq() != userSeq)
-            return ResponseEntity.ok(BaseResponseBody.of(409,"Not Authorized : You Are Not The Host"));
+            return ResponseEntity.ok(BaseResponseBody.of(409, "Not Authorized : You Are Not The Host"));
 
         userService.rejectApplicant(studySeq, applicantSeq);
 
-        return ResponseEntity.ok(BaseResponseBody.of(200,"Success"));
+        sseService.sendStudyRejectNotice(applicantSeq, studySeq, study.getTitle());
+
+        return ResponseEntity.ok(BaseResponseBody.of(200, "Success"));
     }
 
     // API U-015
     @DeleteMapping("/studies/{studySeq}/kick/{kickSeq}")
     public ResponseEntity<BaseResponseBody> kickMember(Authentication authentication,
-                                                            @PathVariable(value = "studySeq") int studySeq,
-                                                            @PathVariable(value = "kickSeq") int kickSeq) {
+                                                       @PathVariable(value = "studySeq") int studySeq,
+                                                       @PathVariable(value = "kickSeq") int kickSeq) {
         int userSeq = getUserSeqFromAuthentication(authentication);
 
         Optional<Study> studyInfo = userService.getStudyInfo(studySeq);
 
         if (!studyInfo.isPresent())
-            return ResponseEntity.ok(BaseResponseBody.of(404,"No Such Study"));
+            return ResponseEntity.ok(BaseResponseBody.of(404, "No Such Study"));
 
         Study study = studyInfo.get();
 
         if (study.getHostSeq() != userSeq)
-            return ResponseEntity.ok(BaseResponseBody.of(409,"Not Authorized : You Are Not The Host"));
+            return ResponseEntity.ok(BaseResponseBody.of(409, "Not Authorized : You Are Not The Host"));
 
         userService.kickMember(studySeq, kickSeq);
 
-        return ResponseEntity.ok(BaseResponseBody.of(200,"Success"));
+        return ResponseEntity.ok(BaseResponseBody.of(200, "Success"));
     }
 
     // API U-016
@@ -355,7 +365,7 @@ public class UserController {
 
         userService.updateMeetingInfo(meetingInfo, meetingPatchReq);
 
-        return  ResponseEntity.ok(BaseResponseBody.of(200,"Success"));
+        return ResponseEntity.ok(BaseResponseBody.of(200, "Success"));
     }
 
     // API U-018
@@ -376,6 +386,6 @@ public class UserController {
 
         userService.deleteMeeting(meetingInfo);
 
-        return  ResponseEntity.ok(BaseResponseBody.of(200,"Success"));
+        return ResponseEntity.ok(BaseResponseBody.of(200, "Success"));
     }
 }

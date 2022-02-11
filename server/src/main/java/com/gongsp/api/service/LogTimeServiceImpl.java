@@ -87,4 +87,60 @@ public class LogTimeServiceImpl implements LogTimeService {
             }
         }
     }
+
+    @Override
+    public void updateStudyLogTime(Integer userSeq, Integer logStudy, LocalTime logStart) {
+        // 오늘 공부한게 있으면 update
+        Optional<LogTime> opLog = logTimeRepository.findTop1ByUserSeqOrderByLogDateDesc(userSeq);
+        if(!opLog.isPresent()){
+            System.out.println("Error : LogTime 기록이 안된 사용자");
+            createLogTime(userSeq);
+            opLog = logTimeRepository.findTop1ByUserSeqOrderByLogDateDesc(userSeq);
+        }
+
+        LogTime logTime = opLog.get();
+        LocalTime curTime = LocalTime.now();
+        LocalDate curDate = LocalDate.now();
+
+        if (logTime.getLogDate().isEqual(curDate)) {
+            logTime.setLogMeeting((short)(logTime.getLogMeeting() + logStudy));
+            logTime.setLogEndTime(curTime);
+            logTimeRepository.save(logTime);
+        } else {
+            // 공부기록이 오늘보다 작으면 오늘에 넣고
+            // 공부기록이 오늘보다 크면 오늘에 넣고 남은걸 어제로 넣음 -> 더 남으면 더 이전날로
+            int todayMin = curTime.getHour() * 60 + curTime.getMinute();
+            LogTime log = new LogTime();
+            log.setUserSeq(userSeq);
+            log.setLogDate(curDate);
+            log.setLogStartTime(LocalTime.of(0, 0, 0));
+            log.setLogEndTime(curTime);
+            if(todayMin > logStudy){
+                log.setLogStudy(logStudy.shortValue());
+                logTimeRepository.save(log);
+            }else{
+                log.setLogStudy((short)todayMin);
+                logTimeRepository.save(log);
+
+                logStudy -= todayMin;
+                while(logStudy >= 1440){ //하루 넘어갔음. 스터디는 이런일 없을거같긴한데 혹시모르니..
+                    log = new LogTime();
+                    log.setUserSeq(userSeq);
+                    log.setLogDate(curDate.plusDays(-1));
+                    log.setLogMeeting((short)1440);
+                    log.setLogStartTime(LocalTime.of(0, 0, 0));
+                    log.setLogEndTime(LocalTime.of(23, 59, 59));
+                    logTimeRepository.save(log);
+                    logStudy -= 1440;
+                }
+                log = new LogTime();
+                log.setUserSeq(userSeq);
+                log.setLogDate(curDate.plusDays(-1));
+                log.setLogMeeting(logStudy.shortValue());
+                log.setLogStartTime(logStart);
+                log.setLogEndTime(LocalTime.of(23, 59, 59));
+                logTimeRepository.save(log);
+            }
+        }
+    }
 }
