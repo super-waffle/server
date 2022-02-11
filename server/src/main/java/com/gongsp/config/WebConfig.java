@@ -12,7 +12,11 @@ public class WebConfig implements WebMvcConfigurer {
         WebMvcConfigurer.super.addCorsMappings(registry);
         registry.addMapping("/**")
                 .allowedOrigins("*")
-                .allowedMethods(HttpMethod.GET.name(), HttpMethod.HEAD.name(), HttpMethod.POST.name(), HttpMethod.PUT.name(), HttpMethod.DELETE.name(), HttpMethod.PATCH.name());
-
+                .allowedMethods(HttpMethod.GET.name(),
+                        HttpMethod.HEAD.name(),
+                        HttpMethod.POST.name(),
+                        HttpMethod.PUT.name(),
+                        HttpMethod.DELETE.name(),
+                        HttpMethod.PATCH.name());
     }
 }
