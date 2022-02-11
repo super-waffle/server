@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,15 +36,9 @@ public class ScheduleController {
 
         Map<Integer, ScheduleRes> map = new HashMap<>();
         for (LocalDate currentDate = todayDate.minusDays(dayOfWeek-1); currentDate.isBefore(todayDate.plusDays(8-dayOfWeek)); currentDate=currentDate.plusDays(1)) {
-//            System.out.println(currentDate);
             Integer dayNumber = currentDate.getDayOfWeek().getValue();
             List<StudySchedule> schedules = scheduleService.findAllUserIncludedActiveStudies(userSeq, currentDate, dayNumber);
             map.put(dayNumber, new ScheduleRes(currentDate, schedules));
-//            for (StudySchedule ss : schedules) {
-//                System.out.println(ss);
-//            }
-            System.out.println("맵" + map.get(dayNumber));
-
         }
         return ResponseEntity.ok(ScheduleListGetRes.of(200, "Success", map));
 

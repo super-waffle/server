@@ -23,7 +23,6 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     public List<StudySchedule> findAllUserIncludedActiveStudies(Integer userSeq, LocalDate date, Integer day) {
-//        System.out.println(studyRepository.findAllByUserSeq(userSeq, date, day));
         List<StudySchedule> studySchedules = studyScheduleRepository.findAllByUserSeq(userSeq, date, day);
         if(studySchedules == null)
             return null;
@@ -32,11 +31,8 @@ public class ScheduleServiceImpl implements ScheduleService {
             if(!optionalStudyHistory.isPresent())
                 studySchedules.get(i).setIsAttend(2);
             else{
-                if(optionalStudyHistory.get().getHistoryLate()) {
-                    System.out.println(optionalStudyHistory.get().getHistoryLate());
+                if(optionalStudyHistory.get().getHistoryLate())
                     studySchedules.get(i).setIsAttend(1);
-                    System.out.println("출석!!" + studySchedules.get(i).getIsAttend());
-                }
                 else
                     studySchedules.get(i).setIsAttend(0);
             }

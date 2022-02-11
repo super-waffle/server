@@ -18,8 +18,6 @@ public class ScheduleRes {
     public ScheduleRes(LocalDate date, List<StudySchedule> studySchedules) {
         this.date = date;
         this.studySchedules = studySchedules;
-        System.out.println("내부" + studySchedules);
-        System.out.println("STudyRES내부" + this.studySchedules.toString());
     }
 
     public ScheduleRes() {

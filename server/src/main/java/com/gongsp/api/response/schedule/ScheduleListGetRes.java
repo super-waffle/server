@@ -17,8 +17,6 @@ public class ScheduleListGetRes extends BaseResponseBody {
         res.setStatusCode(statusCode);
         res.setMessage(message);
         res.setMap(map);
-        System.out.println("최종 전" + map.get(5));
-        System.out.println("최종" + res.map.get(5));
         return res;
     }
 }
