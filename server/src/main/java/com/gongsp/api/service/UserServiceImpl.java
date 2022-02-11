@@ -267,8 +267,6 @@ public class UserServiceImpl implements UserService{
             String newPath = storageService.store(infoPatchReq.getProfileImage());
             user.setUserImg(newPath);
         }
-        System.out.println(infoPatchReq);
-        System.out.println(user);
         userRepository.save(user);
     }
 }
