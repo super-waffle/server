@@ -269,4 +269,10 @@ public class UserServiceImpl implements UserService{
         }
         userRepository.save(user);
     }
+
+    @Override
+    public void deleteProfileImage(User user) {
+        user.setUserImg(null);
+        userRepository.save(user);
+    }
 }
