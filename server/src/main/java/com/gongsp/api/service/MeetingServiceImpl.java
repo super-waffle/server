@@ -43,7 +43,7 @@ public class MeetingServiceImpl implements MeetingService {
 //        System.out.println(sessionName);
         // 근데 아예 Subscriber로 설정하면 화면송출이 안되는듯?? 일단 예제따라서
 //        System.out.println(userSeq + " " + meeting.getHostSeq() + userSeq.equals(meeting.getHostSeq()));
-        OpenViduRole role  = OpenViduRole.PUBLISHER;
+        OpenViduRole role  = OpenViduRole.MODERATOR;
 //        if (isHost)
 //            role = OpenViduRole.PUBLISHER;
 //        else
