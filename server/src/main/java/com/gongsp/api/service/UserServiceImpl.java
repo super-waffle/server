@@ -269,4 +269,9 @@ public class UserServiceImpl implements UserService{
         }
         userRepository.save(user);
     }
+
+    @Override
+    public Integer getUserCount() {
+        return userRepository.getUserCount();
+    }
 }
