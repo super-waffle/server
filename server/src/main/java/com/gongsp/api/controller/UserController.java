@@ -378,4 +378,21 @@ public class UserController {
 
         return  ResponseEntity.ok(BaseResponseBody.of(200,"Success"));
     }
+
+    // API U-019
+    @PatchMapping("/profile/image")
+    public ResponseEntity<BaseResponseBody> deleteMyProfileImage(Authentication authentication) {
+        int userSeq = getUserSeqFromAuthentication(authentication);
+
+        Optional<User> userInfo = userService.getUserByUserSeq(userSeq);
+
+        if (!userInfo.isPresent())
+            return ResponseEntity.ok(BaseResponseBody.of(404, "No Such User"));
+
+        User user = userInfo.get();
+
+        userService.deleteProfileImage(user);
+
+        return ResponseEntity.ok(BaseResponseBody.of(200, "Success"));
+    }
 }

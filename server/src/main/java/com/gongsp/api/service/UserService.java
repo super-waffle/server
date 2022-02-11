@@ -33,4 +33,5 @@ public interface UserService {
     void deleteMeeting(Meeting meetingInfo);
     void updateUserPassword(User user, String newPassword);
     void updateUserProfile(User user, UserInfoPatchReq infoPatchReq);
+    void deleteProfileImage(User userSeq);
 }
