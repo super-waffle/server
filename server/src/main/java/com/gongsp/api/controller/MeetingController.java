@@ -148,7 +148,7 @@ public class MeetingController {
         }
 
         // token 얻기 (session 생성 후 connection 생성)
-        String token = meetingService.getToken(openVidu, userSeq, meeting);
+        String token = meetingService.getToken(openVidu, userSeq, meeting, isHost);
 //        System.out.println("토큰!!" + token);
 
         // 이런식으로 처리하면 안닫히는 세션들이 많이 생길거같긴한데..... 프론트에서 어떻게 처리되는지 몰라서..

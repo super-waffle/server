@@ -34,4 +34,5 @@ public interface UserService {
     void updateUserPassword(User user, String newPassword);
     void updateUserProfile(User user, UserInfoPatchReq infoPatchReq);
     Integer getUserCount();
+    void deleteProfileImage(User userSeq);
 }

@@ -13,7 +13,7 @@ public interface StudyScheduleRepository extends JpaRepository<StudySchedule, In
             "FROM tb_study st\n" +
             "JOIN tb_member_study m ON st.study_seq = m.study_seq\n" +
             "JOIN tb_category c ON st.category_seq = c.category_seq\n" +
-            "JOIN tb_day_study d ON st.study_seq = d.study_seq\n AND d.day_number = :day " +
+            "JOIN tb_day_study d ON (st.study_seq = d.study_seq AND d.day_number = :day)" +
             "WHERE m.user_seq = :userSeq " +
             "AND study_date_start <= :date " +
             "AND study_date_end >= :date " +
