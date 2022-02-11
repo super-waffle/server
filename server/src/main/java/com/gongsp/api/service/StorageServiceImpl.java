@@ -25,6 +25,7 @@ public class StorageServiceImpl implements StorageService{
         try {
             Files.createDirectories(Paths.get(uploadPath));
         } catch (IOException e) {
+            System.out.println("Could not create upload folder");
             throw new RuntimeException("Could not create upload folder");
         }
     }
@@ -33,6 +34,7 @@ public class StorageServiceImpl implements StorageService{
     public String store(MultipartFile file) {
         try {
             if (file.isEmpty()) {
+                System.out.println("ERROR: File is empty.");
                 throw new Exception("ERROR: File is empty.");
             }
             Path root = Paths.get(uploadPath);
@@ -48,6 +50,7 @@ public class StorageServiceImpl implements StorageService{
                 return uuidFilename;
             }
             }  catch (Exception e) {
+            System.out.println("Could not store file. ERROR: " + e.getMessage());
             throw new RuntimeException("Could not store file. ERROR: " + e.getMessage());
         }
 
