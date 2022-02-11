@@ -4,11 +4,9 @@ package com.gongsp.db.entity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.jpa.repository.Modifying;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -55,4 +53,7 @@ public class StudySchedule {
     private LocalTime StartTime;
     @Column(name = "time_end")
     private LocalTime EndTime;
+    @Transient
+    private Integer isAttend;
+
 }

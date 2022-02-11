@@ -5,6 +5,7 @@ import com.gongsp.api.response.schedule.ScheduleRes;
 import com.gongsp.api.response.study.StudyRes;
 import com.gongsp.api.service.ScheduleService;
 import com.gongsp.db.entity.Study;
+import com.gongsp.db.entity.StudySchedule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +37,8 @@ public class ScheduleController {
         Map<Integer, ScheduleRes> map = new HashMap<>();
         for (LocalDate currentDate = todayDate.minusDays(dayOfWeek-1); currentDate.isBefore(todayDate.plusDays(8-dayOfWeek)); currentDate=currentDate.plusDays(1)) {
             Integer dayNumber = currentDate.getDayOfWeek().getValue();
-            map.put(dayNumber, new ScheduleRes(currentDate, scheduleService.findAllUserIncludedActiveStudies(userSeq, currentDate, dayNumber)));
+            List<StudySchedule> schedules = scheduleService.findAllUserIncludedActiveStudies(userSeq, currentDate, dayNumber);
+            map.put(dayNumber, new ScheduleRes(currentDate, schedules));
         }
         return ResponseEntity.ok(ScheduleListGetRes.of(200, "Success", map));
 
