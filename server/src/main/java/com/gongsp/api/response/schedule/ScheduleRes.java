@@ -13,9 +13,9 @@ import java.util.List;
 @ToString
 public class ScheduleRes {
     private LocalDate date;
-    private List<StudySchedule> studySchedules;
+    private List<StudyDailyHistory> studySchedules;
 
-    public ScheduleRes(LocalDate date, List<StudySchedule> studySchedules) {
+    public ScheduleRes(LocalDate date, List<StudyDailyHistory> studySchedules) {
         this.date = date;
         this.studySchedules = studySchedules;
     }
