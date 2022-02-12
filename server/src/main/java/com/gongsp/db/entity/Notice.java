@@ -5,7 +5,7 @@ import lombok.Setter;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -18,14 +18,14 @@ public class Notice {
     private Integer noticeSeq;
     private Integer userSeq;
     private Integer categorySeq;
-    private LocalDate noticeDate;
+    private LocalDateTime noticeDate;
     private String noticeContent;
     private Boolean isChecked;
 
     public Notice() {
     }
 
-    public Notice(Integer userSeq, Integer categorySeq, LocalDate noticeDate, String noticeContent, Boolean isChecked) {
+    public Notice(Integer userSeq, Integer categorySeq, LocalDateTime noticeDate, String noticeContent, Boolean isChecked) {
         this.userSeq = userSeq;
         this.noticeDate = noticeDate;
         this.categorySeq = categorySeq;

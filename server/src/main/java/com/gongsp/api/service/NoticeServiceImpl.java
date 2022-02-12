@@ -1,6 +1,5 @@
 package com.gongsp.api.service;
 
-import com.gongsp.api.controller.NoticeController;
 import com.gongsp.db.entity.Notice;
 import com.gongsp.db.repository.NoticeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,11 +8,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service("noticeService")
 public class NoticeServiceImpl implements NoticeService{
