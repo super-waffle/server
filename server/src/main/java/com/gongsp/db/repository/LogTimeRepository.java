@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,4 +21,11 @@ public interface LogTimeRepository extends JpaRepository<LogTime, Integer> {
             "where user_seq = :userSeq and log_date > :startDate - interval 1 year;",
             nativeQuery = true)
     Optional<List<LogTime>> selectAllOneYearTimesOfUser(@Param(value = "userSeq") int userSeq, @Param(value = "startDate") LocalDate startDate);
+
+    @Query(value = "SELECT SUM(tb.time_total)\n" +
+            "FROM (SELECT user_seq, SUM(log_meeting + log_study) AS time_total\n" +
+            "FROM tb_log_time \n" +
+            "GROUP BY user_seq) tb ;"
+            , nativeQuery = true)
+    Integer getTotalTime();
 }
