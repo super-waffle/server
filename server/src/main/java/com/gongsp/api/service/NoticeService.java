@@ -1,7 +1,6 @@
 package com.gongsp.api.service;
 
 import com.gongsp.db.entity.Notice;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 
