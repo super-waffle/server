@@ -49,9 +49,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public Map<Integer, ScheduleRes> getAllStudiesInAWeek(int userSeq, LocalDate date) {
-        Map<Integer, ScheduleRes> mapResult = new HashMap<>();
-
+    public List<ScheduleRes> getAllStudiesInAWeek(int userSeq, LocalDate date) {
         int startDateInterval = 0;
         int endDateInterval = 0;
 
@@ -90,15 +88,6 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         LocalDate[] dates = setLocalDates(date, date.getDayOfWeek().getValue(), startDateInterval, endDateInterval);
 
-        for (int i = 1; i <= 7; i++) {
-            mapResult.put(i, new ScheduleRes(dates[i], new ArrayList<>()));
-        }
-
-        if (!studiesInfo.isPresent()) {
-            System.out.println("No Studies");
-            return mapResult;
-        }
-
         List<ScheduleRes> result = new ArrayList<>();
 
         for (int i = 0; i < 7; i++) {
@@ -106,6 +95,10 @@ public class ScheduleServiceImpl implements ScheduleService {
             res.setDate(dates[i + 1]);
             res.setStudySchedules(new ArrayList<>());
             result.add(res);
+        }
+
+        if (!studiesInfo.isPresent()) {
+            return result;
         }
 
         List<Study> studies = studiesInfo.get();
@@ -151,11 +144,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             }
         }
 
-        for (int i = 1; i <= 7; i++) {
-            mapResult.put(i, result.get(i - 1));
-        }
-
-        return mapResult;
+        return result;
     }
 
     private LocalDate[] setLocalDates(LocalDate date, int value, int startDateInterval, int endDateInterval) {

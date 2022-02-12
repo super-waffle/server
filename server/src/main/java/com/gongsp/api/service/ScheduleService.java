@@ -11,5 +11,5 @@ import java.util.Optional;
 
 public interface ScheduleService {
     List<StudySchedule> findAllUserIncludedActiveStudies(Integer userSeq, LocalDate date, Integer day);
-    Map<Integer, ScheduleRes> getAllStudiesInAWeek(int userSeq, LocalDate date);
+    List<ScheduleRes> getAllStudiesInAWeek(int userSeq, LocalDate date);
 }

@@ -31,7 +31,7 @@ public class ScheduleController {
 
         LocalDate realDate = LocalDate.parse(date);
 
-        Map<Integer, ScheduleRes> scheduleResInfo = scheduleService.getAllStudiesInAWeek(userSeq, realDate);
+        List<ScheduleRes> scheduleResInfo = scheduleService.getAllStudiesInAWeek(userSeq, realDate);
 
         return ResponseEntity.ok(ScheduleListGetRes.of(200, "Success", scheduleResInfo));
     }
