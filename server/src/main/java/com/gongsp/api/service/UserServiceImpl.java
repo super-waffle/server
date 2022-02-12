@@ -273,6 +273,7 @@ public class UserServiceImpl implements UserService{
     @Override
     public Integer getUserCount() {
         return userRepository.getUserCount();
+    }
       
     @Override
     public void deleteProfileImage(User user) {
