@@ -134,6 +134,7 @@ public class StudyRoomServiceImpl implements StudyRoomService {
             studyRes.setStudyShortDesc(study.getStudyShortDesc());
             studyRes.setStudyHeadcount(getStudyMemberNum(study.getStudySeq()));
             studyRes.setStudyRecruitEnd(study.getStudyRecruitEnd());
+            studyRes.setIsStudyRecruiting(study.getIsStudyRecruiting());
             studyResList.add(studyRes);
         }
         return studyResList;
@@ -193,6 +194,7 @@ public class StudyRoomServiceImpl implements StudyRoomService {
         studyRoom.setStudyDateEnd(null);
         studyRoom.setStudyRecruitStart(LocalDate.now());
         studyRoom.setStudyRecruitEnd(studyCreatePostReq.getStudyRecruitEnd());
+        studyRoom.setIsStudyRecruiting(true);
         return studyRoomRepository.save(studyRoom);
     }
 
