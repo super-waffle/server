@@ -177,6 +177,7 @@ public class UserServiceImpl implements UserService{
     @Override
     public void endStudyRecruit(Study study) {
         study.setRecruitEndDate(LocalDate.now());
+        study.setIsRecruiting(false);
         studyRepository.save(study);
     }
 
