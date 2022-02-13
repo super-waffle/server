@@ -1,5 +1,6 @@
 package com.gongsp.api.controller;
 
+import com.gongsp.api.request.study.StudyApplyPostReq;
 import com.gongsp.api.request.study.StudyCreatePostReq;
 import com.gongsp.api.request.study.StudyExitPatchReq;
 import com.gongsp.api.request.study.StudyParameter;
@@ -217,14 +218,14 @@ public class StudyController {
 
     // 스터디 신청
     @PostMapping("{study-seq}/application")
-    public ResponseEntity<? extends BaseResponseBody> applyStudy(@PathVariable("study-seq") Integer studySeq, Authentication authentication) {
+    public ResponseEntity<? extends BaseResponseBody> applyStudy(@PathVariable("study-seq") Integer studySeq, @RequestBody StudyApplyPostReq studyApplyPostReq, Authentication authentication) {
         Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
         Optional<StudyRoom> opStudyRoom = studyRoomService.getStudyRoom(studySeq);
         if (!opStudyRoom.isPresent())
             return ResponseEntity.ok(StudyEnterPostRes.of(404, "Fail : Not valid studySeq"));
         if (studyApplyService.existsStudyById(new StudyApplyId(userSeq, studySeq)))
             return ResponseEntity.ok(BaseResponseBody.of(409, "Fail : Already applied"));
-        studyApplyService.createApplicant(new StudyApplyId(userSeq, studySeq));
+        studyApplyService.createApplicant(new StudyApplyId(userSeq, studySeq), studyApplyPostReq.getApplyMessage());
         StudyRoom studyRoom = opStudyRoom.get();
         GongUserDetails gongUserDetails = (GongUserDetails) authentication.getDetails();
         sseService.sendStudyApplyNotice(studyRoom.getHost().getUserSeq(), studyRoom.getStudySeq(), ((GongUserDetails) authentication.getDetails()).getUsername(), studyRoom.getStudyTitle());

@@ -6,6 +6,6 @@ import com.gongsp.db.entity.StudyApplyId;
 import java.util.Optional;
 
 public interface StudyApplyService {
-    void createApplicant(StudyApplyId studyApplyId);
+    void createApplicant(StudyApplyId studyApplyId, String applyMessage);
     boolean existsStudyById(StudyApplyId studyApplyId);
 }
