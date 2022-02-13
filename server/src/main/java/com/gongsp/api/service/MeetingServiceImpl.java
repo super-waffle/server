@@ -211,6 +211,7 @@ public class MeetingServiceImpl implements MeetingService {
             meeting.setMeetingTitle(meetingCreatePostReq.getMeetingTitle().substring(50));
         else
             meeting.setMeetingTitle(meetingCreatePostReq.getMeetingTitle());
+        meeting.setCategorySeq(meetingCreatePostReq.getCategorySeq());
         meeting.setMeetingDesc(meetingCreatePostReq.getMeetingDesc());
         meeting.setMeetingUrl(meetingCreatePostReq.getMeetingTitle() + userSeq);
         meeting.setMeetingCamType(meetingCreatePostReq.getMeetingCamType());
