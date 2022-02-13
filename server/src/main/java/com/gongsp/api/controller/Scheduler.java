@@ -33,7 +33,7 @@ public class Scheduler {
     }
 
     // 스터디모집 종료날짜에 마감시키기 == 스터디 모집 종료여부 true로 바꾸기
-    @Scheduled(cron = "0 * * * * ?")    // 매일 자정에 실행
+    @Scheduled(cron = "0 0 0 * * ?")    // 매일 자정에 실행
     public void endStudyRecruit() {
         studyRoomService.hideStudyRecruit(LocalDate.now().minusDays(1));
     }
