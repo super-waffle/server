@@ -8,6 +8,7 @@ import com.gongsp.api.response.meeting.MeetingEnterPostRes;
 import com.gongsp.api.response.meeting.MeetingListGetRes;
 import com.gongsp.api.response.meeting.MeetingRes;
 import com.gongsp.api.service.*;
+import com.gongsp.common.auth.GongUserDetails;
 import com.gongsp.common.model.response.BaseResponseBody;
 import com.gongsp.db.entity.BlacklistMeetingId;
 import com.gongsp.db.entity.Meeting;
@@ -173,7 +174,7 @@ public class MeetingController {
         if (token.equals("GenError"))
             return ResponseEntity.ok(MeetingEnterPostRes.of(409, "Fail : Generate meeting room", null));
 
-        return ResponseEntity.ok(MeetingEnterPostRes.of(200, "Success : Enter meeting room", token, meeting, isHost));
+        return ResponseEntity.ok(MeetingEnterPostRes.of(200, "Success : Enter meeting room", token, meeting, isHost, ((GongUserDetails) authentication.getDetails()).getUsername()));
     }
 
     @GetMapping("sse/{meeting-seq}")
