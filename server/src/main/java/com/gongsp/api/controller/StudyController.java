@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -111,7 +113,7 @@ public class StudyController {
             return ResponseEntity.ok(StudyEnterPostRes.of(409, "Fail : OpenViduJavaClientException", null));
         if (token.equals("GenError"))
             return ResponseEntity.ok(StudyEnterPostRes.of(409, "Fail : Generate meeting room", null));
-        return ResponseEntity.ok(StudyEnterPostRes.of(200, "Success : Enter study room", token, studyRoom, studyRoom.getHost().getUserSeq().equals(userSeq), isLate));
+        return ResponseEntity.ok(StudyEnterPostRes.of(200, "Success : Enter study room", token, studyRoom, studyRoom.getHost().getUserSeq().equals(userSeq), isLate,((GongUserDetails) authentication.getDetails()).getUsername()));
     }
 
     //스터디룸 퇴실
