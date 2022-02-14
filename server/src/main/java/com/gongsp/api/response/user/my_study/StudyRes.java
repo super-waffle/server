@@ -14,6 +14,7 @@ public class StudyRes {
 
     private Integer studySeq;
     private String hostName;
+    private String hostImage;
     private String categoryName;
     private String title;
     private String shortDescription;
@@ -50,6 +51,7 @@ public class StudyRes {
         for (StudyMember member : members)
             if (member.getUserSeq().equals(study.getHostSeq())) {
                 this.hostName = member.getUserNickname();
+                this.hostImage = member.getUserImage();
                 break;
             }
     }
@@ -78,6 +80,7 @@ public class StudyRes {
         for (StudyMember member : memberList)
             if (member.getUserSeq() == Integer.parseInt(this.getHostName())) {
                 this.hostName = member.getUserNickname();
+                this.hostImage = member.getUserImage();
                 break;
             }
     }
