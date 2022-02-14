@@ -182,6 +182,11 @@ public class MeetingController {
             noticeService.sendAchieveNotice(userSeq, 11, "자유열람실 첫 입장");
         }
 
+        // 업적 "일찍 일어나는 새(15번)" 등록
+        if (LocalTime.now().isBefore(LocalTime.of(07, 00, 00))) {
+            noticeService.sendAchieveNotice(userSeq, 15, "일찍 일어나는 새");
+        }
+
         return ResponseEntity.ok(MeetingEnterPostRes.of(200, "Success : Enter meeting room", token, meeting, isHost, ((GongUserDetails) authentication.getDetails()).getUsername()));
     }
 
