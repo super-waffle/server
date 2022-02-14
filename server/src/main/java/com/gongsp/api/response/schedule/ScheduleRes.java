@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 @Getter
@@ -20,6 +21,9 @@ public class ScheduleRes {
         this.studySchedules = studySchedules;
     }
 
-    public ScheduleRes() {
+    public ScheduleRes() {}
+
+    public void sortSchedules() {
+        Collections.sort(this.studySchedules);
     }
 }
