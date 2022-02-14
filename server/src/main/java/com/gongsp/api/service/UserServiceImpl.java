@@ -95,20 +95,17 @@ public class UserServiceImpl implements UserService{
         Study[] studies = myStudy.get();
 
         for (Study study : studies) {
+            StudyRes temp = new StudyRes(study);
+
             Optional<StudyMember[]> members = studyMemberRepository.selectAllStudyMemebers(study.getStudySeq());
-            if (members.isPresent()) {
-                StudyRes temp = new StudyRes(study, members.get());
-                results.add(temp);
-            } else {
-                StudyRes temp = new StudyRes(study);
-                results.add(temp);
-            }
+            members.ifPresent(temp::setMemberList);
+
+            results.add(temp);
         }
 
         for(StudyRes study : results) {
             Optional<StudyDay[]> studyDays = studyDayRepository.findAllByStudySeq(study.getStudySeq());
-            if (studyDays.isPresent())
-                study.setDays(studyDays.get());
+            studyDays.ifPresent(study::setDays);
         }
 
         return Optional.of(results);
@@ -124,12 +121,10 @@ public class UserServiceImpl implements UserService{
         StudyRes result = new StudyRes(study.get());
 
         Optional<StudyMember[]> members = studyMemberRepository.selectAllStudyMemebers(result.getStudySeq());
-        if (members.isPresent())
-            result.setMemberList(members.get());
+        members.ifPresent(result::setMemberList);
 
         Optional<StudyDay[]> studyDays = studyDayRepository.findAllByStudySeq(result.getStudySeq());
-        if (studyDays.isPresent())
-            result.setDays(studyDays.get());
+        studyDays.ifPresent(result::setDays);
 
         return Optional.of(result);
     }
