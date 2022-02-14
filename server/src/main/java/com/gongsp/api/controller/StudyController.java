@@ -142,7 +142,7 @@ public class StudyController {
         userService.updateUserLogTime(userSeq, studyExitPatchReq.getLogStudy());
 
         // 업적 "올빼미(8번)" 등록
-        if (LocalTime.now().isAfter(LocalTime.of(23, 59, 00))) {
+        if (logTimeService.getEndTime(userSeq, LocalDate.now()).isAfter(LocalTime.of(23, 59, 00))) {
             noticeService.sendAchieveNotice(userSeq, 8, "올빼미");
         }
 

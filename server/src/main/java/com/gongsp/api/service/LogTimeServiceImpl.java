@@ -147,4 +147,9 @@ public class LogTimeServiceImpl implements LogTimeService {
     public Integer getTotalTime() {
         return logTimeRepository.getTotalTime();
     }
+
+    @Override
+    public LocalTime getEndTime(Integer userSeq, LocalDate today) {
+        return logTimeRepository.findLogEndTimeByUserSeqAndDate(userSeq, today, today.plusDays(1)).orElse(null);
+    }
 }

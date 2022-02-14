@@ -9,4 +9,5 @@ public interface LogTimeService {
     void updateMeetingLogTime(Integer userSeq, Integer logMeeting, LocalTime logStart);
     void updateStudyLogTime(Integer userSeq, Integer logStudy, LocalTime logStartTime);
     Integer getTotalTime();
+    LocalTime getEndTime(Integer userSeq, LocalDate today);
 }
