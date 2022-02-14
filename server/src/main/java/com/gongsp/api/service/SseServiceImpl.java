@@ -85,6 +85,19 @@ public class SseServiceImpl implements SseService {
     }
 
     @Override
+    public void sendAchieveNotice(Integer userSeq, String content) {
+        if (sseEmitters.containsKey(userSeq)) {
+            SseEmitter sseEmitter = sseEmitters.get(userSeq);
+            try {
+                sseEmitter.send(SseEmitter.event().name("NewAchievement").data(content));
+            } catch (Exception e) {
+                sseEmitters.remove(userSeq);
+            }
+        }
+        noticeRepository.save(new Notice(userSeq, 104, LocalDateTime.now(), content, false));
+    }
+
+    @Override
     @Scheduled(cron = "* */10 * * * *")
     public void studyTimeNotice() {
         List<Integer> userSeqs = studyRoomMemberRepository.findUserSeqByTime(LocalDate.now().getDayOfWeek().getValue(), LocalTime.now());

@@ -6,6 +6,8 @@ import com.gongsp.api.request.account.AccountLoginPostReq;
 import com.gongsp.api.request.account.AccountSignupPostReq;
 import com.gongsp.api.response.account.AccountLoginPostRes;
 import com.gongsp.api.service.AccountService;
+import com.gongsp.api.service.AchieveService;
+import com.gongsp.api.service.SseService;
 import com.gongsp.common.model.response.BaseResponseBody;
 import com.gongsp.common.util.JwtTokenUtil;
 import com.gongsp.db.entity.User;
@@ -28,6 +30,12 @@ public class AccountController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private AchieveService achieveService;
+
+    @Autowired
+    private SseService sseService;
+
     // 회원가입
     @PostMapping()
     public ResponseEntity<? extends BaseResponseBody> signup(@RequestBody AccountSignupPostReq signupInfo) {
@@ -37,6 +45,11 @@ public class AccountController {
         if (user == null) {
             return ResponseEntity.ok(BaseResponseBody.of(404, "Signup Failed"));
         }
+        // 업적 "자 이제 시작이야(1번) 등록
+        achieveService.addAchieve(user, 1);
+        // 실시간 알림 전송 및 알림 보관함에 알림 등록
+        sseService.sendAchieveNotice(user.getUserSeq(), "신규 업적이 등록되었습니다: [자, 이제 시작이야!]");
+
         return ResponseEntity.ok(BaseResponseBody.of(200, "Signup Successful"));
     }
 
