@@ -225,6 +225,8 @@ public class StudyController {
             return ResponseEntity.ok(StudyEnterPostRes.of(404, "Fail : Not valid studySeq"));
         if (studyApplyService.existsStudyById(new StudyApplyId(userSeq, studySeq)))
             return ResponseEntity.ok(BaseResponseBody.of(409, "Fail : Already applied"));
+        if(studyMemberService.existsMember(userSeq, studySeq))
+            return ResponseEntity.ok(BaseResponseBody.of(408, "Fail : Already member"));
         studyApplyService.createApplicant(new StudyApplyId(userSeq, studySeq), studyApplyPostReq.getApplyMessage());
         StudyRoom studyRoom = opStudyRoom.get();
         GongUserDetails gongUserDetails = (GongUserDetails) authentication.getDetails();
