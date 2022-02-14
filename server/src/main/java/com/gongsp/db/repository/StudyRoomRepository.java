@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,4 +52,6 @@ public interface StudyRoomRepository extends JpaRepository<StudyRoom, Integer> {
             "order by study_seq desc limit :start, :spp ")
     List<StudyRoom> searchByKeyAndCategory(@Param("key") String key, @Param("categorySeq") Integer categorySeq, @Param("start") Integer start, @Param("spp") Integer spp);
 
+    @Query(nativeQuery = true, value = "SELECT * FROM tb_study WHERE study_recruit_end = :date")
+    List<StudyRoom> findStudyRoomsByStudyDateEnd(@Param("date") LocalDate date);
 }
