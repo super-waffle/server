@@ -15,8 +15,8 @@ public class StudyApplyServiceImpl implements StudyApplyService{
     StudyApplyRepository studyApplyRepository;
 
     @Override
-    public void createApplicant(StudyApplyId studyApplyId) {
-        studyApplyRepository.save(new StudyApply(studyApplyId));
+    public void createApplicant(StudyApplyId studyApplyId, String applyMessage) {
+        studyApplyRepository.save(new StudyApply(studyApplyId, applyMessage));
     }
 
     @Override
