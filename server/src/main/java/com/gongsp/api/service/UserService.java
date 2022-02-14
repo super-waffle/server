@@ -3,6 +3,7 @@ package com.gongsp.api.service;
 import com.gongsp.api.request.user.UserInfoPatchReq;
 import com.gongsp.api.request.user.UserMeetingPatchReq;
 import com.gongsp.api.request.user.UserStudyUpdatePatchReq;
+import com.gongsp.api.response.user.my_study.PagedStudyResult;
 import com.gongsp.api.response.user.my_study.StudyRes;
 import com.gongsp.db.entity.*;
 
@@ -35,4 +36,5 @@ public interface UserService {
     void updateUserProfile(User user, UserInfoPatchReq infoPatchReq);
     Integer getUserCount();
     void deleteProfileImage(User userSeq);
+    PagedStudyResult setPagenation(List<StudyRes> studyRes, int page, int size);
 }

@@ -10,13 +10,13 @@ import java.util.List;
 @Setter
 public class MyStudyListGetRes  extends BaseResponseBody {
 
-    List<StudyRes> studyList;
+    private PagedStudyResult studyResult;
 
-    public static MyStudyListGetRes of(Integer statusCode, String message, List<StudyRes> studyList) {
+    public static MyStudyListGetRes of(Integer statusCode, String message, PagedStudyResult studyResult) {
         MyStudyListGetRes result = new MyStudyListGetRes();
         result.setStatusCode(statusCode);
         result.setMessage(message);
-        result.setStudyList(studyList);
+        result.setStudyResult(studyResult);
 
         return result;
     }

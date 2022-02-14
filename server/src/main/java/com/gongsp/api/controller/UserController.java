@@ -7,6 +7,7 @@ import com.gongsp.api.response.user.MyMeetingGetRes;
 import com.gongsp.api.response.user.OtherUserProfileGetRes;
 import com.gongsp.api.response.user.UserProfileGetRes;
 import com.gongsp.api.response.user.my_study.MyStudyListGetRes;
+import com.gongsp.api.response.user.my_study.PagedStudyResult;
 import com.gongsp.api.response.user.my_study.StudyRes;
 import com.gongsp.api.service.SseService;
 import com.gongsp.api.service.UserService;
@@ -120,13 +121,18 @@ public class UserController {
 
     // API U-006
     @GetMapping("/studies")
-    public ResponseEntity<? extends BaseResponseBody> getStudiesList(Authentication authentication) {
+    public ResponseEntity<? extends BaseResponseBody> getStudiesList(Authentication authentication,
+                                                                     @RequestParam int page,
+                                                                     @RequestParam int size) {
         int userSeq = getUserSeqFromAuthentication(authentication);
 
         Optional<List<StudyRes>> studies = userService.getUserIncludedStudies(userSeq);
 
-        if (studies.isPresent())
-            return ResponseEntity.ok(MyStudyListGetRes.of(200, "Success", studies.get()));
+        if (studies.isPresent()) {
+            PagedStudyResult pagedStudyResult = userService.setPagenation(studies.get(), page, size);
+
+            return ResponseEntity.ok(MyStudyListGetRes.of(200, "Success", pagedStudyResult));
+        }
         return ResponseEntity.ok(MyStudyListGetRes.of(404, "No Study List", null));
     }
 

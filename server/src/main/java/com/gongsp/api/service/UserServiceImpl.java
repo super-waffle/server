@@ -3,6 +3,7 @@ package com.gongsp.api.service;
 import com.gongsp.api.request.user.UserInfoPatchReq;
 import com.gongsp.api.request.user.UserMeetingPatchReq;
 import com.gongsp.api.request.user.UserStudyUpdatePatchReq;
+import com.gongsp.api.response.user.my_study.PagedStudyResult;
 import com.gongsp.api.response.user.my_study.StudyRes;
 import com.gongsp.db.entity.*;
 import com.gongsp.db.repository.*;
@@ -275,5 +276,32 @@ public class UserServiceImpl implements UserService{
     public void deleteProfileImage(User user) {
         user.setUserImg(null);
         userRepository.save(user);
+    }
+
+    @Override
+    public PagedStudyResult setPagenation(List<StudyRes> studyRes, int page, int size) {
+        int totalPage = studyRes.size() / size;
+        if (studyRes.size() % size != 0)
+            totalPage += 1;
+
+        if (totalPage == 1)
+            return new PagedStudyResult(totalPage, 1, size, studyRes);
+
+        List<StudyRes> result = new ArrayList<>();
+        int thisPage = page;
+
+        if (page == 0)
+            thisPage = 1;
+
+        int endPage = (thisPage - 1) * size + size;
+
+        if (endPage > studyRes.size())
+            endPage = studyRes.size();
+
+        for (int i = (thisPage - 1) * size; i < endPage; i++) {
+            result.add(studyRes.get(i));
+        }
+
+        return new PagedStudyResult(totalPage, thisPage, size, result);
     }
 }
