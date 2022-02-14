@@ -20,6 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,6 +52,8 @@ public class MeetingController {
     private SseService sseService;
     @Autowired
     private BookmarkService bookmarkService;
+    @Autowired
+    private NoticeService noticeService;
 
 
     public MeetingController(@Value("${openvidu.secret}") String secret, @Value("${openvidu.url}") String openviduUrl) {
@@ -251,6 +254,11 @@ public class MeetingController {
         // 만석인 방에서 나갈경우 알림보내기
 
         // 인원 0명일경우 onair업데이트
+
+        // 업적 "올빼미(8번)" 등록
+        if (LocalTime.now().isAfter(LocalTime.of(23, 59, 00))) {
+            noticeService.sendAchieveNotice(userSeq, 8, "올빼미");
+        }
 
         return ResponseEntity.ok(BaseResponseBody.of(200, "Success : Remove user"));
     }

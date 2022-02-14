@@ -17,12 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.Arrays;
+import java.time.LocalTime;
 import java.util.Optional;
 
 @RestController
@@ -53,6 +51,9 @@ public class StudyController {
     UserService userService;
     @Autowired
     SseService sseService;
+    @Autowired
+    private NoticeService noticeService;
+
 
     public StudyController(@Value("${openvidu.secret}") String secret, @Value("${openvidu.url}") String openviduUrl) {
         this.SECRET = secret;
@@ -139,6 +140,11 @@ public class StudyController {
         // 시간 넘어온거 누적
         logTimeService.updateStudyLogTime(userSeq, studyExitPatchReq.getLogStudy(), studyExitPatchReq.getLogStartTime());
         userService.updateUserLogTime(userSeq, studyExitPatchReq.getLogStudy());
+
+        // 업적 "올빼미(8번)" 등록
+        if (LocalTime.now().isAfter(LocalTime.of(23, 59, 00))) {
+            noticeService.sendAchieveNotice(userSeq, 8, "올빼미");
+        }
 
         return ResponseEntity.ok(BaseResponseBody.of(200, "Success : Remove user"));
     }
