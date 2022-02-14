@@ -22,6 +22,7 @@ public class MeetingEnterPostRes extends BaseResponseBody {
     private LocalTime meetingStartTime; //시작시간
     private String userNickname;
     private String meetingUrl;
+    private Integer userSeq;
 
     public static MeetingEnterPostRes of(Integer statusCode, String message, String sessionToken) {
         MeetingEnterPostRes res = new MeetingEnterPostRes();
@@ -33,7 +34,7 @@ public class MeetingEnterPostRes extends BaseResponseBody {
         return res;
     }
 
-    public static MeetingEnterPostRes of(Integer statusCode, String message, String sessionToken, Meeting meeting, Boolean isHost, String userNickname) {
+    public static MeetingEnterPostRes of(Integer statusCode, String message, String sessionToken, Meeting meeting, Boolean isHost, String userNickname, Integer userSeq) {
         MeetingEnterPostRes res = new MeetingEnterPostRes();
         res.setStatusCode(statusCode);
         res.setMessage(message);
@@ -48,6 +49,7 @@ public class MeetingEnterPostRes extends BaseResponseBody {
         res.setMeetingStartTime(LocalTime.now());
         res.setUserNickname(userNickname);
         res.setMeetingUrl(meeting.getMeetingUrl());
+        res.setUserSeq(userSeq);
         return res;
     }
 }
