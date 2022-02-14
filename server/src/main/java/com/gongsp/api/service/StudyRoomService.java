@@ -6,6 +6,7 @@ import com.gongsp.api.response.study.StudyRes;
 import com.gongsp.db.entity.StudyRoom;
 import io.openvidu.java.client.OpenVidu;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,4 +21,5 @@ public interface StudyRoomService {
     String getStudyUrl(Integer studySeq);
     void updateStudyOnair(Integer studySeq, int onairCnt);
     String removeUser(String sessionName, String token, Integer studySeq);
+    void hideStudyRecruit(LocalDate date);
 }
