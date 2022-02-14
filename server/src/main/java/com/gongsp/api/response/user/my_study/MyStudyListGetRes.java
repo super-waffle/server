@@ -10,13 +10,23 @@ import java.util.List;
 @Setter
 public class MyStudyListGetRes  extends BaseResponseBody {
 
-    private PagedStudyResult studyResult;
+    private int totalPage;
+    private int currentPage;
+    private int size;
+    private List<StudyRes> studyList;
 
-    public static MyStudyListGetRes of(Integer statusCode, String message, PagedStudyResult studyResult) {
+    public static MyStudyListGetRes of(Integer statusCode, String message,
+                                       int totalPage,
+                                       int currentPage,
+                                       int size,
+                                       List<StudyRes> studyList) {
         MyStudyListGetRes result = new MyStudyListGetRes();
         result.setStatusCode(statusCode);
         result.setMessage(message);
-        result.setStudyResult(studyResult);
+        result.setStudyList(studyList);
+        result.setTotalPage(totalPage);
+        result.setCurrentPage(currentPage);
+        result.setSize(size);
 
         return result;
     }

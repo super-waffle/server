@@ -131,9 +131,10 @@ public class UserController {
         if (studies.isPresent()) {
             PagedStudyResult pagedStudyResult = userService.setPagenation(studies.get(), page, size);
 
-            return ResponseEntity.ok(MyStudyListGetRes.of(200, "Success", pagedStudyResult));
+            return ResponseEntity.ok(MyStudyListGetRes.of(200, "Success", pagedStudyResult.getTotalPage(),
+                    pagedStudyResult.getCurrentPage(), pagedStudyResult.getSize(), pagedStudyResult.getStudyList()));
         }
-        return ResponseEntity.ok(MyStudyListGetRes.of(404, "No Study List", null));
+        return ResponseEntity.ok(MyStudyListGetRes.of(404, "No Study List", 0, 0, 0, null));
     }
 
     // API U-007
