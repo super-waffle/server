@@ -15,7 +15,7 @@ public interface StudyRepository extends JpaRepository<Study, Integer> {
             "on (sm.study_seq = st.study_seq)\n" +
             "inner join tb_category c\n" +
             "on (st.category_seq = c.category_seq)\n" +
-            "where sm.user_seq = :seq and (st.study_date_end is null or st.study_date_end > curdate());",
+            "where sm.user_seq = :seq and (st.study_date_end is null or st.study_date_end > curdate()) order by st.study_seq desc ;",
             nativeQuery = true)
     Optional<Study[]> selectAllStudies(@Param(value = "seq") int userSeq);
 
