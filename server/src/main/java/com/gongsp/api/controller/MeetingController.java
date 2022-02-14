@@ -177,6 +177,11 @@ public class MeetingController {
         if (token.equals("GenError"))
             return ResponseEntity.ok(MeetingEnterPostRes.of(409, "Fail : Generate meeting room", null));
 
+        // 업적 "자유열람실 첫 입장(11번)" 등록
+        if (!isHost) {
+            noticeService.sendAchieveNotice(userSeq, 11, "자유열람실 첫 입장");
+        }
+
         return ResponseEntity.ok(MeetingEnterPostRes.of(200, "Success : Enter meeting room", token, meeting, isHost, ((GongUserDetails) authentication.getDetails()).getUsername()));
     }
 
