@@ -96,10 +96,11 @@ public class DiaryController {
             return ResponseEntity.ok(BaseResponseBody.of(204, "No Diary"));
         }
         // 있으면 이미지 파일 저장하고
-        if (request.getImage() == null) {
-            return ResponseEntity.ok(DiaryReadGetRes.of(400, "Failed to upload image"));
+        String uuidFilename = null;
+        if (!request.getImage().isEmpty()) {
+            uuidFilename = imageUpload(request.getImage());
+//            return ResponseEntity.ok(DiaryReadGetRes.of(400, "Failed to upload image"));
         }
-        String uuidFilename = imageUpload(request.getImage());
 
         // 전해온 정보로 수정
         Boolean diaryUpdated = diaryService.updateDiary(Integer.parseInt((String) authentication.getPrincipal()), diarySeq, request.getContentInfo(), uuidFilename);
