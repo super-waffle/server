@@ -88,7 +88,7 @@ public class Scheduler {
     }
 
     // 업적 #2 <만남은 어렵고 이별은 쉬워>: 스터디 생성 실패 (어제가 모집마감이며 시작날짜가 여전히 null 값일 때)
-    @Scheduled(cron = "0 * * * * ?")    // 매일 7시에 실행
+    @Scheduled(cron = "0 0 12 * * ?")    // 매일 정오에 실행
     public void failedToOpenStudy() {
         LocalDate yesterday = LocalDate.now().minusDays(1);
         // 스터디 시작날짜 null, 모집종료여부 true, 모집종료날짜 어제
