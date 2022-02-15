@@ -4,9 +4,11 @@ import com.gongsp.api.request.study.StudyCreatePostReq;
 import com.gongsp.api.request.study.StudyParameter;
 import com.gongsp.api.response.study.StudyRes;
 import com.gongsp.db.entity.Category;
+import com.gongsp.db.entity.Study;
 import com.gongsp.db.entity.StudyRoom;
 import com.gongsp.db.entity.User;
 import com.gongsp.db.repository.StudyMemberRepository;
+import com.gongsp.db.repository.StudyRepository;
 import com.gongsp.db.repository.StudyRoomRepository;
 import io.openvidu.java.client.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +25,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class StudyRoomServiceImpl implements StudyRoomService {
 
     @Autowired
-    StudyRoomRepository studyRoomRepository;
+    private StudyRoomRepository studyRoomRepository;
     @Autowired
-    StudyMemberRepository studyMemberRepository;
+    private StudyMemberRepository studyMemberRepository;
+    @Autowired
+    private StudyRepository studyRepository;
 
     // Collection to pair session names and OpenVidu Session objects
     private Map<String, Session> mapSessions = new ConcurrentHashMap<>();
@@ -251,5 +255,10 @@ public class StudyRoomServiceImpl implements StudyRoomService {
             study.setIsStudyRecruiting(false);
             studyRoomRepository.save(study);
         }
+    }
+
+    @Override
+    public List<Study> getRecruitEndedStudyList(LocalDate date) {
+        return studyRepository.findAllByRecruitEndDate(date);
     }
 }
