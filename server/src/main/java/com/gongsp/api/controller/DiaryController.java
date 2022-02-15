@@ -56,6 +56,11 @@ public class DiaryController {
             return ResponseEntity.ok(BaseResponseBody.of(403, "Access Denied"));
         }
 
+        Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
+        if (diaryService.readDiary(userSeq, LocalDate.parse(request.getDateInfo().getDate(), DateTimeFormatter.ISO_DATE)) != null) {
+            return ResponseEntity.ok(BaseResponseBody.of(409, "Existing Diary"));
+        }
+
         // 이미지 파일 저장
         String uuidFilename = null;
         if (!request.getImage().isEmpty()) {
