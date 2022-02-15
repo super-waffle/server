@@ -70,4 +70,19 @@ public class Scheduler {
             }
         }
     }
+
+    // 업적 #6 <쉬는 것도 전략>: 목표시간을 2시간 초과한 경우
+    @Scheduled(cron = "0 0 7 * * ?")   // 매일 7시에 실행
+    public void checkOverTwo() {
+        LocalDate today = LocalDate.now();
+        List<LogTime> totalTimeSpentList = logTimeService.getLogByDate(today).orElse(null);
+        for (LogTime totalTimeLog: totalTimeSpentList) {
+            Integer userSeq = totalTimeLog.getUserSeq();
+            Integer timeGoal = userService.getUserTimeGoal(userSeq);
+            if (timeGoal + 2 <= (totalTimeLog.getLogStudy() + totalTimeLog.getLogMeeting())
+                    && !achieveService.existingAchieve(userSeq, 6)) {
+                noticeService.sendAchieveNotice(userSeq, 6, "쉬는 것도 전략");
+            }
+        }
+    }
 }
