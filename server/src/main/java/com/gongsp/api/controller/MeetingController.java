@@ -120,7 +120,7 @@ public class MeetingController {
     // 자유열람실 입실
     @PostMapping("/{meeting-seq}/room")
     public ResponseEntity<? extends BaseResponseBody> getToken(@PathVariable("meeting-seq") Integer meetingSeq, Authentication authentication) {
-
+        System.out.println("입실들어옴");
         // 존재하는 자유열람실만 입실 할 수 있음
         Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
         Optional<Meeting> opMeeting = meetingService.getMeeting(meetingSeq);
@@ -240,6 +240,7 @@ public class MeetingController {
         // tb_meeting 의 meetingHeadcount --
         meetingService.updateMeeting(meetingSeq, -1);
 
+//        System.out.println("미팅 숫자줄였음");
         // session, connection 해제
         String result = meetingService.removeUser(sessionName, token, meetingSeq);
         if ("Error".equals(result)) return ResponseEntity.ok(BaseResponseBody.of(409, "Fail : Remove user"));
