@@ -15,4 +15,5 @@ public interface LogTimeService {
     Integer getTotalTime();
     LocalTime getEndTime(Integer userSeq, LocalDate today);
     Optional<List<LogTime>> getLogByDate(LocalDate today);
+    Boolean getUserLogByDate(Integer userSeq, LocalDate date);
 }

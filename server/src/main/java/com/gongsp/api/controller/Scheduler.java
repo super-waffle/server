@@ -100,4 +100,19 @@ public class Scheduler {
             }
         }
     }
+
+    // 업적 #3 <작심삼일>: 어제, 그저께, 그끄저꼐 로그기록 연속 3개
+    @Scheduled(cron = "0 * * * * ?")   // 매일 자정에 실행
+    public void successiveThree() {
+        LocalDate today = LocalDate.now();
+        List<LogTime> yesterdayLogList = logTimeService.getLogByDate(today).orElse(null);
+        for (LogTime log: yesterdayLogList) {
+            Integer userSeq = log.getUserSeq();
+            if (logTimeService.getUserLogByDate(userSeq, today.minusDays(2))
+                    && logTimeService.getUserLogByDate(userSeq, today.minusDays(3))
+                    && !achieveService.existingAchieve(userSeq, 3)) {
+                noticeService.sendAchieveNotice(userSeq, 3, "작심삼일");
+            }
+        }
+    }
 }

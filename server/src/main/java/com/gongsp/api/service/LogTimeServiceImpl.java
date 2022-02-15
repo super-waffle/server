@@ -158,4 +158,13 @@ public class LogTimeServiceImpl implements LogTimeService {
     public Optional<List<LogTime>> getLogByDate(LocalDate today) {
         return logTimeRepository.getLogByDate(today.minusDays(1), today);
     }
+
+    @Override
+    public Boolean getUserLogByDate(Integer userSeq, LocalDate date) {
+        LocalTime logEndTime = logTimeRepository.findLogEndTimeByUserSeqAndDate(userSeq, date, date.plusDays(1)).orElse(null);
+        if (logEndTime == null) {
+            return false;
+        }
+        return true;
+    }
 }
