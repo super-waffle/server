@@ -45,7 +45,7 @@ public class StorageServiceImpl implements StorageService{
             try (InputStream inputStream = file.getInputStream()) {
                 // 파일명 충돌방지
                 UUID uuid = UUID.randomUUID();
-                String uuidFilename = uuid + "_" + file.getOriginalFilename();
+                String uuidFilename = uuid + "_" + new String(file.getOriginalFilename().getBytes("8859_1"), "UTF-8");
                 Files.copy(inputStream, root.resolve(uuidFilename), StandardCopyOption.REPLACE_EXISTING);
                 return uuidFilename;
             }
