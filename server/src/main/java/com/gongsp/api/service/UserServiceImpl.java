@@ -322,4 +322,9 @@ public class UserServiceImpl implements UserService{
         user.setUserImg(null);
         userRepository.save(user);
     }
+
+    @Override
+    public Optional<User> getUserByUserNickname(String userNickname) {
+        return userRepository.findUserByUserNickname(userNickname);
+    }
 }

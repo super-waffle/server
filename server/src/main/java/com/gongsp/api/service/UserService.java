@@ -36,4 +36,5 @@ public interface UserService {
     void updateUserProfile(User user, UserInfoPatchReq infoPatchReq);
     Integer getUserCount();
     void deleteProfileImage(User userSeq);
+    Optional<User> getUserByUserNickname(String userNickname);
 }
