@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.aspectj.runtime.internal.Conversions.intValue;
+
 
 @Component
 public class Scheduler {
@@ -26,6 +28,8 @@ public class Scheduler {
     private NoticeService noticeService;
     @Autowired
     private AchieveService achieveService;
+    @Autowired
+    private StudyHistoryService studyHistoryService;
 
     // 랜딩페이지 누적 인원 수 및 누적 공부시간
     @Scheduled(cron = "0 0 0 * * ?")    // 매일 자정에 실행
@@ -102,7 +106,7 @@ public class Scheduler {
     }
 
     // 업적 #3 <작심삼일>: 어제, 그저께, 그끄저꼐 로그기록 연속 3개
-    @Scheduled(cron = "0 * * * * ?")   // 매일 자정에 실행
+    @Scheduled(cron = "0 0 0 * * ?")   // 매일 자정에 실행
     public void successiveThree() {
         LocalDate today = LocalDate.now();
         List<LogTime> yesterdayLogList = logTimeService.getLogByDate(today).orElse(null);
@@ -112,6 +116,18 @@ public class Scheduler {
                     && logTimeService.getUserLogByDate(userSeq, today.minusDays(3))
                     && !achieveService.existingAchieve(userSeq, 3)) {
                 noticeService.sendAchieveNotice(userSeq, 3, "작심삼일");
+            }
+        }
+    }
+
+    // 업적 #7 <지금이니?>: 스터디 정각 출석 10회 달성
+    @Scheduled(cron = "0 0 4 * * ?")    // 매일 4시에 실행
+    public void onTimeTen() {
+        List<Object []> studyHistoryList = studyHistoryService.getHistoryList();
+        for (Object [] data: studyHistoryList) {
+            if (intValue(data[1]) - intValue(data[2]) == 10
+                    && !achieveService.existingAchieve(intValue(data[0]), 7)) {
+                noticeService.sendAchieveNotice(intValue(data[0]), 7, "지금이니?");
             }
         }
     }
