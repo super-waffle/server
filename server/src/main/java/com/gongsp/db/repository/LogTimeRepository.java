@@ -31,4 +31,9 @@ public interface LogTimeRepository extends JpaRepository<LogTime, Integer> {
             "WHERE user_seq = :userSeq AND log_date >= :today AND log_date < :tomorrow ;",
             nativeQuery = true)
     Optional<LocalTime> findLogEndTimeByUserSeqAndDate(@Param(value="userSeq") Integer userSeq, @Param(value="today") LocalDate today, @Param(value="tomorrow") LocalDate tomorrow);
+
+    @Query(value = "SELECT * FROM tb_log_time\n" +
+            "WHERE log_date >= :yesterday AND log_date < :today ;",
+            nativeQuery = true)
+    Optional<List<LogTime>> getLogByDate(@Param(value="yesterday") LocalDate yesterday, @Param(value="today") LocalDate today);
 }

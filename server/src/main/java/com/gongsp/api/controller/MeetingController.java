@@ -95,7 +95,7 @@ public class MeetingController {
     }
 
     // 자유열람실 강퇴
-    @GetMapping("/{meeting-seq}/kick/{user-seq}")
+    @PostMapping("/{meeting-seq}/kick/{user-seq}")
     public ResponseEntity<? extends BaseResponseBody> kickUserFromMeeting(@PathVariable("meeting-seq") Integer meetingSeq, @PathVariable("user-seq") Integer userSeq, Authentication authentication) {
         //session 퇴출, connection 만료
         //이건 프론트에서 강퇴당하는 애 입장에서 자유열람실 퇴실 api호출해줘야 될것 같음! session token 이랑 그 사용자가 공부한시간, 공부 시작한 시간등이 필요해서
@@ -187,7 +187,7 @@ public class MeetingController {
             noticeService.sendAchieveNotice(userSeq, 15, "일찍 일어나는 새");
         }
 
-        return ResponseEntity.ok(MeetingEnterPostRes.of(200, "Success : Enter meeting room", token, meeting, isHost, ((GongUserDetails) authentication.getDetails()).getUsername()));
+        return ResponseEntity.ok(MeetingEnterPostRes.of(200, "Success : Enter meeting room", token, meeting, isHost, ((GongUserDetails) authentication.getDetails()).getUsername(), userSeq));
     }
 
     @GetMapping("sse/{meeting-seq}")

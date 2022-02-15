@@ -120,7 +120,7 @@ public class StudyController {
             noticeService.sendAchieveNotice(userSeq, 15, "일찍 일어나는 새");
         }
 
-        return ResponseEntity.ok(StudyEnterPostRes.of(200, "Success : Enter study room", token, studyRoom, studyRoom.getHost().getUserSeq().equals(userSeq), isLate,((GongUserDetails) authentication.getDetails()).getUsername()));
+        return ResponseEntity.ok(StudyEnterPostRes.of(200, "Success : Enter study room", token, studyRoom, studyRoom.getHost().getUserSeq().equals(userSeq), isLate,((GongUserDetails) authentication.getDetails()).getUsername(), userSeq));
     }
 
     //스터디룸 퇴실
