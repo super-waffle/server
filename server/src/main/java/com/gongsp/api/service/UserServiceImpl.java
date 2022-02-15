@@ -104,7 +104,7 @@ public class UserServiceImpl implements UserService{
         }
 
         for(StudyRes study : results) {
-            Optional<StudyDay[]> studyDays = studyDayRepository.findAllByStudySeq(study.getStudySeq());
+            Optional<StudyDay[]> studyDays = studyDayRepository.findAllByStudySeqOrderByDayNumber(study.getStudySeq());
             studyDays.ifPresent(study::setDays);
         }
 
@@ -123,7 +123,7 @@ public class UserServiceImpl implements UserService{
         Optional<StudyMember[]> members = studyMemberRepository.selectAllStudyMemebers(result.getStudySeq());
         members.ifPresent(result::setMemberList);
 
-        Optional<StudyDay[]> studyDays = studyDayRepository.findAllByStudySeq(result.getStudySeq());
+        Optional<StudyDay[]> studyDays = studyDayRepository.findAllByStudySeqOrderByDayNumber(result.getStudySeq());
         studyDays.ifPresent(result::setDays);
 
         return Optional.of(result);

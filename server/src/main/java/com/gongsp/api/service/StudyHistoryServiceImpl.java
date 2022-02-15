@@ -38,7 +38,7 @@ public class StudyHistoryServiceImpl implements StudyHistoryService {
         studyHistory.setUserSeq(userSeq);
         studyHistory.setStudySeq(studySeq);
         studyHistory.setHistoryDate(LocalDate.now());
-        Optional<StudyDay[]> opStudyDays = studyDayRepository.findAllByStudySeq(studySeq);
+        Optional<StudyDay[]> opStudyDays = studyDayRepository.findAllByStudySeqOrderByDayNumber(studySeq);
         studyHistory.setHistoryLate(false);
         if (opStudyDays.isPresent()){
             Integer today = LocalDate.now().getDayOfWeek().getValue();
