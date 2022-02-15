@@ -51,7 +51,7 @@ public class MeetingServiceImpl implements MeetingService {
 //        OpenViduRole role = userSeq.equals(meeting.getHostSeq()) ? OpenViduRole.PUBLISHER : OpenViduRole.SUBSCRIBER;
 //        System.out.println("역할:" + role);
         String serverData = "{\"serverData\": \"" + userSeq + "\"}";
-        System.out.println(serverData);
+//        System.out.println(serverData);
         // Build connectionProperties object with the serverData and the role
         ConnectionProperties connectionProperties = new ConnectionProperties.Builder().type(ConnectionType.WEBRTC).data(serverData).role(role).build();
 
@@ -61,21 +61,22 @@ public class MeetingServiceImpl implements MeetingService {
             try {
                 // Generate a new Connection with the recently created connectionProperties
                 String token = this.mapSessions.get(sessionName).createConnection(connectionProperties).getToken();
-                System.out.println("토큰: " + token);
+//                System.out.println("토큰: " + token);
                 // Update our collection storing the new token
                 this.mapSessionNamesTokens.get(sessionName).put(token, role);
                 return token;
             } catch (OpenViduJavaClientException e1) {
                 // If internal error generate an error message and return it to client
-                System.out.println("에러1");
+//                System.out.println("에러1");
                 System.out.println(e1.getStackTrace());
-                System.out.println("cause: " + e1.getCause());
-                System.out.println("error: " + e1.getMessage());
-                System.out.println("exception: " + e1.getClass());
+//                System.out.println("cause: " + e1.getCause());
+//                System.out.println("error: " + e1.getMessage());
+//                System.out.println("exception: " + e1.getClass());
                 return "InternalError";
             } catch (OpenViduHttpException e2) {
                 if (404 == e2.getStatus()) {
-                    System.out.println("에러2");
+                    System.out.println(e2.getStackTrace());
+//                    System.out.println("에러2");
                     // Invalid sessionId (user left unexpectedly). Session object is not valid
                     // anymore. Clean collections and continue as new session
                     this.mapSessions.remove(sessionName);
@@ -288,9 +289,9 @@ public class MeetingServiceImpl implements MeetingService {
         // If the session exists
         if (this.mapSessions.get(sessionName) != null && this.mapSessionNamesTokens.get(sessionName) != null) {
             // If the token exists
-            if (this.mapSessionNamesTokens.get(sessionName).remove(token) != null) {
+            if (token!=null && this.mapSessionNamesTokens.get(sessionName).remove(token) != null) {
                 // User left the session
-                System.out.println("세션 종료여부: " + this.mapSessionNamesTokens.get(sessionName).isEmpty());
+//                System.out.println("세션 종료여부: " + this.mapSessionNamesTokens.get(sessionName).isEmpty());
                 if (this.mapSessionNamesTokens.get(sessionName).isEmpty()) {
                     // Last user left: session must be removed
                     this.mapSessions.remove(sessionName);
