@@ -23,6 +23,8 @@ public class Scheduler {
     private StudyRoomService studyRoomService;
     @Autowired
     private NoticeService noticeService;
+    @Autowired
+    private AchieveService achieveService;
 
     // 랜딩페이지 누적 인원 수 및 누적 공부시간
     @Scheduled(cron = "0 0 0 * * ?")    // 매일 자정에 실행
@@ -47,8 +49,24 @@ public class Scheduler {
         for (LogTime totalTimeLog: totalTimeSpentList) {
             Integer userSeq = totalTimeLog.getUserSeq();
             Integer timeGoal = userService.getUserTimeGoal(userSeq);
-            if (timeGoal <= (totalTimeLog.getLogStudy() + totalTimeLog.getLogMeeting())) {
+            if (timeGoal <= (totalTimeLog.getLogStudy() + totalTimeLog.getLogMeeting())
+                    && !achieveService.existingAchieve(userSeq, 14)) {
                 noticeService.sendAchieveNotice(userSeq, 14, "앗, 이것이 성취의 맛?");
+            }
+        }
+    }
+
+    // 업적 #12 <일거양득>: 하루에 자유열람실과 스터디룸을 모두 이용했을 경우
+    @Scheduled(cron = "0 0 0 * * ?")     // 매일 자정에 실행
+    public void checkUseBoth() {
+        LocalDate today = LocalDate.now();
+        List<LogTime> logList = logTimeService.getLogByDate(today).orElse(null);
+        for (LogTime log: logList) {
+            Integer userSeq = log.getUserSeq();
+            if (log.getLogMeeting() > 0
+                    && log.getLogStudy() > 0
+                    && !achieveService.existingAchieve(userSeq, 12)) {
+                noticeService.sendAchieveNotice(userSeq, 12, "일거양득");
             }
         }
     }

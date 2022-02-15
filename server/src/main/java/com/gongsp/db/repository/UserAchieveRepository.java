@@ -1,5 +1,7 @@
 package com.gongsp.db.repository;
 
+import com.gongsp.db.entity.Achieve;
+import com.gongsp.db.entity.User;
 import com.gongsp.db.entity.UserAchieve;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -29,4 +31,6 @@ public interface UserAchieveRepository extends JpaRepository<UserAchieve, Intege
             "WHERE user_seq = :userSeq AND achieve_seq = :achieveSeq AND is_achieve_activate = true;",
             nativeQuery = true)
     Optional<UserAchieve> findActivatedAchieveByAchieveAndUser(@Param(value="userSeq") Integer userSeq, @Param(value="achieveSeq") Integer achieveSeq);
+
+    Boolean existsUserAchieveByUserAndAchieve(User user, Achieve achieve);
 }

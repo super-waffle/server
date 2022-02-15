@@ -9,4 +9,5 @@ public interface AchieveService {
     List<UserAchieve> getAchieveList(Integer userSeq);
     Boolean toggleAchieveActive(Integer userSeq, Integer achieveSeq);
     void addAchieve(User user, Integer achieveSeq);
+    Boolean existingAchieve(Integer userSeq, Integer achieveSeq);
 }

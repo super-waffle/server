@@ -1,9 +1,11 @@
 package com.gongsp.api.service;
 
+import com.gongsp.db.entity.Achieve;
 import com.gongsp.db.entity.User;
 import com.gongsp.db.entity.UserAchieve;
 import com.gongsp.db.repository.AchieveRepository;
 import com.gongsp.db.repository.UserAchieveRepository;
+import com.gongsp.db.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,9 @@ public class AchieveServiceImpl implements AchieveService{
 
     @Autowired
     private AchieveRepository achieveRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     public List<UserAchieve> getAchieveList(Integer userSeq) {
@@ -49,5 +54,12 @@ public class AchieveServiceImpl implements AchieveService{
         userAchieve.setUser(user);
         userAchieve.setAchieve(achieveRepository.findByAchieveSeq(achieveSeq));
         userAchieveRepository.save(userAchieve);
+    }
+
+    @Override
+    public Boolean existingAchieve(Integer userSeq, Integer achieveSeq) {
+        User user = userRepository.findUserByUserSeq(userSeq).orElse(null);
+        Achieve achieve = achieveRepository.findByAchieveSeq(achieveSeq);
+        return userAchieveRepository.existsUserAchieveByUserAndAchieve(user, achieve);
     }
 }
