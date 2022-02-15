@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service("logTimeService")
@@ -146,5 +147,24 @@ public class LogTimeServiceImpl implements LogTimeService {
     @Override
     public Integer getTotalTime() {
         return logTimeRepository.getTotalTime();
+    }
+
+    @Override
+    public LocalTime getEndTime(Integer userSeq, LocalDate today) {
+        return logTimeRepository.findLogEndTimeByUserSeqAndDate(userSeq, today, today.plusDays(1)).orElse(null);
+    }
+
+    @Override
+    public Optional<List<LogTime>> getLogByDate(LocalDate today) {
+        return logTimeRepository.getLogByDate(today.minusDays(1), today);
+    }
+
+    @Override
+    public Boolean getUserLogByDate(Integer userSeq, LocalDate date) {
+        LocalTime logEndTime = logTimeRepository.findLogEndTimeByUserSeqAndDate(userSeq, date, date.plusDays(1)).orElse(null);
+        if (logEndTime == null) {
+            return false;
+        }
+        return true;
     }
 }

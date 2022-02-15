@@ -10,4 +10,5 @@ public interface NoticeService {
     Boolean toggleNotice(Integer userSeq, Integer noticeSeq);
     Integer getUnreadNotice(Integer userSeq);
     Integer getTotalPagesCount(Integer userSeq, Integer page, Integer size);
+    void sendAchieveNotice(Integer userSeq, Integer achieveSeq, String achieveTitle);
 }

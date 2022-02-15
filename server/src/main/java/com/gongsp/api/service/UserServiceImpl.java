@@ -322,4 +322,9 @@ public class UserServiceImpl implements UserService{
         user.setUserImg(null);
         userRepository.save(user);
     }
+
+    @Override
+    public Integer getUserTimeGoal(Integer userSeq) {
+        return userRepository.getUserTimeGoal(userSeq);
+    }
 }

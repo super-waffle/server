@@ -8,6 +8,7 @@ import com.gongsp.api.response.user.OtherUserProfileGetRes;
 import com.gongsp.api.response.user.UserProfileGetRes;
 import com.gongsp.api.response.user.my_study.MyStudyListGetRes;
 import com.gongsp.api.response.user.my_study.StudyRes;
+import com.gongsp.api.service.NoticeService;
 import com.gongsp.api.service.SseService;
 import com.gongsp.api.service.UserService;
 import com.gongsp.common.auth.GongUserDetails;
@@ -44,6 +45,8 @@ public class UserController {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private SseService sseService;
+    @Autowired
+    private NoticeService noticeService;
 
     // API U-001
     @GetMapping("")
@@ -297,6 +300,9 @@ public class UserController {
         userService.grantApplicant(studySeq, applicantSeq);
 
         sseService.sendStudyGrantNotice(applicantSeq, studySeq, study.getTitle());
+
+        // 업적 "스터디 첫 참가(10번)" 등록
+       noticeService.sendAchieveNotice(applicantSeq, 10, "스터디 첫 참가");
 
         return ResponseEntity.ok(BaseResponseBody.of(200, "Success"));
     }

@@ -17,8 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -54,6 +52,9 @@ public class StudyController {
     UserService userService;
     @Autowired
     SseService sseService;
+    @Autowired
+    private NoticeService noticeService;
+
 
     public StudyController(@Value("${openvidu.secret}") String secret, @Value("${openvidu.url}") String openviduUrl) {
         this.SECRET = secret;
@@ -114,6 +115,12 @@ public class StudyController {
             return ResponseEntity.ok(StudyEnterPostRes.of(409, "Fail : OpenViduJavaClientException", null));
         if (token.equals("GenError"))
             return ResponseEntity.ok(StudyEnterPostRes.of(409, "Fail : Generate meeting room", null));
+
+        // 업적 "일찍 일어나는 새(15번)" 등록
+        if (LocalTime.now().isBefore(LocalTime.of(07, 00, 00))) {
+            noticeService.sendAchieveNotice(userSeq, 15, "일찍 일어나는 새");
+        }
+
         return ResponseEntity.ok(StudyEnterPostRes.of(200, "Success : Enter study room", token, studyRoom, studyRoom.getHost().getUserSeq().equals(userSeq), isLate,((GongUserDetails) authentication.getDetails()).getUsername(), userSeq));
     }
 
@@ -140,6 +147,11 @@ public class StudyController {
         // 시간 넘어온거 누적
         logTimeService.updateStudyLogTime(userSeq, studyExitPatchReq.getLogStudy(), studyExitPatchReq.getLogStartTime());
         userService.updateUserLogTime(userSeq, studyExitPatchReq.getLogStudy());
+
+        // 업적 "올빼미(8번)" 등록
+        if (logTimeService.getEndTime(userSeq, LocalDate.now()).isAfter(LocalTime.of(23, 59, 00))) {
+            noticeService.sendAchieveNotice(userSeq, 8, "올빼미");
+        }
 
         return ResponseEntity.ok(BaseResponseBody.of(200, "Success : Remove user"));
     }

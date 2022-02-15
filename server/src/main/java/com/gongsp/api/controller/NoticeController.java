@@ -16,7 +16,7 @@ import java.util.List;
 public class NoticeController {
 
     @Autowired
-    NoticeService noticeService;
+    private NoticeService noticeService;
 
     // 알림 목록 조회
     @GetMapping()

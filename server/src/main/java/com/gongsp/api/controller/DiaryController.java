@@ -61,7 +61,6 @@ public class DiaryController {
         if (request.getImage() != null) {
             uuidFilename = imageUpload(request.getImage());
         }
-
         // 하루기록 내용 저장
         Boolean diaryCreated = diaryService.createDiary(Integer.parseInt((String) authentication.getPrincipal()), request, uuidFilename);
         if (!diaryCreated) {

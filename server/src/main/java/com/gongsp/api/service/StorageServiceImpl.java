@@ -34,7 +34,6 @@ public class StorageServiceImpl implements StorageService{
     public String store(MultipartFile file) {
         try {
             if (file.isEmpty()) {
-                System.out.println("ERROR: File is empty.");
                 throw new Exception("ERROR: File is empty.");
             }
             Path root = Paths.get(uploadPath);
