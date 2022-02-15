@@ -57,10 +57,11 @@ public class DiaryController {
         }
 
         // 이미지 파일 저장
-        if (request.getImage() == null) {
-            return ResponseEntity.ok(DiaryReadGetRes.of(400, "Failed to upload image"));
+        String uuidFilename = null;
+        if (!request.getImage().isEmpty()) {
+            uuidFilename = imageUpload(request.getImage());
         }
-        String uuidFilename = imageUpload(request.getImage());
+//            return ResponseEntity.ok(DiaryReadGetRes.of(400, "Failed to upload image"));
 
         // 하루기록 내용 저장
         Boolean diaryCreated = diaryService.createDiary(Integer.parseInt((String) authentication.getPrincipal()), request, uuidFilename);
