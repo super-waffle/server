@@ -104,12 +104,58 @@ public class UserServiceImpl implements UserService{
         }
 
         for(StudyRes study : results) {
-            Optional<StudyDay[]> studyDays = studyDayRepository.findAllByStudySeq(study.getStudySeq());
+            Optional<StudyDay[]> studyDays = studyDayRepository.findAllByStudySeqOrderByDayNumber(study.getStudySeq());
             studyDays.ifPresent(study::setDays);
         }
 
         return Optional.of(results);
     }
+
+    @Override
+    public Optional<List<StudyRes>> getUserIncludedStudies(int userSeq, Integer today) {
+        Optional<Study[]> myStudy = studyRepository.selectAllStudies(userSeq);
+
+        if (!myStudy.isPresent())
+            return Optional.empty();
+
+        List<StudyRes> results = new ArrayList<>();
+
+        Study[] studies = myStudy.get();
+
+        for (Study study : studies) {
+            StudyRes temp = new StudyRes(study);
+
+            Optional<StudyMember[]> members = studyMemberRepository.selectAllStudyMemebers(study.getStudySeq());
+            members.ifPresent(temp::setMemberList);
+
+            results.add(temp);
+        }
+
+        boolean flag = false;
+        List<StudyRes> realResults = new ArrayList<>();
+        for(StudyRes study : results) {
+            Optional<StudyDay[]> studyDays = studyDayRepository.findAllByStudySeqOrderByDayNumber(study.getStudySeq());
+            List<StudyDay> todayStudyDays = new ArrayList<>();
+            if(studyDays.isPresent()){
+                for (StudyDay studyDay: studyDays.get()) {
+                    if(studyDay.getDayNumber().equals(today)){
+                        flag = true;
+                        todayStudyDays.add(studyDay);
+                    }
+                }
+                if(flag) {
+                    study.setDays(todayStudyDays.toArray(new StudyDay[todayStudyDays.size()]));
+                    flag = false;
+                    todayStudyDays.clear();
+                    realResults.add(study);
+                }
+            }
+        }
+
+        return Optional.of(realResults);
+    }
+
+
 
     @Override
     public Optional<StudyRes> getUserIncludedDetailStudyInfo(int studySeq) {
@@ -123,7 +169,7 @@ public class UserServiceImpl implements UserService{
         Optional<StudyMember[]> members = studyMemberRepository.selectAllStudyMemebers(result.getStudySeq());
         members.ifPresent(result::setMemberList);
 
-        Optional<StudyDay[]> studyDays = studyDayRepository.findAllByStudySeq(result.getStudySeq());
+        Optional<StudyDay[]> studyDays = studyDayRepository.findAllByStudySeqOrderByDayNumber(result.getStudySeq());
         studyDays.ifPresent(result::setDays);
 
         return Optional.of(result);

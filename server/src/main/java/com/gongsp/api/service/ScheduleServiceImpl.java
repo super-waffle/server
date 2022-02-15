@@ -104,7 +104,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         List<Study> studies = studiesInfo.get();
 
         for (Study study : studies) {
-            Optional<StudyDay[]> studyDays = studyDayRepository.findAllByStudySeq(study.getStudySeq());
+            Optional<StudyDay[]> studyDays = studyDayRepository.findAllByStudySeqOrderByDayNumber(study.getStudySeq());
 
             if (studyDays.isPresent()) {
                 for (StudyDay studyDay : studyDays.get()) {

@@ -17,6 +17,7 @@ public interface UserService {
     void updateUserLogTime(Integer userSeq, Integer logTime);
     boolean updateUserNickname(int userSeq, String nickname);
     Optional<List<StudyRes>> getUserIncludedStudies(int userSeq);
+    Optional<List<StudyRes>> getUserIncludedStudies(int userSeq, Integer today);
     Optional<StudyRes> getUserIncludedDetailStudyInfo(int studySeq);
     Optional<Study> getStudyInfo(int studySeq);
     void patchStudyInfo(Study study, UserStudyUpdatePatchReq studyPatchInfo);
