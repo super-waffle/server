@@ -10,7 +10,7 @@ import java.time.LocalTime;
 
 @Getter
 @Setter
-public class StudyDailyHistory {
+public class StudyDailyHistory implements Comparable<StudyDailyHistory> {
 
     private Integer studySeq;
     private Integer hostSeq;
@@ -61,5 +61,10 @@ public class StudyDailyHistory {
         this.recruitStartDate = study.getRecruitStartDate();
         this.isRecruiting = study.getIsRecruiting();
         this.isOnAir = study.getIsOnAir();
+    }
+
+    @Override
+    public int compareTo(StudyDailyHistory o) {
+        return this.startTime.compareTo(o.startTime);
     }
 }

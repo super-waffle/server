@@ -142,6 +142,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                     history.setIsAttend((short) 2);
                 }
             }
+            res.sortSchedules();
         }
 
         return result;
