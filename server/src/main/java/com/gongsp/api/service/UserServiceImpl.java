@@ -327,4 +327,9 @@ public class UserServiceImpl implements UserService{
     public Optional<User> getUserByUserNickname(String userNickname) {
         return userRepository.findUserByUserNickname(userNickname);
     }
+
+    @Override
+    public Integer getUserTimeGoal(Integer userSeq) {
+        return userRepository.getUserTimeGoal(userSeq);
+    }
 }

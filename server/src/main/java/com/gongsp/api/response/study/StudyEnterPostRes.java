@@ -1,9 +1,6 @@
 package com.gongsp.api.response.study;
 
-import com.gongsp.api.response.meeting.MeetingEnterPostRes;
 import com.gongsp.common.model.response.BaseResponseBody;
-import com.gongsp.db.entity.Meeting;
-import com.gongsp.db.entity.Study;
 import com.gongsp.db.entity.StudyRoom;
 import lombok.Getter;
 import lombok.Setter;

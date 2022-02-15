@@ -9,15 +9,16 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service("studyHistoryService")
 public class StudyHistoryServiceImpl implements StudyHistoryService {
 
     @Autowired
-    StudyHistoryRepository studyHistoryRepository;
+    private StudyHistoryRepository studyHistoryRepository;
     @Autowired
-    StudyDayRepository studyDayRepository;
+    private StudyDayRepository studyDayRepository;
 
     @Override
     public boolean existsMemberToday(Integer userSeq, Integer studySeq, LocalDate now) {
@@ -87,5 +88,10 @@ public class StudyHistoryServiceImpl implements StudyHistoryService {
     @Override
     public boolean existsAnyoneToday(Integer studySeq, LocalDate curDate) {
         return studyHistoryRepository.existsStudyHistoryByStudySeqAndHistoryDate(studySeq, curDate);
+    }
+
+    @Override
+    public List<Object []> getHistoryList() {
+        return studyHistoryRepository.historyList();
     }
 }

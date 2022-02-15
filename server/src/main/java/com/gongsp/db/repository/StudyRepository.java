@@ -50,4 +50,11 @@ public interface StudyRepository extends JpaRepository<Study, Integer> {
                                                             @Param(value = "date") LocalDate date,
                                                             @Param(value = "start") int startInterval,
                                                             @Param(value = "end") int endInterval);
+
+    @Query(value = "SELECT st.*, c.category_name\n" +
+            " FROM tb_study st INNER JOIN tb_category c\n" +
+            "ON st.category_seq = c.category_seq\n" +
+            "WHERE study_recruit_end = :yesterday AND is_study_recruiting = false AND study_date_start is null;"
+            , nativeQuery = true)
+    List<Study> findAllByRecruitEndDate(@Param(value="yesterday") LocalDate yesterday);
 }

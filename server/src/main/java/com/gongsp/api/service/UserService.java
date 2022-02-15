@@ -37,4 +37,5 @@ public interface UserService {
     Integer getUserCount();
     void deleteProfileImage(User userSeq);
     Optional<User> getUserByUserNickname(String userNickname);
+    Integer getUserTimeGoal(Integer userSeq);
 }
