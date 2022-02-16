@@ -12,4 +12,6 @@ public interface StudyDayService {
     Optional<StudyDay[]> getStudyDay(Integer studySeq);
     void createStudyDays(List<Day> day, Integer studySeq);
     boolean isValidTime(Integer studySeq, LocalDate curDate, LocalTime curTime);
+    LocalTime getStartTime(Integer studySeq, Integer today);
+    LocalTime getEndTime(Integer studySeq, Integer todqy);
 }

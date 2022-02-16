@@ -119,7 +119,7 @@ public class StudyController {
         for (Integer memberSeq: memberSeqList) {
 //            String userNickname = userService.getUserNickname(memberSeq);
 //            Integer userIsLate=studyHistoryService.isMemberAttend(memberSeq, studySeq, curDate);
-            memberResList.add(new StudyMemberRes(userService.getUserNickname(memberSeq), studyHistoryService.isMemberAttend(memberSeq, studySeq, curDate), studyRoom.getHost().getUserSeq().equals(memberSeq)));
+            memberResList.add(new StudyMemberRes(userService.getUserNickname(memberSeq), studyHistoryService.isMemberAttend(memberSeq, studySeq, curDate), studyRoom.getHost().getUserSeq().equals(userSeq)));
         }
 
         // 업적 "일찍 일어나는 새(15번)" 등록
@@ -127,7 +127,8 @@ public class StudyController {
             noticeService.sendAchieveNotice(userSeq, 15, "일찍 일어나는 새");
         }
 
-        return ResponseEntity.ok(StudyEnterPostRes.of(200, "Success : Enter study room", token, studyRoom, studyRoom.getHost().getUserSeq().equals(userSeq), isLate,((GongUserDetails) authentication.getDetails()).getUsername(), userSeq, memberResList));
+        int today = curDate.getDayOfWeek().getValue();
+        return ResponseEntity.ok(StudyEnterPostRes.of(200, "Success : Enter study room", token, studyRoom, studyRoom.getHost().getUserSeq().equals(userSeq), isLate,((GongUserDetails) authentication.getDetails()).getUsername(), userSeq, memberResList, studyDayService.getStartTime(studySeq, today), studyDayService.getEndTime(studySeq, today)));
     }
 
     //스터디룸 퇴실
