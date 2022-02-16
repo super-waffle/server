@@ -12,4 +12,5 @@ public interface StudyHistoryService {
     boolean isMemberLate(Integer userSeq, Integer studySeq, LocalDate curDate);
     boolean existsAnyoneToday(Integer studySeq, LocalDate curDate);
     List<Object []> getHistoryList();
+    public Integer isMemberAttend(Integer userSeq, Integer studySeq, LocalDate curDate);
 }

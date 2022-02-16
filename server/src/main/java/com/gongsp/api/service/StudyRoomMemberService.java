@@ -2,6 +2,7 @@ package com.gongsp.api.service;
 
 import com.gongsp.db.entity.StudyRoomMember;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface StudyRoomMemberService {
@@ -11,4 +12,5 @@ public interface StudyRoomMemberService {
     void updateMemberOnair(Integer userSeq, Integer studySeq, boolean isOnair);
     int getStudyOnairCnt(Integer studySeq);
     void createMember(Integer userSeq, Integer studySeq);
+    List<Integer> getStudyMemberSeqList(Integer studySeq);
 }

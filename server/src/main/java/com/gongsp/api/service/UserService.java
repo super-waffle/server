@@ -39,4 +39,5 @@ public interface UserService {
     Optional<User> getUserByUserNickname(String userNickname);
     Integer getUserTimeGoal(Integer userSeq);
     void updateUserLevel(Integer userSeq);
+    String getUserNickname(Integer userSeq);
 }

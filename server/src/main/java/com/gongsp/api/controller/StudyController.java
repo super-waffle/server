@@ -4,10 +4,7 @@ import com.gongsp.api.request.study.StudyApplyPostReq;
 import com.gongsp.api.request.study.StudyCreatePostReq;
 import com.gongsp.api.request.study.StudyExitPatchReq;
 import com.gongsp.api.request.study.StudyParameter;
-import com.gongsp.api.response.study.StudyBanPostRes;
-import com.gongsp.api.response.study.StudyDetailGetRes;
-import com.gongsp.api.response.study.StudyEnterPostRes;
-import com.gongsp.api.response.study.StudyListGetRes;
+import com.gongsp.api.response.study.*;
 import com.gongsp.api.service.*;
 import com.gongsp.common.auth.GongUserDetails;
 import com.gongsp.common.model.response.BaseResponseBody;
@@ -21,7 +18,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -75,7 +73,7 @@ public class StudyController {
 
         // 권한없는 사용자가 입실시도 할 경우
         if (!studyMemberService.existsMember(userSeq, studySeq))
-            return ResponseEntity.ok(StudyEnterPostRes.of(406, "Fail : User don't have permission"));
+            return ResponseEntity.ok(StudyEnterPostRes.of(405, "Fail : User don't have permission"));
 
         LocalDate curDate = LocalDate.now();
 
@@ -92,6 +90,11 @@ public class StudyController {
         StudyRoom studyRoom = opStudyRoom.get();
         // token 얻기 (session 생성 후 connection 생성)
         String token = studyRoomService.getToken(openVidu, userSeq, studyRoom);
+
+        if (token.equals("InternalError"))
+            return ResponseEntity.ok(StudyEnterPostRes.of(409, "Fail : OpenViduJavaClientException", null));
+        if (token.equals("GenError"))
+            return ResponseEntity.ok(StudyEnterPostRes.of(409, "Fail : Generate meeting room", null));
 
         studyMemberService.updateMemberOnair(userSeq, studySeq, true);
 
@@ -111,17 +114,20 @@ public class StudyController {
             isLate = studyHistoryService.isMemberLate(userSeq, studySeq, curDate);
         }
 
-        if (token.equals("InternalError"))
-            return ResponseEntity.ok(StudyEnterPostRes.of(409, "Fail : OpenViduJavaClientException", null));
-        if (token.equals("GenError"))
-            return ResponseEntity.ok(StudyEnterPostRes.of(409, "Fail : Generate meeting room", null));
+        List<StudyMemberRes> memberResList = new ArrayList<>();
+        List<Integer> memberSeqList = studyMemberService.getStudyMemberSeqList(studySeq);
+        for (Integer memberSeq: memberSeqList) {
+//            String userNickname = userService.getUserNickname(memberSeq);
+//            Integer userIsLate=studyHistoryService.isMemberAttend(memberSeq, studySeq, curDate);
+            memberResList.add(new StudyMemberRes(userService.getUserNickname(memberSeq), studyHistoryService.isMemberAttend(memberSeq, studySeq, curDate), studyRoom.getHost().getUserSeq().equals(memberSeq)));
+        }
 
         // 업적 "일찍 일어나는 새(15번)" 등록
         if (LocalTime.now().isBefore(LocalTime.of(07, 00, 00))) {
             noticeService.sendAchieveNotice(userSeq, 15, "일찍 일어나는 새");
         }
 
-        return ResponseEntity.ok(StudyEnterPostRes.of(200, "Success : Enter study room", token, studyRoom, studyRoom.getHost().getUserSeq().equals(userSeq), isLate,((GongUserDetails) authentication.getDetails()).getUsername(), userSeq));
+        return ResponseEntity.ok(StudyEnterPostRes.of(200, "Success : Enter study room", token, studyRoom, studyRoom.getHost().getUserSeq().equals(userSeq), isLate,((GongUserDetails) authentication.getDetails()).getUsername(), userSeq, memberResList));
     }
 
     //스터디룸 퇴실

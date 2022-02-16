@@ -6,6 +6,7 @@ import com.gongsp.db.repository.StudyRoomMemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service("studyMemberService")
@@ -48,5 +49,11 @@ public class StudyRoomMemberServiceImpl implements StudyRoomMemberService {
     @Override
     public void createMember(Integer userSeq, Integer studySeq) {
         studyRoomMemberRepository.save(new StudyRoomMember(new StudyRoomMemberId(userSeq, studySeq), 0, false));
+    }
+
+    @Override
+    public List<Integer> getStudyMemberSeqList(Integer studySeq) {
+        return studyRoomMemberRepository.findUserSeqByStudySeq(studySeq);
+//        return null;
     }
 }

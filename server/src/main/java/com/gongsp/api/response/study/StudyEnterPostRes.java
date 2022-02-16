@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -24,6 +25,7 @@ public class StudyEnterPostRes extends BaseResponseBody {
     private String userNickname;
     private String studyUrl;
     private Integer userSeq;
+    private List<StudyMemberRes> memberList;
 
     public static StudyEnterPostRes of(Integer statusCode, String message, String sessionToken) {
         StudyEnterPostRes res = new StudyEnterPostRes();
@@ -35,7 +37,7 @@ public class StudyEnterPostRes extends BaseResponseBody {
         return res;
     }
 
-    public static StudyEnterPostRes of(Integer statusCode, String message, String sessionToken, StudyRoom study, Boolean isHost, Boolean isLate, String userNickname, Integer userSeq) {
+    public static StudyEnterPostRes of(Integer statusCode, String message, String sessionToken, StudyRoom study, Boolean isHost, Boolean isLate, String userNickname, Integer userSeq, List<StudyMemberRes>memberList) {
         StudyEnterPostRes res = new StudyEnterPostRes();
         res.setStatusCode(statusCode);
         res.setMessage(message);
@@ -52,6 +54,7 @@ public class StudyEnterPostRes extends BaseResponseBody {
         res.setUserNickname(userNickname);
         res.setStudyUrl(study.getStudyUrl());
         res.setUserSeq(userSeq);
+        res.setMemberList(memberList);
         return res;
     }
 }
