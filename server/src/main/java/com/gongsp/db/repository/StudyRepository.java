@@ -43,8 +43,7 @@ public interface StudyRepository extends JpaRepository<Study, Integer> {
             "on (st.category_seq = c.category_seq)\n" +
             "where sm.user_seq = :userSeq\n" +
             "and (st.study_date_end is null or (st.study_date_end <= :date + interval :end day and st.study_date_end >= :date - interval :start day))\n" +
-            "and st.study_date_start is not null\n" +
-            "and st.study_date_start <= :date - interval :start day ;",
+            "and st.study_date_start is not null ;",
             nativeQuery = true)
     Optional<List<Study>> selectAllStudiesBetweenGivenDates(@Param(value = "userSeq") int userSeq,
                                                             @Param(value = "date") LocalDate date,
