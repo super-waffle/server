@@ -16,5 +16,6 @@ public class Level {
     @Id
     private Integer levelSeq;
     private String levelName;
+    private Integer levelCondition;
     private String levelImg;
 }

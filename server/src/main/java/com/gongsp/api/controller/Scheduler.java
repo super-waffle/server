@@ -45,6 +45,16 @@ public class Scheduler {
         studyRoomService.hideStudyRecruit(LocalDate.now().minusDays(1));
     }
 
+    // 레벨
+    @Scheduled(cron = "0 0 4 * * ?")    // 매일 4시에 실행
+    public void onTheNextLevel() {
+        // 어제 로그의 유저에 대하여, 해당 유저의 누적 공부시간이 각 유저의 레벨 +1에 해당하는 level_condition 이상이면 갱신
+        List<LogTime> logYesterday = logTimeService.getLogByDate(LocalDate.now()).orElse(null);
+        for (LogTime log: logYesterday) {
+            userService.updateUserLevel(log.getUserSeq());
+        }
+    }
+
     // 업적 #14 <앗, 이것이 성취의 맛?>: 하루 목표시간 최초 만족 시
     @Scheduled(cron = "0 0 0 * * ?")     // 매일 자정에 실행
     public void checkStudyGoal() {
