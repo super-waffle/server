@@ -25,4 +25,9 @@ public interface StudyRoomMemberRepository  extends JpaRepository<StudyRoomMembe
             "and (TIMESTAMPDIFF(MINUTE, TIME(\":curTime\"), time_start) between 1 and 10));",
             nativeQuery = true)
     List<Integer> findUserSeqByTime(@Param(value="dayNum")Integer dayNum, @Param(value="curTime") LocalTime curTime);
+
+    @Query(value = "select user_seq from tb_member_study " +
+            "where study_seq = :studySeq ; ",
+            nativeQuery = true)
+    List<Integer> findUserSeqByStudySeq(@Param(value="studySeq")Integer studySeq);
 }

@@ -25,4 +25,10 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             "JOIN tb_level l ON u.level_seq + 1 = l.level_seq\n" +
             "WHERE u.user_seq = :userSeq ;", nativeQuery = true)
     List<Object[]> getNextLevelConditionByUserSeq(@Param(value = "userSeq") Integer userSeq);
+
+
+    @Query(value = "SELECT user_nickname\n" +
+            "FROM tb_user\n" +
+            "WHERE user_seq = :userSeq ;", nativeQuery = true)
+    String findUserNicknameByUserSeq(@Param(value = "userSeq") Integer userSeq);
 }

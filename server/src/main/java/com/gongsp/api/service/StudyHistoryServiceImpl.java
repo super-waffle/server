@@ -82,7 +82,19 @@ public class StudyHistoryServiceImpl implements StudyHistoryService {
     @Override
     public boolean isMemberLate(Integer userSeq, Integer studySeq, LocalDate curDate) {
         StudyHistory studyHistory = studyHistoryRepository.findStudyHistoryByUserSeqAndStudySeqAndHistoryDate(userSeq, studySeq, curDate).get();
+//        if(!studyHistory.isPresent())
         return studyHistory.getHistoryLate();
+    }
+
+    @Override
+    public Integer isMemberAttend(Integer userSeq, Integer studySeq, LocalDate curDate){
+        Optional<StudyHistory> studyHistory = studyHistoryRepository.findStudyHistoryByUserSeqAndStudySeqAndHistoryDate(userSeq, studySeq, curDate);
+        if(!studyHistory.isPresent())
+            return 0;
+        if(studyHistory.get().getHistoryLate())
+            return 1;
+        else
+            return 2;
     }
 
     @Override

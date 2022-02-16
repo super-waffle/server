@@ -354,4 +354,9 @@ public class UserServiceImpl implements UserService{
             }
         }
     }
+
+    @Override
+    public String getUserNickname(Integer userSeq) {
+        return userRepository.findUserNicknameByUserSeq(userSeq);
+    }
 }
