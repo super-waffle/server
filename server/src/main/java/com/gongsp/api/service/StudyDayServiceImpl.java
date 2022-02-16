@@ -57,13 +57,14 @@ public class StudyDayServiceImpl implements StudyDayService {
 
     @Override
     public LocalTime getStartTime(Integer studySeq, Integer today) {
-
-        return null;
+        return studyDayRepository.findStartTime(studySeq, today);
+//        return null;
     }
 
     @Override
-    public LocalTime getEndTime(Integer studySeq, Integer todqy) {
-        return null;
+    public LocalTime getEndTime(Integer studySeq, Integer today) {
+        return studyDayRepository.findEndTime(studySeq, today);
+//        return null;
     }
 
 }

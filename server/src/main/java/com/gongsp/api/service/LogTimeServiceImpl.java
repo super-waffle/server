@@ -103,7 +103,7 @@ public class LogTimeServiceImpl implements LogTimeService {
         LocalDate curDate = LocalDate.now();
 
         if (logTime.getLogDate().isEqual(curDate)) {
-            logTime.setLogMeeting((short)(logTime.getLogMeeting() + logStudy));
+            logTime.setLogStudy((short)(logTime.getLogStudy() + logStudy));
             logTime.setLogEndTime(curTime);
             logTimeRepository.save(logTime);
         } else {

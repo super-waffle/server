@@ -12,10 +12,10 @@ public interface StudyDayRepository extends JpaRepository<StudyDay, Integer> {
     Optional<StudyDay[]> findAllByStudySeqOrderByDayNumber(int studySeq);
 
     @Query(nativeQuery = true, value = "select time_start from tb_day_study " +
-            "where study_seq = :studySeq and day_number = :today ) ;")
+            "where study_seq = :studySeq and day_number = :today ;")
     LocalTime findStartTime(@Param("studySeq") int studySeq,@Param("today") int today);
 
     @Query(nativeQuery = true, value = "select time_end from tb_day_study " +
-            "where study_seq = :studySeq and day_number = :today ) ;")
+            "where study_seq = :studySeq and day_number = :today ;")
     LocalTime findEndTime(@Param("studySeq") int studySeq,@Param("today") int today);
 }
