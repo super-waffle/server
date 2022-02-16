@@ -21,6 +21,8 @@ public class StudyEnterPostRes extends BaseResponseBody {
     private String studyDesc;
     private Integer studyCapacity;
     private LocalDate studyDate;      //시작날짜
+    private LocalTime studyStartTime; //스터디 원래 시작시간
+    private LocalTime studyEndTime; //스터디 원래 종료시간
     private LocalTime studyEnterTime; //입실시간
     private String userNickname;
     private String studyUrl;
@@ -37,7 +39,7 @@ public class StudyEnterPostRes extends BaseResponseBody {
         return res;
     }
 
-    public static StudyEnterPostRes of(Integer statusCode, String message, String sessionToken, StudyRoom study, Boolean isHost, Boolean isLate, String userNickname, Integer userSeq, List<StudyMemberRes>memberList) {
+    public static StudyEnterPostRes of(Integer statusCode, String message, String sessionToken, StudyRoom study, Boolean isHost, Boolean isLate, String userNickname, Integer userSeq, List<StudyMemberRes>memberList, LocalTime studyStartTime, LocalTime studyEndTime) {
         StudyEnterPostRes res = new StudyEnterPostRes();
         res.setStatusCode(statusCode);
         res.setMessage(message);
@@ -55,6 +57,8 @@ public class StudyEnterPostRes extends BaseResponseBody {
         res.setStudyUrl(study.getStudyUrl());
         res.setUserSeq(userSeq);
         res.setMemberList(memberList);
+        res.setStudyStartTime(studyStartTime);
+        res.setStudyEndTime(studyEndTime);
         return res;
     }
 }
