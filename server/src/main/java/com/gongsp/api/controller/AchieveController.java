@@ -3,7 +3,7 @@ package com.gongsp.api.controller;
 import com.gongsp.api.response.achievement.AchieveListGetRes;
 import com.gongsp.api.service.AchieveService;
 import com.gongsp.common.model.response.BaseResponseBody;
-import com.gongsp.db.entity.UserAchieve;
+import com.gongsp.db.entity.Achieve;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -22,11 +22,10 @@ public class AchieveController {
     @GetMapping()
     public ResponseEntity<AchieveListGetRes> getAchievementList(Authentication authentication) {
         Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
-        List<UserAchieve> achieveList = achieveService.getAchieveList(userSeq);
-        if (achieveList.size() == 0) {
-            return ResponseEntity.ok(AchieveListGetRes.of(204, "No Content", null));
-        }
-        return ResponseEntity.ok(AchieveListGetRes.of(200, "Success", achieveList));
+//        List<UserAchieve> achieveList = achieveService.getAchieveList(userSeq);
+        List<Achieve> achieveList = achieveService.getAll();
+        List<Integer> achieveSeqList = achieveService.getAchieveSeqList(userSeq);
+        return ResponseEntity.ok(AchieveListGetRes.of(200, "Success", achieveList, achieveSeqList));
     }
 
     // 대표 업적 등록/해제

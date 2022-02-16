@@ -62,4 +62,14 @@ public class AchieveServiceImpl implements AchieveService{
         Achieve achieve = achieveRepository.findByAchieveSeq(achieveSeq);
         return userAchieveRepository.existsUserAchieveByUserAndAchieve(user, achieve);
     }
+
+    @Override
+    public List<Integer> getAchieveSeqList(Integer userSeq) {
+        return achieveRepository.findAllAchieveSeqByUserSeq(userSeq);
+    }
+
+    @Override
+    public List<Achieve> getAll() {
+        return achieveRepository.getAll();
+    }
 }
