@@ -42,18 +42,17 @@ public class StudyDayServiceImpl implements StudyDayService {
         Optional<StudyDay[]> opStudyDays = getStudyDay(studySeq);
         if(!opStudyDays.isPresent())
             return false;
-        boolean res = false;
         StudyDay[] studyDays = opStudyDays.get();
         for (StudyDay studyDay: studyDays) {
             if(studyDay.getDayNumber().equals(today)){
                 LocalTime startTime = studyDay.getStartTime();
-                if(startTime.getHour() >= curTime.getHour()){
-                    if(startTime.getMinute() >= curTime.getMinute())
-                        res = true;
-                }
+                LocalTime endTime = studyDay.getEndTime();
+                if(startTime.getHour() <= curTime.getHour() && startTime.getMinute() <= curTime.getMinute() && endTime.getHour()>=curTime.getHour() && endTime.getMinute()>=curTime.getMinute())
+                        return true;
                 break;
             }
         }
-        return res;
+        return false;
     }
+
 }
