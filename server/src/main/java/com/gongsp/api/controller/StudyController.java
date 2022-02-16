@@ -75,7 +75,7 @@ public class StudyController {
 
         // 권한없는 사용자가 입실시도 할 경우
         if (!studyMemberService.existsMember(userSeq, studySeq))
-            return ResponseEntity.ok(StudyEnterPostRes.of(406, "Fail : User don't have permission"));
+            return ResponseEntity.ok(StudyEnterPostRes.of(405, "Fail : User don't have permission"));
 
         LocalDate curDate = LocalDate.now();
 
