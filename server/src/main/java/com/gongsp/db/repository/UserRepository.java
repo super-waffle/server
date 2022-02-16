@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
@@ -17,4 +18,10 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     @Query(value = "SELECT user_time_goal FROM tb_user WHERE user_seq = :userSeq ;", nativeQuery = true)
     Integer getUserTimeGoal(@Param(value="userSeq") Integer userSeq);
+
+    @Query(value = "SELECT u.user_seq, u.user_time_total, l.level_condition\n" +
+            "FROM tb_user u\n" +
+            "JOIN tb_level l ON u.level_seq + 1 = l.level_seq\n" +
+            "WHERE u.user_seq = :userSeq ;", nativeQuery = true)
+    List<Object[]> getNextLevelConditionByUserSeq(@Param(value = "userSeq") Integer userSeq);
 }

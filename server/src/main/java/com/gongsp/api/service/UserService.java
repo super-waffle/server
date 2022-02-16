@@ -36,4 +36,5 @@ public interface UserService {
     Integer getUserCount();
     void deleteProfileImage(User userSeq);
     Integer getUserTimeGoal(Integer userSeq);
+    void updateUserLevel(Integer userSeq);
 }

@@ -14,6 +14,8 @@ import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.*;
 
+import static org.aspectj.runtime.internal.Conversions.intValue;
+
 @Service("userService")
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService{
@@ -25,6 +27,8 @@ public class UserServiceImpl implements UserService{
     private UserRepository userRepository;
     @Autowired
     private OtherProfileRepository otherProfileRepository;
+    @Autowired
+    private LevelRepository levelRepository;
 
     // Study Related Repositories
     @Autowired
@@ -280,5 +284,23 @@ public class UserServiceImpl implements UserService{
     @Override
     public Integer getUserTimeGoal(Integer userSeq) {
         return userRepository.getUserTimeGoal(userSeq);
+    }
+
+    @Override
+    public void updateUserLevel(Integer userSeq) {
+        User user = userRepository.findUserByUserSeq(userSeq).orElse(null);
+        if (user != null) {
+            List<Object[]> userLevelStatusList = userRepository.getNextLevelConditionByUserSeq(userSeq);
+            for (Object[] data: userLevelStatusList) {
+                if (intValue(data[1]) >= intValue(data[2])) {
+                    try {
+                        user.setUserLevel(levelRepository.getLevelByLevelSeq(user.getUserLevel().getLevelSeq() + 1));
+                        userRepository.save(user);
+                    } catch (Exception e) {
+                        System.out.println(e);
+                    }
+                }
+            }
+        }
     }
 }
