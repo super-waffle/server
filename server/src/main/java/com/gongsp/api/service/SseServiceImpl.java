@@ -10,9 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,7 +41,7 @@ public class SseServiceImpl implements SseService {
                     sseEmitters.remove(userSeq);
                 }
             }
-            noticeRepository.save(new Notice(userSeq, 103, LocalDate.now(), "[" + meetingTitle + "] 자유열람실에 공석이 생겼습니다.", false));
+            noticeRepository.save(new Notice(userSeq, 103, LocalDateTime.now(), "[" + meetingTitle + "] 자유열람실에 공석이 생겼습니다.", false));
         }
     }
 
@@ -56,7 +55,7 @@ public class SseServiceImpl implements SseService {
                 sseEmitters.remove(userSeq);
             }
         }
-        noticeRepository.save(new Notice(userSeq, 102, LocalDate.now(), "[" + studyTitle + "] 스터디에 ["+username+"] 회원이 참가를 신청하였습니다.", false));
+        noticeRepository.save(new Notice(userSeq, 102, LocalDateTime.now(), "[" + studyTitle + "] 스터디에 ["+username+"] 회원이 참가를 신청하였습니다.", false));
     }
 
     @Override
@@ -69,7 +68,7 @@ public class SseServiceImpl implements SseService {
                 sseEmitters.remove(userSeq);
             }
         }
-        noticeRepository.save(new Notice(userSeq, 102, LocalDate.now(), "[" + title + "] 스터디에 참가되었습니다.", false));
+        noticeRepository.save(new Notice(userSeq, 102, LocalDateTime.now(), "[" + title + "] 스터디에 참가되었습니다.", false));
     }
 
     @Override
@@ -82,7 +81,20 @@ public class SseServiceImpl implements SseService {
                 sseEmitters.remove(userSeq);
             }
         }
-        noticeRepository.save(new Notice(userSeq, 102, LocalDate.now(), "[" + title + "] 스터디에 거절당했습니다.", false));
+        noticeRepository.save(new Notice(userSeq, 102, LocalDateTime.now(), "[" + title + "] 스터디에 거절당했습니다.", false));
+    }
+
+    @Override
+    public void sendAchieveNotice(Integer userSeq, String content) {
+        if (sseEmitters.containsKey(userSeq)) {
+            SseEmitter sseEmitter = sseEmitters.get(userSeq);
+            try {
+                sseEmitter.send(SseEmitter.event().name("NewAchievement").data(content));
+            } catch (Exception e) {
+                sseEmitters.remove(userSeq);
+            }
+        }
+        noticeRepository.save(new Notice(userSeq, 104, LocalDateTime.now(), content, false));
     }
 
     @Override
@@ -99,7 +111,7 @@ public class SseServiceImpl implements SseService {
                         sseEmitters.remove(userSeq);
                     }
                 }
-                noticeRepository.save(new Notice(userSeq, 102, LocalDate.now(), "스터디 시작시간 10분 전입니다.", false));
+                noticeRepository.save(new Notice(userSeq, 102, LocalDateTime.now(), "스터디 시작시간 10분 전입니다.", false));
             }
         }
     }

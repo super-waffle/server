@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface StudyDayRepository extends JpaRepository<StudyDay, Integer> {
-    Optional<StudyDay[]> findAllByStudySeq(int studySeq);
+    Optional<StudyDay[]> findAllByStudySeqOrderByDayNumber(int studySeq);
 }

@@ -20,7 +20,7 @@ public class StudyDayServiceImpl implements StudyDayService {
 
     @Override
     public Optional<StudyDay[]> getStudyDay(Integer studySeq) {
-        return studyDayRepository.findAllByStudySeq(studySeq);
+        return studyDayRepository.findAllByStudySeqOrderByDayNumber(studySeq);
     }
 
     @Override

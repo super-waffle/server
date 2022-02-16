@@ -10,5 +10,6 @@ public interface SseService {
     void sendStudyApplyNotice(Integer userSeq, Integer studySeq, String username, String studyTitle);
     void sendStudyGrantNotice(int applicantSeq, int studySeq, String title);
     void sendStudyRejectNotice(int applicantSeq, int studySeq, String title);
+    void sendAchieveNotice(Integer userSeq, String content);
     void studyTimeNotice();
 }

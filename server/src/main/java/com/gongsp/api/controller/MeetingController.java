@@ -8,9 +8,11 @@ import com.gongsp.api.response.meeting.MeetingEnterPostRes;
 import com.gongsp.api.response.meeting.MeetingListGetRes;
 import com.gongsp.api.response.meeting.MeetingRes;
 import com.gongsp.api.service.*;
+import com.gongsp.common.auth.GongUserDetails;
 import com.gongsp.common.model.response.BaseResponseBody;
 import com.gongsp.db.entity.BlacklistMeetingId;
 import com.gongsp.db.entity.Meeting;
+import com.gongsp.db.entity.User;
 import io.openvidu.java.client.OpenVidu;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +21,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,6 +53,8 @@ public class MeetingController {
     private SseService sseService;
     @Autowired
     private BookmarkService bookmarkService;
+    @Autowired
+    private NoticeService noticeService;
 
 
     public MeetingController(@Value("${openvidu.secret}") String secret, @Value("${openvidu.url}") String openviduUrl) {
@@ -91,16 +96,19 @@ public class MeetingController {
     }
 
     // 자유열람실 강퇴
-    @GetMapping("/{meeting-seq}/kick/{user-seq}")
-    public ResponseEntity<? extends BaseResponseBody> kickUserFromMeeting(@PathVariable("meeting-seq") Integer meetingSeq, @PathVariable("user-seq") Integer userSeq, Authentication authentication) {
+    @PostMapping("/{meeting-seq}/kick/{user-nickname}")
+    public ResponseEntity<? extends BaseResponseBody> kickUserFromMeeting(@PathVariable("meeting-seq") Integer meetingSeq, @PathVariable("user-nickname") String userNickname, Authentication authentication) {
         //session 퇴출, connection 만료
         //이건 프론트에서 강퇴당하는 애 입장에서 자유열람실 퇴실 api호출해줘야 될것 같음! session token 이랑 그 사용자가 공부한시간, 공부 시작한 시간등이 필요해서
         //퇴실 api호출해주면 onair삭제, 시간누적, meeting update등 호출안에서 이뤄짐
-
+        Optional<User> opUser = userService.getUserByUserNickname(userNickname);
+        if(!opUser.isPresent())
+            return ResponseEntity.ok(BaseResponseBody.of(408, "Fail : User nickname is not valid"));
         Integer hostSeq = Integer.parseInt((String) authentication.getPrincipal());
         if (!hostSeq.equals(meetingService.getHostSeq(meetingSeq)))
             return ResponseEntity.ok(BaseResponseBody.of(409, "Fail : Request is not from host"));
 
+        Integer userSeq = opUser.get().getUserSeq();
         //블랙리스트 추가
         blacklistMeetingService.createBlacklist(new BlacklistMeetingId(userSeq, meetingSeq));
 
@@ -119,7 +127,7 @@ public class MeetingController {
     // 자유열람실 입실
     @PostMapping("/{meeting-seq}/room")
     public ResponseEntity<? extends BaseResponseBody> getToken(@PathVariable("meeting-seq") Integer meetingSeq, Authentication authentication) {
-
+        System.out.println("입실들어옴");
         // 존재하는 자유열람실만 입실 할 수 있음
         Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
         Optional<Meeting> opMeeting = meetingService.getMeeting(meetingSeq);
@@ -148,7 +156,7 @@ public class MeetingController {
         }
 
         // token 얻기 (session 생성 후 connection 생성)
-        String token = meetingService.getToken(openVidu, userSeq, meeting);
+        String token = meetingService.getToken(openVidu, userSeq, meeting, isHost);
 //        System.out.println("토큰!!" + token);
 
         // 이런식으로 처리하면 안닫히는 세션들이 많이 생길거같긴한데..... 프론트에서 어떻게 처리되는지 몰라서..
@@ -173,7 +181,17 @@ public class MeetingController {
         if (token.equals("GenError"))
             return ResponseEntity.ok(MeetingEnterPostRes.of(409, "Fail : Generate meeting room", null));
 
-        return ResponseEntity.ok(MeetingEnterPostRes.of(200, "Success : Enter meeting room", token, meeting, isHost));
+        // 업적 "자유열람실 첫 입장(11번)" 등록
+        if (!isHost) {
+            noticeService.sendAchieveNotice(userSeq, 11, "자유열람실 첫 입장");
+        }
+
+        // 업적 "일찍 일어나는 새(15번)" 등록
+        if (LocalTime.now().isBefore(LocalTime.of(07, 00, 00))) {
+            noticeService.sendAchieveNotice(userSeq, 15, "일찍 일어나는 새");
+        }
+
+        return ResponseEntity.ok(MeetingEnterPostRes.of(200, "Success : Enter meeting room", token, meeting, isHost, ((GongUserDetails) authentication.getDetails()).getUsername(), userSeq));
     }
 
     @GetMapping("sse/{meeting-seq}")
@@ -239,6 +257,7 @@ public class MeetingController {
         // tb_meeting 의 meetingHeadcount --
         meetingService.updateMeeting(meetingSeq, -1);
 
+//        System.out.println("미팅 숫자줄였음");
         // session, connection 해제
         String result = meetingService.removeUser(sessionName, token, meetingSeq);
         if ("Error".equals(result)) return ResponseEntity.ok(BaseResponseBody.of(409, "Fail : Remove user"));
@@ -250,6 +269,11 @@ public class MeetingController {
         // 만석인 방에서 나갈경우 알림보내기
 
         // 인원 0명일경우 onair업데이트
+
+        // 업적 "올빼미(8번)" 등록
+        if (logTimeService.getEndTime(userSeq, LocalDate.now()).isAfter(LocalTime.of(23, 59, 00))) {
+            noticeService.sendAchieveNotice(userSeq, 8, "올빼미");
+        }
 
         return ResponseEntity.ok(BaseResponseBody.of(200, "Success : Remove user"));
     }

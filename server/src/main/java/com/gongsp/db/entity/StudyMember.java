@@ -25,6 +25,8 @@ public class StudyMember {
     private Integer ejectCount;
     @Column(name = "is_member_onair")
     private Boolean isOnAir;
+    @Column(name = "user_img")
+    private String userImage;
 
     public StudyMember(Integer userSeq, Integer studySeq, Integer ejectCount, Boolean isOnAir) {
         this.userSeq = userSeq;

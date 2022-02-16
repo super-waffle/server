@@ -56,12 +56,11 @@ public class DiaryController {
             return ResponseEntity.ok(BaseResponseBody.of(403, "Access Denied"));
         }
 
+        String uuidFilename = null;
         // 이미지 파일 저장
-        if (request.getImage() == null) {
-            return ResponseEntity.ok(DiaryReadGetRes.of(400, "Failed to upload image"));
+        if (request.getImage() != null) {
+            uuidFilename = imageUpload(request.getImage());
         }
-        String uuidFilename = imageUpload(request.getImage());
-
         // 하루기록 내용 저장
         Boolean diaryCreated = diaryService.createDiary(Integer.parseInt((String) authentication.getPrincipal()), request, uuidFilename);
         if (!diaryCreated) {
@@ -90,10 +89,10 @@ public class DiaryController {
             return ResponseEntity.ok(BaseResponseBody.of(204, "No Diary"));
         }
         // 있으면 이미지 파일 저장하고
-        if (request.getImage() == null) {
-            return ResponseEntity.ok(DiaryReadGetRes.of(400, "Failed to upload image"));
+        String uuidFilename = null;
+        if (request.getImage() != null) {
+            uuidFilename = imageUpload(request.getImage());
         }
-        String uuidFilename = imageUpload(request.getImage());
 
         // 전해온 정보로 수정
         Boolean diaryUpdated = diaryService.updateDiary(Integer.parseInt((String) authentication.getPrincipal()), diarySeq, request.getContentInfo(), uuidFilename);

@@ -15,4 +15,5 @@ public class StudyRes {
     private String studyShortDesc;
     private int studyHeadcount;
     private LocalDate studyRecruitEnd;
+    private Boolean isStudyRecruiting;
 }

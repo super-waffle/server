@@ -15,9 +15,11 @@ import javax.persistence.Table;
 public class StudyApply {
     @EmbeddedId
     StudyApplyId studyApplyId;
+    String applyMessage;
 
-    public StudyApply(StudyApplyId studyApplyId) {
+    public StudyApply(StudyApplyId studyApplyId, String applyMessage) {
         this.studyApplyId = studyApplyId;
+        this.applyMessage = applyMessage;
     }
 
     public StudyApply() {

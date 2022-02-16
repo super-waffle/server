@@ -1,9 +1,6 @@
 package com.gongsp.api.response.study;
 
-import com.gongsp.api.response.meeting.MeetingEnterPostRes;
 import com.gongsp.common.model.response.BaseResponseBody;
-import com.gongsp.db.entity.Meeting;
-import com.gongsp.db.entity.Study;
 import com.gongsp.db.entity.StudyRoom;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,6 +21,9 @@ public class StudyEnterPostRes extends BaseResponseBody {
     private Integer studyCapacity;
     private LocalDate studyDate;      //시작날짜
     private LocalTime studyEnterTime; //입실시간
+    private String userNickname;
+    private String studyUrl;
+    private Integer userSeq;
 
     public static StudyEnterPostRes of(Integer statusCode, String message, String sessionToken) {
         StudyEnterPostRes res = new StudyEnterPostRes();
@@ -35,7 +35,7 @@ public class StudyEnterPostRes extends BaseResponseBody {
         return res;
     }
 
-    public static StudyEnterPostRes of(Integer statusCode, String message, String sessionToken, StudyRoom study, Boolean isHost, Boolean isLate) {
+    public static StudyEnterPostRes of(Integer statusCode, String message, String sessionToken, StudyRoom study, Boolean isHost, Boolean isLate, String userNickname, Integer userSeq) {
         StudyEnterPostRes res = new StudyEnterPostRes();
         res.setStatusCode(statusCode);
         res.setMessage(message);
@@ -49,6 +49,9 @@ public class StudyEnterPostRes extends BaseResponseBody {
         res.setStudyShortDesc(study.getStudyShortDesc());
         res.setStudyDesc(study.getStudyDesc());
         res.setStudyCapacity(study.getStudyCapacity());
+        res.setUserNickname(userNickname);
+        res.setStudyUrl(study.getStudyUrl());
+        res.setUserSeq(userSeq);
         return res;
     }
 }

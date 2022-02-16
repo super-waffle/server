@@ -14,6 +14,8 @@ import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.*;
 
+import static org.aspectj.runtime.internal.Conversions.intValue;
+
 @Service("userService")
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService{
@@ -25,6 +27,8 @@ public class UserServiceImpl implements UserService{
     private UserRepository userRepository;
     @Autowired
     private OtherProfileRepository otherProfileRepository;
+    @Autowired
+    private LevelRepository levelRepository;
 
     // Study Related Repositories
     @Autowired
@@ -95,24 +99,67 @@ public class UserServiceImpl implements UserService{
         Study[] studies = myStudy.get();
 
         for (Study study : studies) {
+            StudyRes temp = new StudyRes(study);
+
             Optional<StudyMember[]> members = studyMemberRepository.selectAllStudyMemebers(study.getStudySeq());
-            if (members.isPresent()) {
-                StudyRes temp = new StudyRes(study, members.get());
-                results.add(temp);
-            } else {
-                StudyRes temp = new StudyRes(study);
-                results.add(temp);
-            }
+            members.ifPresent(temp::setMemberList);
+
+            results.add(temp);
         }
 
         for(StudyRes study : results) {
-            Optional<StudyDay[]> studyDays = studyDayRepository.findAllByStudySeq(study.getStudySeq());
-            if (studyDays.isPresent())
-                study.setDays(studyDays.get());
+            Optional<StudyDay[]> studyDays = studyDayRepository.findAllByStudySeqOrderByDayNumber(study.getStudySeq());
+            studyDays.ifPresent(study::setDays);
         }
 
         return Optional.of(results);
     }
+
+    @Override
+    public Optional<List<StudyRes>> getUserIncludedStudies(int userSeq, Integer today) {
+        Optional<Study[]> myStudy = studyRepository.selectAllStudies(userSeq);
+
+        if (!myStudy.isPresent())
+            return Optional.empty();
+
+        List<StudyRes> results = new ArrayList<>();
+
+        Study[] studies = myStudy.get();
+
+        for (Study study : studies) {
+            StudyRes temp = new StudyRes(study);
+
+            Optional<StudyMember[]> members = studyMemberRepository.selectAllStudyMemebers(study.getStudySeq());
+            members.ifPresent(temp::setMemberList);
+
+            results.add(temp);
+        }
+
+        boolean flag = false;
+        List<StudyRes> realResults = new ArrayList<>();
+        for(StudyRes study : results) {
+            Optional<StudyDay[]> studyDays = studyDayRepository.findAllByStudySeqOrderByDayNumber(study.getStudySeq());
+            List<StudyDay> todayStudyDays = new ArrayList<>();
+            if(studyDays.isPresent()){
+                for (StudyDay studyDay: studyDays.get()) {
+                    if(studyDay.getDayNumber().equals(today)){
+                        flag = true;
+                        todayStudyDays.add(studyDay);
+                    }
+                }
+                if(flag) {
+                    study.setDays(todayStudyDays.toArray(new StudyDay[todayStudyDays.size()]));
+                    flag = false;
+                    todayStudyDays.clear();
+                    realResults.add(study);
+                }
+            }
+        }
+
+        return Optional.of(realResults);
+    }
+
+
 
     @Override
     public Optional<StudyRes> getUserIncludedDetailStudyInfo(int studySeq) {
@@ -124,12 +171,10 @@ public class UserServiceImpl implements UserService{
         StudyRes result = new StudyRes(study.get());
 
         Optional<StudyMember[]> members = studyMemberRepository.selectAllStudyMemebers(result.getStudySeq());
-        if (members.isPresent())
-            result.setMemberList(members.get());
+        members.ifPresent(result::setMemberList);
 
-        Optional<StudyDay[]> studyDays = studyDayRepository.findAllByStudySeq(result.getStudySeq());
-        if (studyDays.isPresent())
-            result.setDays(studyDays.get());
+        Optional<StudyDay[]> studyDays = studyDayRepository.findAllByStudySeqOrderByDayNumber(result.getStudySeq());
+        studyDays.ifPresent(result::setDays);
 
         return Optional.of(result);
     }
@@ -177,6 +222,7 @@ public class UserServiceImpl implements UserService{
     @Override
     public void endStudyRecruit(Study study) {
         study.setRecruitEndDate(LocalDate.now());
+        study.setIsRecruiting(false);
         studyRepository.save(study);
     }
 
@@ -267,7 +313,45 @@ public class UserServiceImpl implements UserService{
             String newPath = storageService.store(infoPatchReq.getProfileImage());
             user.setUserImg(newPath);
         }
-
         userRepository.save(user);
+    }
+
+    @Override
+    public Integer getUserCount() {
+        return userRepository.getUserCount();
+    }
+      
+    @Override
+    public void deleteProfileImage(User user) {
+        user.setUserImg(null);
+        userRepository.save(user);
+    }
+
+    @Override
+    public Optional<User> getUserByUserNickname(String userNickname) {
+        return userRepository.findUserByUserNickname(userNickname);
+    }
+
+    @Override
+    public Integer getUserTimeGoal(Integer userSeq) {
+        return userRepository.getUserTimeGoal(userSeq);
+    }
+
+    @Override
+    public void updateUserLevel(Integer userSeq) {
+        User user = userRepository.findUserByUserSeq(userSeq).orElse(null);
+        if (user != null) {
+            List<Object[]> userLevelStatusList = userRepository.getNextLevelConditionByUserSeq(userSeq);
+            for (Object[] data: userLevelStatusList) {
+                if (intValue(data[1]) >= intValue(data[2])) {
+                    try {
+                        user.setUserLevel(levelRepository.getLevelByLevelSeq(user.getUserLevel().getLevelSeq() + 1));
+                        userRepository.save(user);
+                    } catch (Exception e) {
+                        System.out.println(e);
+                    }
+                }
+            }
+        }
     }
 }

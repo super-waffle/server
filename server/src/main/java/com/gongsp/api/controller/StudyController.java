@@ -1,5 +1,6 @@
 package com.gongsp.api.controller;
 
+import com.gongsp.api.request.study.StudyApplyPostReq;
 import com.gongsp.api.request.study.StudyCreatePostReq;
 import com.gongsp.api.request.study.StudyExitPatchReq;
 import com.gongsp.api.request.study.StudyParameter;
@@ -19,6 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -50,6 +52,9 @@ public class StudyController {
     UserService userService;
     @Autowired
     SseService sseService;
+    @Autowired
+    private NoticeService noticeService;
+
 
     public StudyController(@Value("${openvidu.secret}") String secret, @Value("${openvidu.url}") String openviduUrl) {
         this.SECRET = secret;
@@ -79,8 +84,8 @@ public class StudyController {
             return ResponseEntity.ok(StudyEnterPostRes.of(406, "Fail : User was ejected"));
 
         // 스터디 시작 전/ 종료 후
-//        if (!studyDayService.isValidTime(studySeq, curDate, LocalTime.now()))
-//            return ResponseEntity.ok(StudyEnterPostRes.of(407, "Fail : Study has not started yet or already ended"));
+        if (!studyDayService.isValidTime(studySeq, curDate, LocalTime.now()))
+            return ResponseEntity.ok(StudyEnterPostRes.of(407, "Fail : Study has not started yet or already ended"));
 
         // 스터디 정원은 생각 안하겠습니당 신청받을때 무조건 6명 이하로 받는다고 생각해서...
 
@@ -110,7 +115,13 @@ public class StudyController {
             return ResponseEntity.ok(StudyEnterPostRes.of(409, "Fail : OpenViduJavaClientException", null));
         if (token.equals("GenError"))
             return ResponseEntity.ok(StudyEnterPostRes.of(409, "Fail : Generate meeting room", null));
-        return ResponseEntity.ok(StudyEnterPostRes.of(200, "Success : Enter study room", token, studyRoom, studyRoom.getHost().getUserSeq().equals(userSeq), isLate));
+
+        // 업적 "일찍 일어나는 새(15번)" 등록
+        if (LocalTime.now().isBefore(LocalTime.of(07, 00, 00))) {
+            noticeService.sendAchieveNotice(userSeq, 15, "일찍 일어나는 새");
+        }
+
+        return ResponseEntity.ok(StudyEnterPostRes.of(200, "Success : Enter study room", token, studyRoom, studyRoom.getHost().getUserSeq().equals(userSeq), isLate,((GongUserDetails) authentication.getDetails()).getUsername(), userSeq));
     }
 
     //스터디룸 퇴실
@@ -136,6 +147,11 @@ public class StudyController {
         // 시간 넘어온거 누적
         logTimeService.updateStudyLogTime(userSeq, studyExitPatchReq.getLogStudy(), studyExitPatchReq.getLogStartTime());
         userService.updateUserLogTime(userSeq, studyExitPatchReq.getLogStudy());
+
+        // 업적 "올빼미(8번)" 등록
+        if (logTimeService.getEndTime(userSeq, LocalDate.now()).isAfter(LocalTime.of(23, 59, 00))) {
+            noticeService.sendAchieveNotice(userSeq, 8, "올빼미");
+        }
 
         return ResponseEntity.ok(BaseResponseBody.of(200, "Success : Remove user"));
     }
@@ -217,14 +233,16 @@ public class StudyController {
 
     // 스터디 신청
     @PostMapping("{study-seq}/application")
-    public ResponseEntity<? extends BaseResponseBody> applyStudy(@PathVariable("study-seq") Integer studySeq, Authentication authentication) {
+    public ResponseEntity<? extends BaseResponseBody> applyStudy(@PathVariable("study-seq") Integer studySeq, @RequestBody StudyApplyPostReq studyApplyPostReq, Authentication authentication) {
         Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
         Optional<StudyRoom> opStudyRoom = studyRoomService.getStudyRoom(studySeq);
         if (!opStudyRoom.isPresent())
             return ResponseEntity.ok(StudyEnterPostRes.of(404, "Fail : Not valid studySeq"));
         if (studyApplyService.existsStudyById(new StudyApplyId(userSeq, studySeq)))
             return ResponseEntity.ok(BaseResponseBody.of(409, "Fail : Already applied"));
-        studyApplyService.createApplicant(new StudyApplyId(userSeq, studySeq));
+        if(studyMemberService.existsMember(userSeq, studySeq))
+            return ResponseEntity.ok(BaseResponseBody.of(408, "Fail : Already member"));
+        studyApplyService.createApplicant(new StudyApplyId(userSeq, studySeq), studyApplyPostReq.getApplyMessage());
         StudyRoom studyRoom = opStudyRoom.get();
         GongUserDetails gongUserDetails = (GongUserDetails) authentication.getDetails();
         sseService.sendStudyApplyNotice(studyRoom.getHost().getUserSeq(), studyRoom.getStudySeq(), ((GongUserDetails) authentication.getDetails()).getUsername(), studyRoom.getStudyTitle());

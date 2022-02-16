@@ -1,6 +1,7 @@
 package com.gongsp.api.service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public interface StudyHistoryService {
     boolean existsMemberToday(Integer userSeq, Integer studySeq, LocalDate now);
@@ -10,4 +11,5 @@ public interface StudyHistoryService {
     void updateHistoryEjected(Integer userSeq, Integer studySeq, LocalDate curDate, boolean isEjected);
     boolean isMemberLate(Integer userSeq, Integer studySeq, LocalDate curDate);
     boolean existsAnyoneToday(Integer studySeq, LocalDate curDate);
+    List<Object []> getHistoryList();
 }

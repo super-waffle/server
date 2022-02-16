@@ -8,6 +8,7 @@ import com.gongsp.api.response.user.OtherUserProfileGetRes;
 import com.gongsp.api.response.user.UserProfileGetRes;
 import com.gongsp.api.response.user.my_study.MyStudyListGetRes;
 import com.gongsp.api.response.user.my_study.StudyRes;
+import com.gongsp.api.service.NoticeService;
 import com.gongsp.api.service.SseService;
 import com.gongsp.api.service.UserService;
 import com.gongsp.common.auth.GongUserDetails;
@@ -22,6 +23,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -43,6 +45,8 @@ public class UserController {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private SseService sseService;
+    @Autowired
+    private NoticeService noticeService;
 
     // API U-001
     @GetMapping("")
@@ -124,6 +128,18 @@ public class UserController {
         int userSeq = getUserSeqFromAuthentication(authentication);
 
         Optional<List<StudyRes>> studies = userService.getUserIncludedStudies(userSeq);
+
+        if (studies.isPresent())
+            return ResponseEntity.ok(MyStudyListGetRes.of(200, "Success", studies.get()));
+        return ResponseEntity.ok(MyStudyListGetRes.of(404, "No Study List", null));
+    }
+
+    // API U-006-1
+    @GetMapping("/studies/today")
+    public ResponseEntity<? extends BaseResponseBody> getStudiesListToday(Authentication authentication) {
+        int userSeq = getUserSeqFromAuthentication(authentication);
+
+        Optional<List<StudyRes>> studies = userService.getUserIncludedStudies(userSeq, LocalDate.now().getDayOfWeek().getValue());
 
         if (studies.isPresent())
             return ResponseEntity.ok(MyStudyListGetRes.of(200, "Success", studies.get()));
@@ -285,6 +301,9 @@ public class UserController {
 
         sseService.sendStudyGrantNotice(applicantSeq, studySeq, study.getTitle());
 
+        // 업적 "스터디 첫 참가(10번)" 등록
+       noticeService.sendAchieveNotice(applicantSeq, 10, "스터디 첫 참가");
+
         return ResponseEntity.ok(BaseResponseBody.of(200, "Success"));
     }
 
@@ -385,6 +404,23 @@ public class UserController {
             return ResponseEntity.ok(BaseResponseBody.of(409, "Not Authorized : You Are Not The Host"));
 
         userService.deleteMeeting(meetingInfo);
+
+        return ResponseEntity.ok(BaseResponseBody.of(200, "Success"));
+    }
+
+    // API U-019
+    @PatchMapping("/profile/image")
+    public ResponseEntity<BaseResponseBody> deleteMyProfileImage(Authentication authentication) {
+        int userSeq = getUserSeqFromAuthentication(authentication);
+
+        Optional<User> userInfo = userService.getUserByUserSeq(userSeq);
+
+        if (!userInfo.isPresent())
+            return ResponseEntity.ok(BaseResponseBody.of(404, "No Such User"));
+
+        User user = userInfo.get();
+
+        userService.deleteProfileImage(user);
 
         return ResponseEntity.ok(BaseResponseBody.of(200, "Success"));
     }

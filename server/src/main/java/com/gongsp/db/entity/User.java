@@ -17,8 +17,8 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer userSeq;
 
-    @OneToOne
-    @JoinColumn (name = "level_seq", updatable = false, insertable = false)
+    @ManyToOne
+    @JoinColumn (name = "level_seq", insertable = false)
     private Level userLevel;
 
     @OneToOne
