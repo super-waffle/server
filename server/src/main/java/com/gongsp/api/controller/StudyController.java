@@ -157,8 +157,13 @@ public class StudyController {
     }
 
     //일시방출 누적횟수 확인
-    @GetMapping("{study-seq}/ban/{user-seq}")
-    public ResponseEntity<? extends BaseResponseBody> getBanCnt(@PathVariable("study-seq") Integer studySeq, @PathVariable("user-seq") Integer userSeq, Authentication authentication) {
+    @GetMapping("{study-seq}/ban/{user-nickname}")
+    public ResponseEntity<? extends BaseResponseBody> getBanCnt(@PathVariable("study-seq") Integer studySeq, @PathVariable("user-nickname") String userNickname, Authentication authentication) {
+        Optional<User> opUser = userService.getUserByUserNickname(userNickname);
+        if(!opUser.isPresent())
+            return ResponseEntity.ok(BaseResponseBody.of(407, "Fail : User nickname is not valid"));
+        Integer userSeq = opUser.get().getUserSeq();
+
         Optional<StudyRoomMember> opStudyMember = studyMemberService.getStudyMember(userSeq, studySeq);
         if (!opStudyMember.isPresent())
             return ResponseEntity.ok(StudyBanPostRes.of(409, "Fail : Not valid studySeq or userSeq", null));
@@ -170,8 +175,13 @@ public class StudyController {
     }
 
     //스터디원 일시방출하기
-    @PatchMapping("{study-seq}/ban/{user-seq}")
-    public ResponseEntity<? extends BaseResponseBody> banUserFromStudy(@PathVariable("study-seq") Integer studySeq, @PathVariable("user-seq") Integer userSeq, Authentication authentication) {
+    @PatchMapping("{study-seq}/ban/{user-nickname}")
+    public ResponseEntity<? extends BaseResponseBody> banUserFromStudy(@PathVariable("study-seq") Integer studySeq, @PathVariable("user-nickname") String userNickname, Authentication authentication) {
+        Optional<User> opUser = userService.getUserByUserNickname(userNickname);
+        if(!opUser.isPresent())
+            return ResponseEntity.ok(BaseResponseBody.of(407, "Fail : User nickname is not valid"));
+        Integer userSeq = opUser.get().getUserSeq();
+
         if(authentication == null)
             return ResponseEntity.ok(BaseResponseBody.of(403, "Access denied"));
         Optional<StudyRoomMember> opStudyMember = studyMemberService.getStudyMember(userSeq, studySeq);
