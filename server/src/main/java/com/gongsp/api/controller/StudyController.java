@@ -119,7 +119,7 @@ public class StudyController {
         for (Integer memberSeq: memberSeqList) {
 //            String userNickname = userService.getUserNickname(memberSeq);
 //            Integer userIsLate=studyHistoryService.isMemberAttend(memberSeq, studySeq, curDate);
-            memberResList.add(new StudyMemberRes(userService.getUserNickname(memberSeq), studyHistoryService.isMemberAttend(memberSeq, studySeq, curDate), studyRoom.getHost().getUserSeq().equals(userSeq)));
+            memberResList.add(new StudyMemberRes(userService.getUserNickname(memberSeq), studyHistoryService.isMemberAttend(memberSeq, studySeq, curDate), studyRoom.getHost().getUserSeq().equals(memberSeq)));
         }
 
         // 업적 "일찍 일어나는 새(15번)" 등록
