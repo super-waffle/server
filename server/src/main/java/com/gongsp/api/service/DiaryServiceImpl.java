@@ -58,11 +58,11 @@ public class DiaryServiceImpl implements DiaryService{
     @Override
     public Boolean updateDiary(Integer userSeq, Integer diarySeq, DiaryContentInfo contentInfo, String uuidFilename) {
         Diary diary = diaryRepository.getDiaryByDiarySeq(diarySeq).orElse(null);
-        String originalDiaryImg = diary.getDiaryImg();
         if (diary == null || !userSeq.equals(diary.getUserSeq())) {
             // 해당 하루기록 존재하지 않거나, 사용자의 하루기록이 아닌 경우(권한 없음)
             return false;
         }
+        String originalDiaryImg = diary.getDiaryImg();
         try {
             diary.setDiaryContent(contentInfo.getContent());
             if (uuidFilename != null)
