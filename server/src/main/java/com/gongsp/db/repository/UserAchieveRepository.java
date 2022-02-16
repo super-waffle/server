@@ -28,9 +28,9 @@ public interface UserAchieveRepository extends JpaRepository<UserAchieve, Intege
 
     @Query(value = "SELECT *\n" +
             "FROM tb_user_achieve\n" +
-            "WHERE user_seq = :userSeq AND achieve_seq = :achieveSeq AND is_achieve_activate = true;",
+            "WHERE user_seq = :userSeq AND is_achieve_active = true;",
             nativeQuery = true)
-    Optional<UserAchieve> findActivatedAchieveByAchieveAndUser(@Param(value="userSeq") Integer userSeq, @Param(value="achieveSeq") Integer achieveSeq);
+    Optional<UserAchieve> findActivatedAchieveByUser(@Param(value="userSeq") Integer userSeq);
 
     Boolean existsUserAchieveByUserAndAchieve(User user, Achieve achieve);
 }

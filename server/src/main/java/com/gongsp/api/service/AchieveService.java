@@ -13,4 +13,5 @@ public interface AchieveService {
     Boolean existingAchieve(Integer userSeq, Integer achieveSeq);
     List<Integer> getAchieveSeqList(Integer userSeq);
     List<Achieve> getAll();
+    UserAchieve getActiveAchieveSeq(Integer userSeq);
 }
