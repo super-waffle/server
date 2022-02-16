@@ -127,7 +127,7 @@ public class LogTimeServiceImpl implements LogTimeService {
                     log = new LogTime();
                     log.setUserSeq(userSeq);
                     log.setLogDate(curDate.plusDays(-1));
-                    log.setLogMeeting((short)1440);
+                    log.setLogStudy((short)1440);
                     log.setLogStartTime(LocalTime.of(0, 0, 0));
                     log.setLogEndTime(LocalTime.of(23, 59, 59));
                     logTimeRepository.save(log);
@@ -136,7 +136,7 @@ public class LogTimeServiceImpl implements LogTimeService {
                 log = new LogTime();
                 log.setUserSeq(userSeq);
                 log.setLogDate(curDate.plusDays(-1));
-                log.setLogMeeting(logStudy.shortValue());
+                log.setLogStudy(logStudy.shortValue());
                 log.setLogStartTime(logStart);
                 log.setLogEndTime(LocalTime.of(23, 59, 59));
                 logTimeRepository.save(log);
