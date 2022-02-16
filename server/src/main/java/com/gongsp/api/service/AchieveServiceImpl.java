@@ -34,10 +34,10 @@ public class AchieveServiceImpl implements AchieveService{
         if (achievement == null) {
             return false;
         }
-        UserAchieve existingActiveAchieve = userAchieveRepository.findActivatedAchieveByAchieveAndUser(userSeq, achieveSeq).orElse(null);
+        UserAchieve existingActiveAchieve = userAchieveRepository.findActivatedAchieveByUser(userSeq).orElse(null);
         try {
             if (existingActiveAchieve != null) {
-                existingActiveAchieve.setIsAchieveActive(false);
+                existingActiveAchieve.setIsAchieveActive(!existingActiveAchieve.getIsAchieveActive());
                 userAchieveRepository.save(existingActiveAchieve);
             }
             achievement.setIsAchieveActive(!achievement.getIsAchieveActive());
@@ -71,5 +71,10 @@ public class AchieveServiceImpl implements AchieveService{
     @Override
     public List<Achieve> getAll() {
         return achieveRepository.getAll();
+    }
+
+    @Override
+    public UserAchieve getActiveAchieveSeq(Integer userSeq) {
+        return userAchieveRepository.findActivatedAchieveByUser(userSeq).orElse(null);
     }
 }
