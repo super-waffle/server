@@ -23,6 +23,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -127,6 +128,18 @@ public class UserController {
         int userSeq = getUserSeqFromAuthentication(authentication);
 
         Optional<List<StudyRes>> studies = userService.getUserIncludedStudies(userSeq);
+
+        if (studies.isPresent())
+            return ResponseEntity.ok(MyStudyListGetRes.of(200, "Success", studies.get()));
+        return ResponseEntity.ok(MyStudyListGetRes.of(404, "No Study List", null));
+    }
+
+    // API U-006-1
+    @GetMapping("/studies/today")
+    public ResponseEntity<? extends BaseResponseBody> getStudiesListToday(Authentication authentication) {
+        int userSeq = getUserSeqFromAuthentication(authentication);
+
+        Optional<List<StudyRes>> studies = userService.getUserIncludedStudies(userSeq, LocalDate.now().getDayOfWeek().getValue());
 
         if (studies.isPresent())
             return ResponseEntity.ok(MyStudyListGetRes.of(200, "Success", studies.get()));

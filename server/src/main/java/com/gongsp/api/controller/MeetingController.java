@@ -12,6 +12,7 @@ import com.gongsp.common.auth.GongUserDetails;
 import com.gongsp.common.model.response.BaseResponseBody;
 import com.gongsp.db.entity.BlacklistMeetingId;
 import com.gongsp.db.entity.Meeting;
+import com.gongsp.db.entity.User;
 import io.openvidu.java.client.OpenVidu;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -95,16 +96,19 @@ public class MeetingController {
     }
 
     // 자유열람실 강퇴
-    @PostMapping("/{meeting-seq}/kick/{user-seq}")
-    public ResponseEntity<? extends BaseResponseBody> kickUserFromMeeting(@PathVariable("meeting-seq") Integer meetingSeq, @PathVariable("user-seq") Integer userSeq, Authentication authentication) {
+    @PostMapping("/{meeting-seq}/kick/{user-nickname}")
+    public ResponseEntity<? extends BaseResponseBody> kickUserFromMeeting(@PathVariable("meeting-seq") Integer meetingSeq, @PathVariable("user-nickname") String userNickname, Authentication authentication) {
         //session 퇴출, connection 만료
         //이건 프론트에서 강퇴당하는 애 입장에서 자유열람실 퇴실 api호출해줘야 될것 같음! session token 이랑 그 사용자가 공부한시간, 공부 시작한 시간등이 필요해서
         //퇴실 api호출해주면 onair삭제, 시간누적, meeting update등 호출안에서 이뤄짐
-
+        Optional<User> opUser = userService.getUserByUserNickname(userNickname);
+        if(!opUser.isPresent())
+            return ResponseEntity.ok(BaseResponseBody.of(408, "Fail : User nickname is not valid"));
         Integer hostSeq = Integer.parseInt((String) authentication.getPrincipal());
         if (!hostSeq.equals(meetingService.getHostSeq(meetingSeq)))
             return ResponseEntity.ok(BaseResponseBody.of(409, "Fail : Request is not from host"));
 
+        Integer userSeq = opUser.get().getUserSeq();
         //블랙리스트 추가
         blacklistMeetingService.createBlacklist(new BlacklistMeetingId(userSeq, meetingSeq));
 
@@ -123,7 +127,7 @@ public class MeetingController {
     // 자유열람실 입실
     @PostMapping("/{meeting-seq}/room")
     public ResponseEntity<? extends BaseResponseBody> getToken(@PathVariable("meeting-seq") Integer meetingSeq, Authentication authentication) {
-
+        System.out.println("입실들어옴");
         // 존재하는 자유열람실만 입실 할 수 있음
         Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
         Optional<Meeting> opMeeting = meetingService.getMeeting(meetingSeq);
@@ -253,6 +257,7 @@ public class MeetingController {
         // tb_meeting 의 meetingHeadcount --
         meetingService.updateMeeting(meetingSeq, -1);
 
+//        System.out.println("미팅 숫자줄였음");
         // session, connection 해제
         String result = meetingService.removeUser(sessionName, token, meetingSeq);
         if ("Error".equals(result)) return ResponseEntity.ok(BaseResponseBody.of(409, "Fail : Remove user"));

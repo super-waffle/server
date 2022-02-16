@@ -12,6 +12,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findUserByUserEmail(String userEmail);
     Optional<User> findUserByUserSeq(Integer userSeq);
     Boolean existsUserByUserSeq(Integer userSeq);
+    Optional<User> findUserByUserNickname(String userNickname);
 
     @Query(value = "SELECT COUNT(*) FROM tb_user;", nativeQuery = true)
     Integer getUserCount();

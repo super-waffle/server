@@ -17,6 +17,7 @@ public interface UserService {
     void updateUserLogTime(Integer userSeq, Integer logTime);
     boolean updateUserNickname(int userSeq, String nickname);
     Optional<List<StudyRes>> getUserIncludedStudies(int userSeq);
+    Optional<List<StudyRes>> getUserIncludedStudies(int userSeq, Integer today);
     Optional<StudyRes> getUserIncludedDetailStudyInfo(int studySeq);
     Optional<Study> getStudyInfo(int studySeq);
     void patchStudyInfo(Study study, UserStudyUpdatePatchReq studyPatchInfo);
@@ -35,6 +36,7 @@ public interface UserService {
     void updateUserProfile(User user, UserInfoPatchReq infoPatchReq);
     Integer getUserCount();
     void deleteProfileImage(User userSeq);
+    Optional<User> getUserByUserNickname(String userNickname);
     Integer getUserTimeGoal(Integer userSeq);
     void updateUserLevel(Integer userSeq);
 }
