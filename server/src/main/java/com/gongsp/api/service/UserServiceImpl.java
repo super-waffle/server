@@ -345,7 +345,9 @@ public class UserServiceImpl implements UserService{
             for (Object[] data: userLevelStatusList) {
                 if (intValue(data[1]) >= intValue(data[2])) {
                     try {
-                        user.setUserLevel(levelRepository.getLevelByLevelSeq(user.getUserLevel().getLevelSeq() + 1));
+                        Integer newLevel = user.getUserLevel().getLevelSeq() + 1;
+                        user.setUserLevel(levelRepository.getLevelByLevelSeq(newLevel));
+                        user.setUserImageLevel(levelRepository.getLevelByLevelSeq(newLevel));
                         userRepository.save(user);
                     } catch (Exception e) {
                         System.out.println(e);
