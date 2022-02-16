@@ -46,15 +46,15 @@ public class StudyHistoryServiceImpl implements StudyHistoryService {
             StudyDay[] studyDays = opStudyDays.get();
             for (StudyDay studyday: studyDays ) {
                 if(studyday.getDayNumber().equals(today)){
-                    LocalTime startTime = studyday.getStartTime();
+                    LocalTime startTime = studyday.getStartTime().plusMinutes(10);
+                    System.out.println(startTime);
                     LocalTime curTime = LocalTime.now();
-                    if(startTime.getHour() >= curTime.getHour()){
-                        if(startTime.getMinute() >= curTime.getMinute())
-                            studyHistory.setHistoryLate(false);
-                        else
-                            studyHistory.setHistoryLate(true);
-                    }
-                    studyHistory.setHistoryLate(true);
+//                    System.out.println(curTime);
+//                    System.out.println(startTime);
+                    if(curTime.isAfter(startTime))
+                        studyHistory.setHistoryLate(true);
+                    else
+                        studyHistory.setHistoryLate(false);
                     break;
                 }
             }

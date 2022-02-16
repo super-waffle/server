@@ -40,15 +40,15 @@ public class StudyDayServiceImpl implements StudyDayService {
     public boolean isValidTime(Integer studySeq, LocalDate curDate, LocalTime curTime) {
         Integer today = curDate.getDayOfWeek().getValue();
         Optional<StudyDay[]> opStudyDays = getStudyDay(studySeq);
-        if(!opStudyDays.isPresent())
+        if (!opStudyDays.isPresent())
             return false;
         StudyDay[] studyDays = opStudyDays.get();
-        for (StudyDay studyDay: studyDays) {
-            if(studyDay.getDayNumber().equals(today)){
+        for (StudyDay studyDay : studyDays) {
+            if (studyDay.getDayNumber().equals(today)) {
                 LocalTime startTime = studyDay.getStartTime();
                 LocalTime endTime = studyDay.getEndTime();
-                if(startTime.getHour() <= curTime.getHour() && startTime.getMinute() <= curTime.getMinute() && endTime.getHour()>=curTime.getHour() && endTime.getMinute()>=curTime.getMinute())
-                        return true;
+                if (curTime.isAfter(startTime) && curTime.isBefore(endTime))
+                    return true;
                 break;
             }
         }
