@@ -117,7 +117,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public Optional<List<StudyRes>> getUserIncludedStudies(int userSeq, Integer today) {
-        Optional<Study[]> myStudy = studyRepository.selectAllStudies(userSeq);
+        Optional<Study[]> myStudy = studyRepository.selectAllStudiesWithoutNotStarted(userSeq);
 
         if (!myStudy.isPresent())
             return Optional.empty();
