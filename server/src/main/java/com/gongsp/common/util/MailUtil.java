@@ -3,6 +3,7 @@ package com.gongsp.common.util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -35,11 +36,7 @@ public class MailUtil {
                 message.setTo(sendTo);
                 message.setFrom(sendFrom);
                 message.setSubject(mailTitle);
-                message.setText(mailContent, true);     // true: html 형식 사용
-
-//                // Mail에 img 삽입
-//                ClassPathResource resource = new ClassPathResource("img주소/img이름.png");
-//                message.addlnline("img", resource.getFile());
+                message.setText(mailContent + "<img src=\"https://i6a301.p.ssafy.io:8080/images/logo_email.png\">", true);     // true: html 형식 사용
             }
         };
         try {
