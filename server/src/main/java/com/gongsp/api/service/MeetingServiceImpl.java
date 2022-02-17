@@ -217,7 +217,8 @@ public class MeetingServiceImpl implements MeetingService {
         meeting.setMeetingUrl(meetingCreatePostReq.getMeetingTitle() + userSeq);
         meeting.setMeetingCamType(meetingCreatePostReq.getMeetingCamType());
         meeting.setMeetingMicType(meetingCreatePostReq.getMeetingMicType());
-        meeting.setMeetingImg(uuidFilename);
+        if(uuidFilename!=null)
+            meeting.setMeetingImg(uuidFilename);
         return meetingRepository.save(meeting);
     }
 
