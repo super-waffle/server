@@ -17,6 +17,10 @@ public class Meeting {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer meetingSeq;
     private Integer hostSeq;
+
+    @Column(name = "user_nickname", updatable = false, insertable = false)
+    private String hostNickname;
+
     @Ignore
     private Integer categorySeq;
     @OneToOne

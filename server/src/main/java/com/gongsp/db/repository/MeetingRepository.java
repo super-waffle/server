@@ -67,7 +67,9 @@ public interface MeetingRepository extends JpaRepository<Meeting, Integer> {
     boolean existsMeetingByHostSeq(Integer userSeq);
 
     // 즐겨찾기한 자유열람실 목록 조회
-    @Query(nativeQuery = true, value = "(SELECT * FROM tb_meeting WHERE meeting_seq in " +
+    @Query(nativeQuery = true, value = "(SELECT m.*, u.user_nickname FROM tb_meeting m\n" +
+            "JOIN tb_user u ON (m.host_seq = u.user_seq)\n" +
+            "WHERE meeting_seq in " +
             "(SELECT meeting_seq FROM tb_bookmark WHERE user_seq = :userSeq)) ")
     List<Meeting> findAllByUser(@Param("userSeq") Integer userSeq);
 
