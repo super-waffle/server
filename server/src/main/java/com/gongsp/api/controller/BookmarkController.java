@@ -2,6 +2,7 @@ package com.gongsp.api.controller;
 
 import com.gongsp.api.response.bookmark.BookmarkListGetRes;
 import com.gongsp.api.service.BookmarkService;
+import com.gongsp.api.service.UserService;
 import com.gongsp.common.model.response.BaseResponseBody;
 import com.gongsp.db.entity.Meeting;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,9 @@ public class BookmarkController {
 
     @Autowired
     private BookmarkService bookmarkService;
+
+    @Autowired
+    private UserService userService;
 
     // 즐겨찾기 목록 조회
     @GetMapping()
