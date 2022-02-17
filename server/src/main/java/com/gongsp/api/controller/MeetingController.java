@@ -81,7 +81,10 @@ public class MeetingController {
         Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
         if (meetingService.isUserOwnMeeting(userSeq))
             return ResponseEntity.ok(BaseResponseBody.of(408, "Fail : User already has meeting room"));
-        if (meetingService.createMeeting(meetingCreatePostReq, userSeq, storageService.store(meetingCreatePostReq.getMeetingImg())) == null)
+        String uuidFilename = null;
+        if(uuidFilename != null)
+            uuidFilename = storageService.store(meetingCreatePostReq.getMeetingImg());
+        if (meetingService.createMeeting(meetingCreatePostReq, userSeq, uuidFilename) == null)
             return ResponseEntity.ok(BaseResponseBody.of(409, "Fail : Create meeting room"));
         return ResponseEntity.ok(BaseResponseBody.of(200, "Success : Create meeting room"));
     }
