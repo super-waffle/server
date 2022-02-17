@@ -17,12 +17,18 @@ public class MeetingListGetRes extends BaseResponseBody {
     private String key;
     private List<MeetingRes> data;
 
-    public static MeetingListGetRes of(Integer statusCode, String message, MeetingParameter meetingParameter, int totalPage, List<MeetingRes> data) {
+    public static MeetingListGetRes of(Integer statusCode, String message, MeetingParameter meetingParameter, int totalCount, List<MeetingRes> data) {
         MeetingListGetRes res = new MeetingListGetRes();
         res.setStatusCode(statusCode);
         res.setMessage(message);
+        int totalPage = totalCount / 12;
+        if (totalCount % 12 != 0)
+            totalPage += 1;
         res.setTotalPage(totalPage);
-        res.setCurrentPage(meetingParameter.getPage());
+        if (meetingParameter.getPage() == 0)
+            res.setCurrentPage(1);
+        else
+            res.setCurrentPage(meetingParameter.getPage());
         res.setType(meetingParameter.getType());
         res.setKey(meetingParameter.getKey());
         res.setData(data);

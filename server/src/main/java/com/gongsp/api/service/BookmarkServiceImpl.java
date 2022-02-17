@@ -2,11 +2,11 @@ package com.gongsp.api.service;
 
 import com.gongsp.db.entity.Bookmark;
 import com.gongsp.db.entity.Meeting;
+import com.gongsp.db.entity.MeetingWithNickname;
 import com.gongsp.db.entity.User;
 import com.gongsp.db.repository.BookmarkRepository;
-import com.gongsp.db.repository.MeetingRepository;
+import com.gongsp.db.repository.MeetingWithNicknameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,7 +15,7 @@ import java.util.List;
 public class BookmarkServiceImpl implements BookmarkService {
 
     @Autowired
-    private MeetingRepository meetingRepository;
+    private MeetingWithNicknameRepository meetingWithNicknameRepository;
 
     @Autowired
     private BookmarkRepository bookmarkRepository;
@@ -27,8 +27,8 @@ public class BookmarkServiceImpl implements BookmarkService {
     private MeetingService meetingService;
 
     @Override
-    public List<Meeting> findAllByUserSeq(Integer userSeq) {
-        return meetingRepository.findAllByUser(userSeq);
+    public List<MeetingWithNickname> findAllByUserSeq(Integer userSeq) {
+        return meetingWithNicknameRepository.findAllByUserWithNickname(userSeq);
     }
 
     @Override

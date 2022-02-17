@@ -18,6 +18,7 @@ public class MeetingDetailGetRes extends BaseResponseBody {
     private String meetingCamType;
     private String meetingMicType;
     private Boolean isMeetingOnair;
+    private boolean isInBookmark;
 
     public static MeetingDetailGetRes of(Integer statusCode, String message, MeetingDetailGetRes meetingDetailGetRes) {
         meetingDetailGetRes.setStatusCode(statusCode);

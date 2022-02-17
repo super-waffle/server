@@ -92,7 +92,7 @@ public class MeetingController {
     // 자유열람실 상세조회
     @GetMapping("/{meeting-seq}")
     public ResponseEntity<? extends BaseResponseBody> getMeetingDetail(@PathVariable("meeting-seq") Integer meetingSeq, Authentication authentication) {
-        MeetingDetailGetRes meetingDetailGetRes = meetingService.getMeetingDetail(meetingSeq);
+        MeetingDetailGetRes meetingDetailGetRes = meetingService.getMeetingDetail(meetingSeq, Integer.parseInt((String) authentication.getPrincipal()));
         if (meetingDetailGetRes == null)
             return ResponseEntity.ok(BaseResponseBody.of(409, "Fail : Get meeting detail"));
         return ResponseEntity.ok(MeetingDetailGetRes.of(200, "Success : Get meeting detail", meetingDetailGetRes));

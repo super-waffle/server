@@ -110,21 +110,21 @@ public class StudyRoomServiceImpl implements StudyRoomService {
             //검색어 없음 = 전체목록
             if (studyParameter.getKey() == null || studyParameter.getKey().equals("")) {
 //                System.out.println("카테고리X 검색어X");
-                studyList = studyRoomRepository.searchAll(start, studyParameter.getSpp());
+                studyList = studyRoomRepository.searchAll(start, studyParameter.getSpp(), LocalDate.now());
             } else {
                 //검색어 있음 - 필터링(글제목, 글내용)
 //                System.out.println("카테고리X 검색어O");
-                studyList = studyRoomRepository.searchByKey(studyParameter.getKey(), start, studyParameter.getSpp());
+                studyList = studyRoomRepository.searchByKey(studyParameter.getKey(), start, studyParameter.getSpp(), LocalDate.now());
             }
         } else {    //카테고리 선택한경우
             //검색어 없음 = 선택한 카테고리 모두
             if (studyParameter.getKey() == null || studyParameter.getKey().equals("")) {
 //                System.out.println("카테고리O 검색어X");
-                studyList = studyRoomRepository.searchByCategorySeq(studyParameter.getType(), start, studyParameter.getSpp());
+                studyList = studyRoomRepository.searchByCategorySeq(studyParameter.getType(), start, studyParameter.getSpp(), LocalDate.now());
             } else {
                 //검색어 있음 - 필터링(글제목, 글내용)
 //                System.out.println("카테고리O 검색어O");
-                studyList = studyRoomRepository.searchByKeyAndCategory(studyParameter.getKey(), studyParameter.getType(), start, studyParameter.getSpp());
+                studyList = studyRoomRepository.searchByKeyAndCategory(studyParameter.getKey(), studyParameter.getType(), start, studyParameter.getSpp(), LocalDate.now());
             }
         }
 
@@ -155,18 +155,18 @@ public class StudyRoomServiceImpl implements StudyRoomService {
             //검색어 없음 = 전체목록
             if (studyParameter.getKey() == null || studyParameter.getKey().equals("")) {
 //                System.out.println("카테고리X 검색어X");
-                return (int) studyRoomRepository.count();
+                return studyRoomRepository.countAllWithoutCount(LocalDate.now());
             } else {
                 //검색어 있음 - 필터링(글제목, 글내용)
-                return studyRoomRepository.countByLike(studyParameter.getKey());
+                return studyRoomRepository.countByLike(studyParameter.getKey(), LocalDate.now());
             }
         } else {    //카테고리 선택한경우
             //검색어 없음 = 선택한 카테고리 모두
             if (studyParameter.getKey() == null || studyParameter.getKey().equals("")) {
-                return studyRoomRepository.countByCategory(studyParameter.getType());
+                return studyRoomRepository.countByCategory(studyParameter.getType(), LocalDate.now());
             } else {
                 //검색어 있음 - 필터링(글제목, 글내용)
-                return studyRoomRepository.countByLikeAndCategory(studyParameter.getType(), studyParameter.getKey());
+                return studyRoomRepository.countByLikeAndCategory(studyParameter.getType(), studyParameter.getKey(), LocalDate.now());
             }
         }
     }

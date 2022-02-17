@@ -19,6 +19,6 @@ public class MeetingParameter {
 
     public MeetingParameter() {
         this.page = 1;
-        this.spp = 20;
+        this.spp = 12;
     }
 }

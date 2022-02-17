@@ -20,7 +20,7 @@ public interface MeetingService {
     void updateMeeting(Integer meetingSeq, int flag);
     List<MeetingRes> getMeetingList(MeetingParameter meetingParameter, Integer userSeq);
     Meeting createMeeting(MeetingCreatePostReq meetingCreatePostReq, Integer userSeq, String uuidFileName);
-    MeetingDetailGetRes getMeetingDetail(Integer meetingSeq);
+    MeetingDetailGetRes getMeetingDetail(Integer meetingSeq, int userSeq);
     boolean isUserOwnMeeting(Integer userSeq);
     Integer getHostSeq(Integer meetingSeq);
     String getMeetingUrl(Integer meetingSeq);
