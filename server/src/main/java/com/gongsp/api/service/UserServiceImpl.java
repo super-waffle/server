@@ -273,15 +273,17 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public void updateMeetingInfo(Meeting meetingInfo, UserMeetingPatchReq meetingPatchReq) {
-        storageService.delete(meetingInfo.getMeetingImg());
-        String imagePath = storageService.store(meetingPatchReq.getMeetingImg());
+        if (meetingPatchReq.getMeetingImg() != null) {
+            storageService.delete(meetingInfo.getMeetingImg());
+            String imagePath = storageService.store(meetingPatchReq.getMeetingImg());
+            meetingInfo.setMeetingImg(imagePath);
+        }
 
         meetingInfo.setMeetingTitle(meetingPatchReq.getMeetingTitle());
         meetingInfo.setMeetingDesc(meetingPatchReq.getMeetingDesc());
         meetingInfo.setMeetingCamType(meetingPatchReq.getMeetingCamType());
         meetingInfo.setMeetingMicType(meetingPatchReq.getMeetingMicType());
         meetingInfo.setCategorySeq(meetingPatchReq.getCategorySeq());
-        meetingInfo.setMeetingImg(imagePath);
 
         meetingRepository.save(meetingInfo);
     }
