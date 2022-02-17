@@ -21,7 +21,7 @@ public class StudyListGetRes extends BaseResponseBody {
         res.setStatusCode(statusCode);
         res.setMessage(message);
         int totalPage = totalCount / 20;
-        if (totalPage != 0)
+        if (totalCount % 20 != 0)
             totalPage += 1;
         res.setTotalPage(totalPage);
         int currentPage = studyParameter.getPage();

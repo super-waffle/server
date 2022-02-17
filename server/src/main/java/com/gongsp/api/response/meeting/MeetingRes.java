@@ -12,4 +12,5 @@ public class MeetingRes {
     private String meetingImg;
     private int meetingHeadcount;
     private boolean isMeetingOnair;
+    private boolean isInBookmark;
 }

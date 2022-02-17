@@ -4,9 +4,11 @@ import com.gongsp.api.request.meeting.MeetingCreatePostReq;
 import com.gongsp.api.request.meeting.MeetingParameter;
 import com.gongsp.api.response.meeting.MeetingDetailGetRes;
 import com.gongsp.api.response.meeting.MeetingRes;
+import com.gongsp.db.entity.Bookmark;
 import com.gongsp.db.entity.Category;
 import com.gongsp.db.entity.Meeting;
 import com.gongsp.db.entity.MeetingDetail;
+import com.gongsp.db.repository.BookmarkRepository;
 import com.gongsp.db.repository.MeetingDetailRepository;
 import com.gongsp.db.repository.MeetingRepository;
 import io.openvidu.java.client.*;
@@ -26,6 +28,8 @@ public class MeetingServiceImpl implements MeetingService {
     private MeetingRepository meetingRepository;
     @Autowired
     private MeetingDetailRepository meetingDetailRepository;
+    @Autowired
+    private BookmarkRepository bookmarkRepository;
 
     // Collection to pair session names and OpenVidu Session objects
     // ConcurrentHashMap : Multi-Thread 환경에서 사용할 수 있도록 나온 클래스
@@ -175,6 +179,9 @@ public class MeetingServiceImpl implements MeetingService {
             meetingRes.setMeetingHeadcount(meeting.getMeetingHeadcount());
             meetingRes.setMeetingTitle(meeting.getMeetingTitle());
             meetingRes.setCategoryName(meeting.getCategory().getCategoryName());
+            meetingRes.setInBookmark(false);
+            if (bookmarkRepository.existsByMeetingSeqAndUserSeq(meeting.getMeetingSeq(), userSeq) != 0)
+                meetingRes.setInBookmark(true);
             meetingResList.add(meetingRes);
         }
         return meetingResList;
@@ -222,7 +229,7 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
-    public MeetingDetailGetRes getMeetingDetail(Integer meetingSeq) {
+    public MeetingDetailGetRes getMeetingDetail(Integer meetingSeq, int userSeq) {
         MeetingDetailGetRes meetingDetailGetRes = new MeetingDetailGetRes();
         Optional<MeetingDetail> opMeetingDetail = meetingDetailRepository.findMeetingByMeetingSeq(meetingSeq);
         if (!opMeetingDetail.isPresent())
@@ -260,6 +267,8 @@ public class MeetingServiceImpl implements MeetingService {
         }
         meetingDetailGetRes.setMeetingMicType(type);
         meetingDetailGetRes.setIsMeetingOnair(meetingDetail.getIsMeetingOnair());
+        if (bookmarkRepository.existsByMeetingSeqAndUserSeq(meetingSeq, userSeq) != 0)
+            meetingDetailGetRes.setInBookmark(true);
         return meetingDetailGetRes;
     }
 
