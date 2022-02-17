@@ -12,11 +12,15 @@ import javax.persistence.*;
 @Setter
 @DynamicInsert
 @Table(name="tb_meeting")
-public class Meeting {
+public class MeetingWithNickname {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer meetingSeq;
     private Integer hostSeq;
+
+    @Column(name = "user_nickname", updatable = false, insertable = false)
+    private String hostNickname;
+
     @Ignore
     private Integer categorySeq;
     @OneToOne

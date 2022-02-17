@@ -2,9 +2,8 @@ package com.gongsp.api.controller;
 
 import com.gongsp.api.response.bookmark.BookmarkListGetRes;
 import com.gongsp.api.service.BookmarkService;
-import com.gongsp.api.service.UserService;
 import com.gongsp.common.model.response.BaseResponseBody;
-import com.gongsp.db.entity.Meeting;
+import com.gongsp.db.entity.MeetingWithNickname;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -19,14 +18,11 @@ public class BookmarkController {
     @Autowired
     private BookmarkService bookmarkService;
 
-    @Autowired
-    private UserService userService;
-
     // 즐겨찾기 목록 조회
     @GetMapping()
     public ResponseEntity<BookmarkListGetRes> getBookmarkList(Authentication authentication) {
         Integer userSeq = Integer.parseInt((String) authentication.getPrincipal());
-        List<Meeting> bookmarkList = bookmarkService.findAllByUserSeq(userSeq);
+        List<MeetingWithNickname> bookmarkList = bookmarkService.findAllByUserSeq(userSeq);
         if (bookmarkList.isEmpty()) {
             return ResponseEntity.ok(BookmarkListGetRes.of(204, "No Content", null));
         }
