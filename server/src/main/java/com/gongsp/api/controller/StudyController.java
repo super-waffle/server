@@ -82,8 +82,8 @@ public class StudyController {
             return ResponseEntity.ok(StudyEnterPostRes.of(406, "Fail : User was ejected"));
 
         // 스터디 시작 전/ 종료 후
-        if (!studyDayService.isValidTime(studySeq, curDate, LocalTime.now()))
-            return ResponseEntity.ok(StudyEnterPostRes.of(407, "Fail : Study has not started yet or already ended"));
+//        if (!studyDayService.isValidTime(studySeq, curDate, LocalTime.now()))
+//            return ResponseEntity.ok(StudyEnterPostRes.of(407, "Fail : Study has not started yet or already ended"));
 
         // 스터디 정원은 생각 안하겠습니당 신청받을때 무조건 6명 이하로 받는다고 생각해서...
 
