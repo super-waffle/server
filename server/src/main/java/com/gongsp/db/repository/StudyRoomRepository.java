@@ -26,7 +26,7 @@ public interface StudyRoomRepository extends JpaRepository<StudyRoom, Integer> {
     @Query(nativeQuery = true, value = "select count(*) from tb_study " +
             "where is_study_recruiting = true " +
             "and study_recruit_end >= :today " +
-            "where category_seq = :categorySeq ;")
+            "and category_seq = :categorySeq ;")
     int countByCategory(@Param("categorySeq") int categorySeq, @Param("today") LocalDate today);
 
     @Query(nativeQuery = true, value = "select * from tb_study " +
